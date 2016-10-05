@@ -66,6 +66,8 @@ electron.ipcMain.once('ipcBackgroundReady', (e) => {
       }
     })
 
+    console.log(`Seeding torrents from: \n - ${Array.from(extendedList).join('\n - ')}`)
+
     pull(
       context.sbot.createLogStream({ live: true }),
       ofType('ferment/audio'),
@@ -81,6 +83,7 @@ electron.ipcMain.once('ipcBackgroundReady', (e) => {
             torrentWhiteList.add(torrent.infoHash)
             if (extendedList.has(item.value.author)) {
               backgroundProcess.checkTorrent(item.value.content.audioSrc)
+              console.log(`Seeding torrent ${torrent.infoHash}`)
             }
           }
         }
