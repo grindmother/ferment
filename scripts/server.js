@@ -58,11 +58,11 @@ electron.ipcMain.once('ipcBackgroundReady', (e) => {
   context.sbot.friends.all((err, graph) => {
     if (err) throw err
 
-    var extendedList = new Set()
-    torrentWhiteList.forEach((id) => {
+    var extendedList = new Set(seedWhiteList)
+    Array.from(seedWhiteList).forEach((id) => {
       var moreIds = graph[id]
       if (moreIds) {
-        moreIds.forEach(x => extendedList.add(x))
+        Object.keys(moreIds).forEach(x => extendedList.add(x))
       }
     })
 
