@@ -72,7 +72,7 @@ By default, **Ferment** will only see other users that are on the same local are
 
 Since I'm a nice person 💖 you can hang out in my pub, and you don't even have to buy any drinks! 🍻
 
-Click 'Join Pub' on the sidebar then paste the code below:
+**Click 'Join Pub' on the sidebar then paste the code below:**
 
 ```
 pub.ferment.audio:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~Wa2SjJB8sXF9WNRBuIlpK1gVXmtehBe7NwYevoP/0l8=
