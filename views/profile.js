@@ -16,7 +16,7 @@ function ProfileView (context, profileId) {
   context.player.currentFeed.set(feed)
 
   var rankedFollowingIds = context.api.rankProfileIds(profile.following)
-  var rankedFollowerIds = context.api.rankProfileIds(profile.followers, 6)
+  var rankedFollowerIds = context.api.rankProfileIds(profile.followers, profileId === context.api.id ? null : 6)
   var uniqueFollowingIds = computed([rankedFollowingIds, rankedFollowerIds, 6], (ids, otherIds) => {
     var result = []
     for (var i = 0; i < ids.length; i++) {

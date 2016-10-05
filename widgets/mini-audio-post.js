@@ -38,8 +38,8 @@ module.exports = function (context, item) {
       })
     ]),
     h('div.main', [
-      h('div.displayName', [ item.author.displayName ]),
-      h('div.title', [ item.title ]),
+      h('div.displayName', { title: item.author.displayName }, [ item.author.displayName ]),
+      h('div.title', { title: item.title }, [ item.title ]),
       h('div.info', [
         when(likeCount, h('span', [
           h('strong', [likeCount]), ' likes'
