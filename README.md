@@ -18,8 +18,8 @@ I want to see a thriving audio sharing community (actually would be COMMUNITIES!
 
 ## Requirements
 
-- You currently need to have `automake` and `ffmpeg` on your system to add audio files.
-- Until I get around to creating a packaged app installer, you'll need a modern version of [`node` and `npm`](https://nodejs.org) installed in order to build.
+- You currently need to have `automake` and `ffmpeg` installed on your system
+- Until I get around to creating a packaged app installer, you'll need a modern version of [`node` and `npm`](https://nodejs.org) in order to build.
 
 ## Install
 
