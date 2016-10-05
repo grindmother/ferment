@@ -38,9 +38,6 @@ module.exports = function (ssbClient, config) {
         mlib.links(data.value.content.contact, 'feed').forEach(function (link) {
           if (typeof following === 'boolean') {
             if (following) {
-              if (data.value.author === '@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519') {
-                console.log(data.value)
-              }
               if (!scope || data.value.content.scope === scope) {
                 author.following.add(link.link)
                 get(link.link).followers.add(data.value.author)
@@ -84,7 +81,6 @@ module.exports = function (ssbClient, config) {
   function pollPeers () {
     ssbClient.gossip.peers((err, values) => {
       if (err) console.log(err)
-      console.log(values)
       values.forEach((peer) => {
         if (!ip.isPrivate(peer.host)) {
           var profile = get(peer.key)
