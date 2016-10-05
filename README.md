@@ -75,10 +75,12 @@ Since I'm a nice person 💖 you can hang out in my pub, and you don't even have
 Click 'Join Pub' on the sidebar then paste the code below:
 
 ```
-120.138.27.120:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~G0c0KMPSsZynwgM4wBLoUpfIyAP5gX9At2Ngs56tfmM=
+pub.ferment.audio:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~Wa2SjJB8sXF9WNRBuIlpK1gVXmtehBe7NwYevoP/0l8=
 ```
 
 If all goes to well, you'll start to see audio appear before your eyes! Give that play button a spin.
+
+> **NOTE:** To avoid destroying my server, this code can only be used a limited amount of times. Please post an issue if it doesn't work for you, and I'll generate a new one.
 
 ## Hosting Your Own Pub Server
 
