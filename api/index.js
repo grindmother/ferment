@@ -25,6 +25,7 @@ module.exports = function (ssbClient, config) {
   var profiles = null
   var profilesLoaded = Proxy()
   var requesting = new Map()
+  var scope = (config.friends || {}).scope
 
   return {
     id: ssbClient.id,
@@ -87,7 +88,9 @@ module.exports = function (ssbClient, config) {
     publish,
 
     follow (id, cb) {
-      publish(schemas.follow(id), cb)
+      var msg = schemas.follow(id)
+      msg.scope = scope
+      publish(msg, cb)
     },
 
     unfollow (id, cb) {
@@ -135,7 +138,7 @@ module.exports = function (ssbClient, config) {
 
   function checkProfilesLoaded () {
     if (!profiles) {
-      profiles = Profiles(ssbClient)
+      profiles = Profiles(ssbClient, config)
       profilesLoaded.set(profiles.sync)
     }
   }

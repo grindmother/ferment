@@ -9,12 +9,13 @@ var MutantMap = require('@mmckegg/mutant/map')
 var Value = require('@mmckegg/mutant/value')
 var SetDict = require('../lib/set-dict')
 
-module.exports = function (ssbClient) {
+module.exports = function (ssbClient, config) {
   var lookup = MutantDict()
   var profilesList = toCollection(lookup)
   var lookupByName = MutantLookup(profilesList, 'displayName')
   var sync = Value(false)
   var postLikes = SetDict()
+  var scope = (config.friends || {}).scope
 
   pull(
     ssbClient.createFeedStream({ live: true }),
@@ -32,13 +33,17 @@ module.exports = function (ssbClient) {
 
         mlib.links(data.value.content.contact, 'feed').forEach(function (link) {
           if (typeof following === 'boolean') {
-            const target = get(link.link)
             if (following) {
-              author.following.add(link.link)
-              target.followers.add(data.value.author)
+              if (!scope || data.value.content.scope === scope) {
+                author.following.add(link.link)
+                get(link.link).followers.add(data.value.author)
+              }
             } else {
               author.following.delete(link.link)
-              target.followers.delete(data.value.author)
+              const target = lookup.get(link.link)
+              if (target) {
+                target.followers.delete(data.value.author)
+              }
             }
           }
         })
