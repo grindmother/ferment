@@ -25,6 +25,8 @@ I want to see a thriving audio sharing community (actually would be COMMUNITIES!
 
 ### from npm
 
+> **NOTE:** [This doesn't seem be be working right now](https://github.com/mmckegg/ferment/issues/5). Everything installs fine, but when you run `ferment` you'll get a version mismatch error. Build from source for now.
+
 ```bash
 $ npm install -g ferment
 ```
