@@ -33,9 +33,9 @@ if (process.argv[2] === '--test-peer') {
 } else {
   makeSingleInstance(windows, openMainWindow)
   context = setupContext('ferment')
-  console.log('address:', context.sbot.getAddress())
 }
 
+console.log(`Address: ${context.sbot.getAddress()}`)
 
 electron.ipcMain.on('add-blob', (ev, id, path, cb) => {
   pull(
