@@ -55,26 +55,38 @@ var tracker = TorrentTracker({
 })
 
 electron.ipcMain.once('ipcBackgroundReady', (e) => {
-  pull(
-    context.sbot.createLogStream({ live: true }),
-    ofType('ferment/audio'),
-    pull.drain((item) => {
-      if (item.sync) {
-        tracker.listen(ssbConfig.trackerPort, ssbConfig.host, (err) => {
-          if (err) console.log('Cannot start tracker')
-          else console.log(`Tracker started at ws://${ssbConfig.host || 'localhost'}:${ssbConfig.trackerPort}`)
-        })
-      } else if (item.value && typeof item.value.content.audioSrc === 'string') {
-        var torrent = magnet.decode(item.value.content.audioSrc)
-        if (torrent.infoHash) {
-          torrentWhiteList.add(torrent.infoHash)
-          if (seedWhiteList.has(item.value.author)) {
-            backgroundProcess.checkTorrent(item.value.content.audioSrc)
-          }
-        }
+  context.sbot.friends.all((err, graph) => {
+    if (err) throw err
+
+    var extendedList = new Set()
+    torrentWhiteList.forEach((id) => {
+      var moreIds = graph[id]
+      if (moreIds) {
+        moreIds.forEach(x => extendedList.add(x))
       }
     })
-  )
+
+    pull(
+      context.sbot.createLogStream({ live: true }),
+      ofType('ferment/audio'),
+      pull.drain((item) => {
+        if (item.sync) {
+          tracker.listen(ssbConfig.trackerPort, ssbConfig.host, (err) => {
+            if (err) console.log('Cannot start tracker')
+            else console.log(`Tracker started at ws://${ssbConfig.host || 'localhost'}:${ssbConfig.trackerPort}`)
+          })
+        } else if (item.value && typeof item.value.content.audioSrc === 'string') {
+          var torrent = magnet.decode(item.value.content.audioSrc)
+          if (torrent.infoHash) {
+            torrentWhiteList.add(torrent.infoHash)
+            if (extendedList.has(item.value.author)) {
+              backgroundProcess.checkTorrent(item.value.content.audioSrc)
+            }
+          }
+        }
+      })
+    )
+  })
 })
 
 function ofType (types) {
