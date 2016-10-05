@@ -83,9 +83,11 @@ Since I'm a nice person 💖 you can hang out in my pub, and you don't even have
 pub.ferment.audio:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~Wa2SjJB8sXF9WNRBuIlpK1gVXmtehBe7NwYevoP/0l8=
 ```
 
+> **NOTE:** To avoid destroying my server, this code can only be used a limited amount of times. Please post an issue if it doesn't work for you, and I'll generate a new one.
+
 If all goes to well, you'll start to see audio appear before your eyes! Give that play button a spin.
 
-> **NOTE:** To avoid destroying my server, this code can only be used a limited amount of times. Please post an issue if it doesn't work for you, and I'll generate a new one.
+However, if you don't see anything appear after about 30 seconds, try restarting ferment. It may take a minute or two before it appears. You should be all good as long as `+connected pub.ferment.audio:43761:....` appears in your terminal.
 
 ## Hosting Your Own Pub Server
 
