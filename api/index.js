@@ -29,7 +29,6 @@ module.exports = function (ssbClient, config) {
 
   return {
     id: ssbClient.id,
-
     getDiscoveryFeed (cb) {
       return toMutantArray(pull(
         getGlobalFeed(),
@@ -73,6 +72,11 @@ module.exports = function (ssbClient, config) {
     getProfile (id) {
       checkProfilesLoaded()
       return profiles.get(id)
+    },
+
+    rankProfileIds (ids, max) {
+      checkProfilesLoaded()
+      return profiles.rankProfileIds(ids, max)
     },
 
     getOwnProfile () {
@@ -132,6 +136,7 @@ module.exports = function (ssbClient, config) {
   }
 
   // scoped
+
   function getGlobalFeed () {
     return ssbClient.createFeedStream({live: true})
   }

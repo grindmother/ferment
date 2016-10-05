@@ -11,7 +11,7 @@ function FollowingFeed (context) {
   var profile = context.api.getProfile(context.api.id)
   var followingCount = computed(profile.following, (list) => list.length)
 
-  var profiles = MutantMap(profile.following, id => context.api.getProfile(id))
+  var profiles = MutantMap(context.api.rankProfileIds(profile.following), id => context.api.getProfile(id))
 
   return h('Feed', [
     h('div.main', [

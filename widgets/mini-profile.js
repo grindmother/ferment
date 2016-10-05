@@ -5,6 +5,9 @@ var computed = require('@mmckegg/mutant/computed')
 
 module.exports = function (context, profile) {
   return h('MiniProfile', {
+    classList: [
+      when(profile.isPub, '-pub')
+    ],
     'ev-click': send(context.actions.viewProfile, profile.id),
     'tab-index': 0,
     style: {
@@ -21,11 +24,15 @@ module.exports = function (context, profile) {
         href: '#'
       }, [ profile.displayName ]),
       h('div.info', [
-        h('span', [
-          h('strong', [profile.postCount]), ' posts'
-        ]), ' // ',
-        h('span', [
-          h('strong', [computed(profile.followers, count)]), ' followers'
+        when(profile.isPub, [
+          'Pub Server'
+        ], [
+          h('span', [
+            h('strong', [profile.postCount]), ' posts'
+          ]), ' // ',
+          h('span', [
+            h('strong', [computed(profile.followers, count)]), ' followers'
+          ])
         ])
       ])
     ])

@@ -8,6 +8,7 @@ var computed = require('@mmckegg/mutant/computed')
 var MutantMap = require('@mmckegg/mutant/map')
 var Value = require('@mmckegg/mutant/value')
 var SetDict = require('../lib/set-dict')
+var ip = require('ip')
 
 module.exports = function (ssbClient, config) {
   var lookup = MutantDict()
@@ -16,6 +17,9 @@ module.exports = function (ssbClient, config) {
   var sync = Value(false)
   var postLikes = SetDict()
   var scope = (config.friends || {}).scope
+
+  pollPeers()
+  setInterval(pollPeers, 5000)
 
   pull(
     ssbClient.createFeedStream({ live: true }),
@@ -34,6 +38,9 @@ module.exports = function (ssbClient, config) {
         mlib.links(data.value.content.contact, 'feed').forEach(function (link) {
           if (typeof following === 'boolean') {
             if (following) {
+              if (data.value.author === '@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519') {
+                console.log(data.value)
+              }
               if (!scope || data.value.content.scope === scope) {
                 author.following.add(link.link)
                 get(link.link).followers.add(data.value.author)
@@ -67,10 +74,26 @@ module.exports = function (ssbClient, config) {
   return {
     get,
     getSuggested,
+    rankProfileIds,
     getLikesFor: postLikes.getValue,
     lookup,
     lookupByName,
     sync
+  }
+
+  function pollPeers () {
+    ssbClient.gossip.peers((err, values) => {
+      if (err) console.log(err)
+      console.log(values)
+      values.forEach((peer) => {
+        if (!ip.isPrivate(peer.host)) {
+          var profile = get(peer.key)
+          if (!profile.isPub()) {
+            profile.isPub.set(true)
+          }
+        }
+      })
+    })
   }
 
   function get (id) {
@@ -88,6 +111,21 @@ module.exports = function (ssbClient, config) {
     return profile
   }
 
+  function rankProfileIds (ids, max) {
+    return computed(ids, (ids) => {
+      var result = ids.map(id => {
+        var profile = get(id)
+        var displayNameBonus = profile.displayNames.keys().length ? 10 : 0
+        return [id, profile.postCount() + profile.followers.getLength() + displayNameBonus]
+      })
+      result = result.sort((a, b) => b[1] - a[1]).slice(0, 10).map(x => x[0])
+      if (max) {
+        result = result.slice(0, max)
+      }
+      return result
+    })
+  }
+
   function getSuggested () {
     var yourProfile = get(ssbClient.id)
     var ids = computed([sync, lookup], (sync, profiles) => {
@@ -95,14 +133,12 @@ module.exports = function (ssbClient, config) {
         var result = []
         for (var id in profiles) {
           var profile = get(id)
-          if (!yourProfile.following.has(id) && id !== yourProfile.id && profile.postCount() > 0) {
-            result.push(id)
-            if (result.length > 10) {
-              break
-            }
+          if (!yourProfile.following.has(id) && id !== yourProfile.id && profile.displayName() && !profile.isPub()) {
+            result.push([id, profile.postCount() + profile.followers.getLength()])
           }
         }
-        return result
+        // super hacky nonsense!
+        return result.sort((a, b) => b[1] - a[1]).slice(0, 10).map(x => x[0])
       }
     }, { nextTick: true })
     return MutantMap(ids, get)

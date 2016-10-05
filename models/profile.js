@@ -14,7 +14,8 @@ module.exports = function (id, myId) {
     followers: MutantSet(),
     following: MutantSet(),
     postCount: Value(0),
-    likes: MutantSet()
+    likes: MutantSet(),
+    isPub: Value(false)
   })
 
   obj.id = id

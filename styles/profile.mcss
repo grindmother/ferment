@@ -47,6 +47,13 @@ Profile {
       margin-left: 20px
       min-width: 250px
       max-width 400px
+
+      h2 {
+        span.sub {
+          font-weight: normal
+          font-size: 90%
+        }
+      }
     }
   }
 }

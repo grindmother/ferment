@@ -14,6 +14,7 @@ var windows = {
 }
 
 var context = null
+// TODO: rewrite this to just use ssbConfig
 if (process.argv[2] === '--test-peer') {
   // helpful for testing peers on a single machine
   context = setupContext('ferment-peer', {

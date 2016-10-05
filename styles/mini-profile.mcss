@@ -6,6 +6,18 @@ MiniProfile {
   padding: 5px 10px
   border-radius: 5px
   height: 60px
+
+  -pub {
+    div.main {
+      div.displayName {
+        color: #CCF
+      }
+    }
+    div.image {
+      background: linear-gradient(100deg, #CCF, #FCC);
+    }
+  }
+
   div.image {
     border-radius: 25px;
     overflow: hidden;
