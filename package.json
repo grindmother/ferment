@@ -6,7 +6,8 @@
   "scripts": {
     "test": "standard",
     "start": "electron index.js",
-    "postinstall": "npm run rebuild",
+    "server": "electron scripts/server.js",
+    "postinstall": "npm rebuild --runtime=electron --target=1.4.2 --disturl=https://atom.io/download/atom-shell --build-from-source",
     "rebuild": "npm rebuild --runtime=electron --target=1.4.2 --disturl=https://atom.io/download/atom-shell --build-from-source"
   },
   "bin": {
@@ -36,6 +37,7 @@
   "homepage": "https://github.com/mmckegg/ferment#readme",
   "dependencies": {
     "@mmckegg/mutant": "~3.4.1",
+    "bittorrent-tracker": "^8.0.12",
     "create-torrent": "~3.25.1",
     "electron-prebuilt": "~1.4.2",
     "graphmitter": "^1.6.3",

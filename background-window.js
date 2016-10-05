@@ -18,8 +18,7 @@ window.addEventListener('error', function (e) {
 })
 
 var announce = [
-  'ws://sbot.wetsand.co.nz:8000',
-  'udp://sbot.wetsand.co.nz:8000'
+  'ws://pub.ferment.audio:43770'
 ]
 
 module.exports = function (client, config) {
