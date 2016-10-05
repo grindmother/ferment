@@ -29,6 +29,8 @@ module.exports = function (client, config) {
   var paused = []
   var torrentStatuses = {}
 
+  setInterval(pollStats, 5000)
+
   startSeeding()
 
   torrentClient.on('torrent', function (torrent) {
@@ -118,6 +120,14 @@ module.exports = function (client, config) {
   ipc.send('ipcBackgroundReady', true)
 
   // scoped
+
+  function pollStats () {
+    ipc.send('bg-torrent-stats', {
+      progress: torrentClient.progress,
+      down: torrentClient.downloadSpeed,
+      up: torrentClient.uploadSpeed
+    })
+  }
 
   function getTorrentPath (infoHash) {
     return `${getTorrentDataPath(infoHash)}.torrent`

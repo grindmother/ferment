@@ -1,6 +1,7 @@
 var electron = require('electron')
 var seq = Date.now()
 var ipc = electron.ipcRenderer || electron.ipcMain
+var Value = require('@mmckegg/mutant/value')
 
 var callbacks = {}
 ipc.on('bg-response', function (ev, id, ...args) {
@@ -19,9 +20,15 @@ ipc.on('bg-multi-response', function (ev, id, ...args) {
   }
 })
 
+var stats = Value({})
+ipc.on('bg-torrent-stats', function (ev, value) {
+  stats.set(value)
+})
+
 module.exports = function (config) {
   var self = {
     target: ipc,
+    stats,
 
     stream (torrentId, cb) {
       var id = seq++

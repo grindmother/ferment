@@ -41,6 +41,8 @@ module.exports = function (client, config) {
     }
   }
 
+  background.stats(x => console.log(x))
+
   var context = { config, api, background, actions }
   var player = context.player = Player(context)
   var profile = api.getOwnProfile()
