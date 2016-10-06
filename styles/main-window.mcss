@@ -14,7 +14,7 @@ MainWindow {
     }
   }
 
-  -win32, -linux {
+  -win32 {
     div.top {
       padding-right: 70px
     }
