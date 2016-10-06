@@ -112,7 +112,7 @@ See [this guide](http://ssbc.github.io/docs/scuttlebot/howto-setup-a-pub.html) f
 - [x] Likes
 - [x] Backgrounding (keep seeding / syncing when main window is closed)
 - [x] Invite to pub
-- [ ] Make torrents more reliable via pub server trackers
+- [x] Make torrents more reliable via pub server trackers [still need to make this work for other pubs though, hard coded to pub.ferment.audio right now]
 - [ ] Automatically download/seed from profiles you follow
 - [ ] Make Save / Download buttons work
 - [ ] Allow "delete" of audio posts (some kind of tombstoning)
@@ -125,6 +125,6 @@ See [this guide](http://ssbc.github.io/docs/scuttlebot/howto-setup-a-pub.html) f
 
 ### Server
 
-- [ ] Pub server (invites, etc)
-- [ ] Seed torrents from specified feeds
+- [x] Pub server (invites, etc)
+- [x] Seed torrents from specified feeds
 - [ ] Web interface for viewing specified feeds
