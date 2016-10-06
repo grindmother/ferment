@@ -84,9 +84,9 @@ module.exports = function (ssbClient, config) {
       return profiles.get(ssbClient.id)
     },
 
-    getSuggestedProfiles () {
+    getSuggestedProfiles (max) {
       checkProfilesLoaded()
-      return profiles.getSuggested()
+      return profiles.getSuggested(max)
     },
 
     publish,

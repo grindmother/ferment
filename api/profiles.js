@@ -122,7 +122,7 @@ module.exports = function (ssbClient, config) {
     })
   }
 
-  function getSuggested () {
+  function getSuggested (max) {
     var yourProfile = get(ssbClient.id)
     var ids = computed([sync, lookup], (sync, profiles) => {
       if (sync) {
@@ -134,7 +134,13 @@ module.exports = function (ssbClient, config) {
           }
         }
         // super hacky nonsense!
-        return result.sort((a, b) => b[1] - a[1]).slice(0, 10).map(x => x[0])
+        result = result.sort((a, b) => b[1] - a[1])
+
+        if (max) {
+          result = result.slice(0, max)
+        }
+
+        return result.map(x => x[0])
       }
     }, { nextTick: true })
     return MutantMap(ids, get)

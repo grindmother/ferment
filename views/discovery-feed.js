@@ -12,7 +12,7 @@ function DiscoveryFeed (context) {
   var feed = context.api.getDiscoveryFeed()
   context.player.currentFeed.set(feed)
 
-  var suggestedProfiles = context.api.getSuggestedProfiles()
+  var suggestedProfiles = context.api.getSuggestedProfiles(15)
   var suggestedProfilesCount = computed(suggestedProfiles, x => x.length)
 
   return h('Feed', {
