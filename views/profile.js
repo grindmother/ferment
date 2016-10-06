@@ -53,7 +53,7 @@ function ProfileView (context, profileId) {
           hooks: [ MarkdownHook(profile.description) ]
         })
       ]),
-    h('div.controls', [
+      h('div.controls', [
         FollowButton(context, profileId)
       ])
     ]),

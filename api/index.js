@@ -30,6 +30,7 @@ module.exports = function (ssbClient, config) {
   return {
     id: ssbClient.id,
     getDiscoveryFeed (cb) {
+      checkProfilesLoaded()
       return toMutantArray(pull(
         getGlobalFeed(),
         ofType('ferment/audio')

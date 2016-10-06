@@ -9,19 +9,16 @@ var send = require('@mmckegg/mutant/send')
 module.exports = DiscoveryFeed
 
 function DiscoveryFeed (context) {
-  var feed = context.api.getDiscoveryFeed()
-  context.player.currentFeed.set(feed)
+  context.player.currentFeed.set(context.discoveryFeed)
 
   var suggestedProfiles = context.api.getSuggestedProfiles(15)
   var suggestedProfilesCount = computed(suggestedProfiles, x => x.length)
 
-  return h('Feed', {
-    hooks: [ UnlistenHook(feed.destroy) ]
-  }, [
+  return h('Feed', [
     h('div.main', [
       h('h1', 'Discovery Feed'),
-      when(feed.sync,
-        MutantMap(feed, (item) => renderAudioPost(context, item), {
+      when(context.discoveryFeed.sync,
+        MutantMap(context.discoveryFeed, (item) => renderAudioPost(context, item), {
           maxTime: 5
         }),
         h('div.loading')
@@ -45,10 +42,4 @@ function DiscoveryFeed (context) {
       h('button -full -pub', {href: '#', 'ev-click': context.actions.openJoinPubWindow}, ['+ Join Pub'])
     ])
   ])
-}
-
-function UnlistenHook (cb) {
-  return function (element) {
-    return cb
-  }
 }

@@ -6,6 +6,7 @@ var send = require('@mmckegg/mutant/send')
 var electron = require('electron')
 var Player = require('./widgets/player')
 var onceTrue = require('./lib/once-true')
+var watch = require('@mmckegg/mutant/watch')
 
 var views = {
   discoveryFeed: require('./views/discovery-feed'),
@@ -43,7 +44,14 @@ module.exports = function (client, config) {
 
   background.stats(x => console.log(x))
 
-  var context = { config, api, background, actions }
+  var discoveryFeed = api.getDiscoveryFeed()
+  var suggestedProfiles = api.getSuggestedProfiles(15)
+
+  // hold these open
+  watch(suggestedProfiles)
+  watch(discoveryFeed)
+
+  var context = { config, api, background, actions, discoveryFeed, suggestedProfiles }
   var player = context.player = Player(context)
   var profile = api.getOwnProfile()
 
