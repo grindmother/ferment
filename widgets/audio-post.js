@@ -65,8 +65,8 @@ module.exports = function (context, item) {
         }, [
           '💚 ', when(likeCount, likeCount, 'Like')
         ]),
-        h('a.repost', {href: '#'}, '📡 Repost'),
-        h('a.download', {href: '#'}, '⬇️ Download'),
+        h('a.repost', { href: '#', 'ev-click': repost }, '📡 Repost'),
+        h('a.save', { href: '#', 'ev-click': save }, '⬇️ Save'),
         when(torrentStatus.downloading, h('span', [
           h('strong', 'Downloading: '),
           computed(torrentStatus.downloadProgress, percent), ' (', computed(torrentStatus.downloadSpeed, value => `${prettyBytes(value)}/s`), ')'
@@ -74,6 +74,20 @@ module.exports = function (context, item) {
       ])
     ])
   ])
+
+  function save () {
+    showDialog({
+      message: `This button doesn't do anything yet, but when it does, you'll be able to save this file to somewhere on your computer!`,
+      buttons: ['Okay, hurry up and add it!']
+    })
+  }
+
+  function repost () {
+    showDialog({
+      message: `This button doesn't do anything yet, but when it does, you'll be able to repost content from other peoples feed to your own!`,
+      buttons: ['Okay, hurry up and add it!']
+    })
+  }
 }
 
 function toggleLike (opts) {
@@ -129,4 +143,8 @@ function TorrentStatus (context, item) {
       }
     }
   }
+}
+
+function showDialog (opts) {
+  electron.remote.dialog.showMessageBox(electron.remote.getCurrentWindow(), opts)
 }
