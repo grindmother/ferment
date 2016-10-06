@@ -21,7 +21,9 @@ function DiscoveryFeed (context) {
     h('div.main', [
       h('h1', 'Discovery Feed'),
       when(feed.sync,
-        MutantMap(feed, (item) => renderAudioPost(context, item)),
+        MutantMap(feed, (item) => renderAudioPost(context, item), {
+          maxTime: 5
+        }),
         h('div.loading')
       )
     ]),
@@ -29,7 +31,9 @@ function DiscoveryFeed (context) {
     h('div.side', [
       h('h2', 'Who to follow'),
       when(suggestedProfilesCount,
-        MutantMap(suggestedProfiles, (item) => renderMiniProfile(context, item)),
+        MutantMap(suggestedProfiles, (item) => renderMiniProfile(context, item), {
+          maxTime: 5
+        }),
         h('div', [
           h('p', `Sorry, there's no one here right now 😞`),
           h('p', h('a', {

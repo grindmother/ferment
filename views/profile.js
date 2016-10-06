@@ -61,19 +61,19 @@ function ProfileView (context, profileId) {
       h('div.main', [
         h('h2', 'Latest Posts'),
         when(true,
-          MutantMap(feed, (item) => renderAudioPost(context, item)),
+          MutantMap(feed, (item) => renderAudioPost(context, item), { maxTime: 5 }),
           h('div.loading')
         )
       ]),
       h('div.side', [
         when(followingCount, [
           h('h2', ['Following ', h('span.sub', [followingCount])]),
-          MutantMap(followingProfiles, (item) => renderMiniProfile(context, item))
+          MutantMap(followingProfiles, (item) => renderMiniProfile(context, item), { maxTime: 5 })
         ]),
 
         when(followerCount, [
           h('h2', ['Followed by ', h('span.sub', [followerCount])]),
-          MutantMap(followerProfiles, (item) => renderMiniProfile(context, item))
+          MutantMap(followerProfiles, (item) => renderMiniProfile(context, item), { maxTime: 5 })
         ]),
 
         when(likesCount, [

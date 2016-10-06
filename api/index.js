@@ -162,7 +162,7 @@ module.exports = function (ssbClient, config) {
       } else {
         invalidateOn(requestItem(id))
       }
-    })
+    }, { maxTime: 10 })
   }
 
   function requestItem (id) {

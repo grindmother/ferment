@@ -143,6 +143,6 @@ module.exports = function (ssbClient, config) {
         return result.map(x => x[0])
       }
     }, { nextTick: true })
-    return MutantMap(ids, get)
+    return MutantMap(ids, get, { maxTime: 10 })
   }
 }

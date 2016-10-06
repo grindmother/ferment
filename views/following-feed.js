@@ -11,7 +11,9 @@ function FollowingFeed (context) {
   var profile = context.api.getProfile(context.api.id)
   var followingCount = computed(profile.following, (list) => list.length)
 
-  var profiles = MutantMap(context.api.rankProfileIds(profile.following), id => context.api.getProfile(id))
+  var profiles = MutantMap(context.api.rankProfileIds(profile.following), id => context.api.getProfile(id), {
+    maxTime: 5
+  })
 
   return h('Feed', [
     h('div.main', [
@@ -29,7 +31,8 @@ function FollowingFeed (context) {
           context.player.currentFeed.set(feed)
           return when(feed.sync,
             MutantMap(feed, (item) => renderAudioPost(context, item), {
-              unlisten: feed.destroy
+              unlisten: feed.destroy,
+              maxTime: 5
             }),
             h('div.loading')
           )
@@ -38,7 +41,9 @@ function FollowingFeed (context) {
     ]),
     h('div.side', [
       h('h2', 'Following'),
-      MutantMap(profiles, (item) => renderMiniProfile(context, item)),
+      MutantMap(profiles, (item) => renderMiniProfile(context, item), {
+        maxTime: 5
+      }),
       h('button -full -pub', {href: '#', 'ev-click': context.actions.openJoinPubWindow}, ['+ Join Pub'])
     ])
   ])
