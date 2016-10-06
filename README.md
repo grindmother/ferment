@@ -89,9 +89,23 @@ If all goes to well, you'll start to see audio appear before your eyes! Give tha
 
 However, if you don't see anything appear after about 30 seconds, try restarting ferment. It may take a minute or two before it appears. You should be all good as long as `+connected pub.ferment.audio:43761:....` appears in your terminal.
 
+**If you receive an error message, it probably means my pub server has locked up. This seems to be happening a bit at the moment, [trying to get to the bottom of it](https://github.com/mmckegg/ferment/issues/7).** Let me know and I'll restart it. In the mean time, you could start creating a shiny profile and adding some tunes!
+
 ## Hosting Your Own Pub Server
 
-See [this guide](http://ssbc.github.io/docs/scuttlebot/howto-setup-a-pub.html) for full info.
+See [this guide](http://ssbc.github.io/docs/scuttlebot/howto-setup-a-pub.html) for full info setting up [scuttlebot](http://ssbc.github.io/scuttlebot/).
+
+### Ferment flavoured pub server
+
+Ferment includes it's own bundled server app that you can run which also functions as a tracker and torrent seeder. It also scopes the network, only replicating ferment feeds with you (rather than the normal 3-hop friend replicate, which gives you a bunch of other ssb data, which you won't be able to see but takes up hard-drive space and makes things slow for no reason).
+
+This is all super undocumented now. Eventually there will be a one-click style install. Or at least some step by step instructions for different platforms.
+
+Here's a hint to get started:
+
+```
+xvfb-run npm run server -- --host={yourhostname} --seed {YOUR_ID}
+```
 
 ## TODO
 
