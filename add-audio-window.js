@@ -63,7 +63,7 @@ module.exports = function (client, config) {
             type: 'error',
             title: 'Error',
             buttons: ['OK'],
-            message: 'An error occured while processing audio file.'
+            message: 'An error occured while processing audio file. Check that "ffmpeg" is installed on your machine and that the file is a supported format.'
           })
           audioInfo.set({error: err})
           throw err
