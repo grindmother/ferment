@@ -8,6 +8,8 @@ var pull = require('pull-stream')
 var pullFile = require('pull-file')
 var Path = require('path')
 var fs = require('fs')
+var defaultMenu = require('electron-default-menu')
+var Menu = electron.Menu
 
 var windows = {
   dialogs: new Set()
@@ -48,6 +50,7 @@ electron.ipcMain.on('add-blob', (ev, id, path, cb) => {
 })
 
 electron.app.on('ready', function () {
+  Menu.setApplicationMenu(Menu.buildFromTemplate(defaultMenu(electron.app, electron.shell)))
   setupIpc(windows)
   startBackgroundProcess()
   openMainWindow()
