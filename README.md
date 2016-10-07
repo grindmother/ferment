@@ -34,6 +34,8 @@ I want to see a thriving audio sharing community (actually would be COMMUNITIES!
 
 Download the latest release [here](https://github.com/mmckegg/ferment/releases)!
 
+**Make sure you read the section of this readme titled ["Joining Pub Server"](#joining-pub-server)!**
+
 ### from npm
 
 ```bash
