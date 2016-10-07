@@ -1,4 +1,11 @@
-# Ferment
+<h1 align="center">
+  <br>
+  <a href="http://ferment.audio"><img src="/ferment-logo.png" alt="WebTorrent" width="200"></a>
+  <br>
+  Ferment
+  <br>
+  <br>
+</h1>
 
 [Ferment](http://ferment.audio) is a peer-to-peer audio sharing and streaming application. It is an attempted re-creation of classic SoundCloud, but runs entirely decentralized instead of one corporation and its investors holding all the power.
 
