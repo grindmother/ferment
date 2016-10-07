@@ -30,6 +30,10 @@ I want to see a thriving audio sharing community (actually would be COMMUNITIES!
 
 ## Install
 
+### on macOS
+
+Download the latest release [here](https://github.com/mmckegg/ferment/releases)!
+
 ### from npm
 
 ```bash
