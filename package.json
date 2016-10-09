@@ -41,7 +41,7 @@
     "color-hash": "^1.0.3",
     "create-torrent": "~3.25.1",
     "electron-default-menu": "^1.0.0",
-    "electron-prebuilt": "~1.4.2",
+    "electron": "~1.4.2",
     "graphmitter": "^1.6.3",
     "insert-css": "^1.0.0",
     "mdmanifest": "^1.0.8",
