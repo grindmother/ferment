@@ -32,10 +32,9 @@ module.exports = function (client, config) {
 
   setInterval(pollStats, 5000)
 
-  window.startSeeding = startSeeding
-  torrentClient.tracker.wrtc = false
+  //torrentClient.tracker.wrtc = false
 
-  //startSeeding()
+  startSeeding()
 
   torrentClient.on('torrent', function (torrent) {
     var status = torrentStatuses[torrent.infoHash]
