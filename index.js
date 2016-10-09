@@ -63,6 +63,7 @@ electron.app.on('activate', function (e) {
 electron.ipcMain.on('open-add-window', openAddWindow)
 electron.ipcMain.on('open-edit-profile-window', (ev, data) => openEditProfileWindow(data))
 electron.ipcMain.on('open-join-pub-window', openJoinPubWindow)
+electron.ipcMain.on('open-background-devtools', openBackgroundDevTools)
 
 function openMainWindow () {
   if (!windows.main) {
@@ -173,6 +174,12 @@ function startBackgroundProcess () {
     useContentSize: true,
     width: 150
   })
+}
+
+function openBackgroundDevTools () {
+  if (windows.background) {
+    windows.background.webContents.openDevTools({detach: true})
+  }
 }
 
 function setupContext (appName, opts) {
