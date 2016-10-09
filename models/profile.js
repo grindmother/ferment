@@ -24,9 +24,9 @@ module.exports = function (id, myId) {
   obj.id = id
   obj.self = Assigned(obj, id)
   obj.byMe = Assigned(obj, myId)
-  obj.description = computed([obj.self.description, obj.byMe.description, obj.descriptions], getSocialValue, { nextTick: true })
-  obj.displayName = computed([obj.self.displayName, obj.byMe.displayName, obj.displayNames], getSocialValue, { nextTick: true })
-  obj.image = computed([obj.self.image, obj.byMe.image, obj.images], getSocialValue, { nextTick: true })
+  obj.description = computed([obj.byMe.description, obj.self.description, obj.descriptions], getSocialValue, { nextTick: true })
+  obj.displayName = computed([obj.byMe.displayName, obj.self.displayName, obj.displayNames], getSocialValue, { nextTick: true })
+  obj.image = computed([obj.byMe.image, obj.self.image, obj.images], getSocialValue, { nextTick: true })
   obj.updateFrom = updateFrom.bind(null, obj)
 
   // hold the line open
@@ -65,8 +65,8 @@ function updateFrom (profile, sourceId, msg) {
   }
 }
 
-function getSocialValue (self, assigned, all) {
-  return self || assigned || mostPopular(all)
+function getSocialValue (assigned, self, all) {
+  return assigned || self || mostPopular(all)
 }
 
 function mostPopular (obj) {

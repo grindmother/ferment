@@ -21,7 +21,6 @@ module.exports = function (ssbClient, config) {
   var lookupByName = MutantLookup(profilesList, 'displayName')
   var sync = Value(false)
   var postLikes = SetDict()
-  var scope = (config.friends || {}).scope
 
   pollPeers()
   setInterval(pollPeers, 5000)
