@@ -52,7 +52,7 @@
     "pull-pushable": "^2.0.1",
     "pull-stream": "^3.4.5",
     "sanitize-filename": "^1.6.1",
-    "scuttlebot": "~8.7.2",
+    "scuttlebot": "~9.0.2",
     "ssb-blobs": "~0.1.6",
     "ssb-client": "~4.1.0",
     "ssb-config": "~2.1.1",
