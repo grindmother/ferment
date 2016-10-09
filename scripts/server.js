@@ -1,6 +1,9 @@
 process.on('uncaughtException', function (err) {
   console.log(err)
-  process.exit()
+
+  if (err.code !== 'ENOTFOUND') {
+    process.exit()
+  }
 })
 
 var fs = require('fs')
