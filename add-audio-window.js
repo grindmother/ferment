@@ -20,6 +20,8 @@ module.exports = function (client, config) {
     background: require('./models/background-remote')(config)
   }
 
+  var announce = config.webtorrent.announceList
+
   var mediaPath = config.mediaPath
   var artworkPath = Value()
 
@@ -178,7 +180,7 @@ module.exports = function (client, config) {
     console.log('renaming', tempFile, 'to', renamed)
     fs.rename(tempFile, renamed, function (err) {
       if (err) throw err
-      createTorrent(renamed, function (err, torrentFile) {
+      createTorrent(renamed, { announce }, function (err, torrentFile) {
         if (err) return cb(err)
         var torrent = parseTorrentFile(torrentFile)
         var torrentPath = Path.join(mediaPath, `${torrent.infoHash}.torrent`)

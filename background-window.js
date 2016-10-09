@@ -17,12 +17,8 @@ window.addEventListener('error', function (e) {
   console.error(e.error.stack || 'Uncaught ' + e.error)
 })
 
-var announce = [
-  'ws://pub.ferment.audio:43770',
-  'udp://pub.ferment.audio:43770'
-]
-
 module.exports = function (client, config) {
+  var announce = config.webtorrent.announceList
   var torrentClient = new WebTorrent()
   var mediaPath = config.mediaPath
   var releases = {}
@@ -31,8 +27,6 @@ module.exports = function (client, config) {
   var torrentStatuses = {}
 
   setInterval(pollStats, 5000)
-
-  //torrentClient.tracker.wrtc = false
 
   startSeeding()
 
@@ -111,11 +105,15 @@ module.exports = function (client, config) {
     if (torrent) {
       ipc.send('bg-response', id, null, torrent.magnetURI)
     } else {
-      torrentClient.add(getTorrentPath(infoHash), {
-        path: getTorrentDataPath(infoHash),
-        announce
-      }, function (torrent) {
-        ipc.send('bg-response', id, null, torrent.magnetURI)
+      fs.readFile(getTorrentPath(infoHash), function (err, buffer) {
+        if (err) return ipc.send('bg-response', id, err)
+        var torrent = parseTorrent(buffer)
+        torrent.announce = announce.slice()
+        torrentClient.add(torrent, {
+          path: getTorrentDataPath(infoHash)
+        }, function (torrent) {
+          ipc.send('bg-response', id, null, torrent.magnetURI)
+        })
       })
     }
   })
@@ -143,10 +141,10 @@ module.exports = function (client, config) {
   function addTorrent (torrentId, cb) {
     var torrent = parseTorrent(torrentId)
     var torrentPath = getTorrentPath(torrent.infoHash)
+    torrent.announce = announce.slice()
 
     torrentClient.add(torrent, {
-      path: getTorrentDataPath(torrent.infoHash),
-      announce
+      path: getTorrentDataPath(torrent.infoHash)
     }, function (torrent) {
       console.log('add torrent', torrent.infoHash)
       fs.writeFile(torrentPath, torrent.torrentFile, cb)
@@ -154,19 +152,40 @@ module.exports = function (client, config) {
   }
 
   function startSeeding () {
+    var i = 0
+    var items = []
     fs.readdir(mediaPath, function (err, entries) {
       if (err) throw err
       entries.forEach((name) => {
         if (getExt(name) === '.torrent') {
-          torrentClient.add(Path.join(mediaPath, name), {
-            path: getTorrentDataPath(Path.basename(name, '.torrent')),
-            announce
-          }, (torrent) => {
-            console.log('seeding', name)
-          })
+          items.push(Path.join(mediaPath, name))
         }
       })
+
+      // make sure the same torrents aren't being seeded every time
+      shuffle(items)
+      next()
     })
+
+    function next () {
+      // don't seed all of the torrents at once, roll out slowly to avoid cpu spike
+      var item = items[i]
+      setTimeout(function () {
+        fs.readFile(item, function (err, buffer) {
+          if (err) throw err
+          var torrent = parseTorrent(buffer)
+          torrent.announce = announce.slice()
+          torrentClient.add(torrent, {
+            path: getTorrentDataPath(Path.basename(item, '.torrent'))
+          }, function (torrent) {
+            console.log('seeding', torrent.infoHash)
+            i += 1
+            if (i < items.length) next()
+          })
+        })
+        // wait 15 seconds before seeding next file
+      }, 15000)
+    }
   }
 
   function unprioritize (restart, cb) {
@@ -225,4 +244,16 @@ module.exports = function (client, config) {
       ipc.send('bg-multi-response', id, value)
     })
   }
+}
+
+function shuffle (array) {
+  var currentIndex = array.length
+  while (currentIndex !== 0) {
+    var randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex -= 1
+    var temporaryValue = array[currentIndex]
+    array[currentIndex] = array[randomIndex]
+    array[randomIndex] = temporaryValue
+  }
+  return array
 }
