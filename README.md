@@ -172,3 +172,7 @@ xvfb-run npm run server -- --host={yourhostname} --seed {YOUR_ID}
 - [x] Pub server (invites, etc)
 - [x] Seed torrents from specified feeds
 - [ ] Web interface for viewing specified feeds
+
+## License
+
+GPL-3.0
