@@ -18,7 +18,8 @@ window.addEventListener('error', function (e) {
 })
 
 var announce = [
-  'ws://pub.ferment.audio:43770'
+  'ws://pub.ferment.audio:43770',
+  'udp://pub.ferment.audio:43770'
 ]
 
 module.exports = function (client, config) {
@@ -31,7 +32,10 @@ module.exports = function (client, config) {
 
   setInterval(pollStats, 5000)
 
-  startSeeding()
+  window.startSeeding = startSeeding
+  torrentClient.tracker.wrtc = false
+
+  //startSeeding()
 
   torrentClient.on('torrent', function (torrent) {
     var status = torrentStatuses[torrent.infoHash]

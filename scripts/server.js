@@ -50,7 +50,7 @@ electron.app.on('ready', function () {
 // torrent tracker (with whitelist)
 var torrentWhiteList = new Set()
 var tracker = TorrentTracker({
-  udp: false,
+  udp: true,
   http: false,
   stats: false,
   ws: true,
