@@ -1,3 +1,8 @@
+process.on('uncaughtException', function (err) {
+  console.log(err)
+  process.exit()
+})
+
 var fs = require('fs')
 var Path = require('path')
 var createSbot = require('../lib/ssb-server')
