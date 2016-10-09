@@ -12,7 +12,7 @@ if (process.argv.includes('--rebuild')) {
     process.exit()
   })
 } else {
-  spawn(electron, ['index.js'], {
+  spawn(electron, ['index.js'].concat(process.argv.slice(2)), {
     stdio: 'inherit',
     cwd: join(__dirname, '..')
   }).on('exit', function (i, m) {
