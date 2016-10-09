@@ -90,8 +90,12 @@ electron.ipcMain.once('ipcBackgroundReady', (e) => {
           if (torrent.infoHash) {
             torrentWhiteList.add(torrent.infoHash)
             if (extendedList.has(item.value.author)) {
-              backgroundProcess.checkTorrent(item.value.content.audioSrc)
-              console.log(`Seeding torrent ${torrent.infoHash}`)
+              fs.exists(Path.join(context.config.mediaPath, torrent.infoHash + '.torrent'), (exists) => {
+                if (!exists) {
+                  backgroundProcess.checkTorrent(item.value.content.audioSrc)
+                  console.log(`Seeding torrent ${torrent.infoHash}`)
+                }
+              })
             }
           }
         }
