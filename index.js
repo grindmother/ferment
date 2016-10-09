@@ -23,27 +23,27 @@ var windows = {
 
 var context = null
 // TODO: rewrite this to just use ssbConfig
-if (process.argv[2] === '--test-peer') {
+if (process.argv.includes('--test-peer')) {
   // helpful for testing peers on a single machine
   context = setupContext('ferment-peer', {
     port: 43762
   })
-
-  if (process.argv[3]) {
-    context.sbot.gossip.add(process.argv[3], 'local')
-  }
-} else if (process.argv[2] === '--create-invite') {
+} else if (process.argv.includes('--create-invite')) {
   context = setupContext('ferment', { allowPrivate: true })
   context.sbot.invite.create(1, (err, code) => {
     if (err) throw err
     console.log(`invite code:\n\n${code}\n`)
   })
+} else if (process.argv.includes('--use-global-ssb') || process.argv.includes('-g')) {
+  context = setupContext('ssb', {
+    port: 8008,
+    blobsPort: 7777,
+    server: false
+  })
 } else {
   makeSingleInstance(windows, openMainWindow)
   context = setupContext('ferment')
 }
-
-console.log(`Address: ${context.sbot.getAddress()}`)
 
 electron.ipcMain.on('add-blob', (ev, id, path, cb) => {
   pull(
@@ -190,13 +190,19 @@ function openBackgroundDevTools () {
 
 function setupContext (appName, opts) {
   var ssbConfig = require('./lib/ssb-config')(appName, opts)
-  var context = {
-    sbot: createSbot(ssbConfig),
-    config: ssbConfig
+  if (opts && opts.server === false) {
+    return {
+      config: ssbConfig
+    }
+  } else {
+    var context = {
+      sbot: createSbot(ssbConfig),
+      config: ssbConfig
+    }
+    ssbConfig.manifest = context.sbot.getManifest()
+    serveBlobs(context)
+    fs.writeFileSync(Path.join(ssbConfig.path, 'manifest.json'), JSON.stringify(ssbConfig.manifest))
+    console.log(`Address: ${context.sbot.getAddress()}`)
+    return context
   }
-
-  ssbConfig.manifest = context.sbot.getManifest()
-  serveBlobs(context)
-  fs.writeFileSync(Path.join(ssbConfig.path, 'manifest.json'), JSON.stringify(ssbConfig.manifest))
-  return context
 }
