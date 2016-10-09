@@ -64,6 +64,13 @@ Install latest updates:
 $ npm install -g ferment@latest
 ```
 
+If you get weird issues, trash it and reinstall:
+
+```bash
+$ npm rm -g ferment
+```
+
+
 ### from source
 
 **Warning:** Development is done on the master branch, so this could be broken right now!
@@ -85,6 +92,13 @@ Install latest updates:
 ```bash
 $ npm update
 $ npm run rebuild # make sure native add-ons are compatible with electron version
+```
+
+If you get weird issues, trash your `ferment/node_modules` directory:
+
+```bash
+$ rm -rf node_modules
+$ npm install
 ```
 
 ## Joining Pub Server
