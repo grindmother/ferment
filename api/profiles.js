@@ -6,12 +6,17 @@ var toCollection = require('@mmckegg/mutant/dict-to-collection')
 var mlib = require('ssb-msgs')
 var computed = require('@mmckegg/mutant/computed')
 var MutantMap = require('@mmckegg/mutant/map')
+var MutantArray = require('@mmckegg/mutant/array')
 var Value = require('@mmckegg/mutant/value')
+var AudioPost = require('../models/audio-post')
 var SetDict = require('../lib/set-dict')
 var ip = require('ip')
 
 module.exports = function (ssbClient, config) {
   var lookup = MutantDict()
+  var postLookup = MutantDict()
+  var postIds = MutantArray()
+  var profileIds = MutantArray()
   var profilesList = toCollection(lookup)
   var lookupByName = MutantLookup(profilesList, 'displayName')
   var sync = Value(false)
@@ -38,9 +43,11 @@ module.exports = function (ssbClient, config) {
         mlib.links(data.value.content.contact, 'feed').forEach(function (link) {
           if (typeof following === 'boolean') {
             if (following) {
-              if (!scope || data.value.content.scope === scope) {
-                author.following.add(link.link)
-                get(link.link).followers.add(data.value.author)
+              author.following.add(link.link)
+              var target = get(link.link)
+              target.followers.add(data.value.author)
+              if (typeof data.value.content.scope === 'string') {
+                target.scopes.add(data.value.content.scope)
               }
             } else {
               author.following.delete(link.link)
@@ -52,8 +59,13 @@ module.exports = function (ssbClient, config) {
           }
         })
       } else if (data.value.content.type === 'ferment/audio') {
-        const author = get(data.value.author)
-        author.postCount.set(author.postCount() + 1)
+        const profile = get(data.value.author)
+        const post = getPost(data.key)
+        profile.postCount.set(profile.postCount() + 1)
+        post.set(data.value.content)
+        post.author = profile
+        profile.posts.add(data.key)
+        postIds.push(data.key)
       } else if (data.value.content.type === 'ferment/like') {
         const profile = get(data.value.author)
         const like = mlib.link(data.value.content.like, 'msg')
@@ -75,6 +87,8 @@ module.exports = function (ssbClient, config) {
     getLikesFor: postLikes.getValue,
     lookup,
     lookupByName,
+    postIds,
+    postLookup,
     sync
   }
 
@@ -102,19 +116,38 @@ module.exports = function (ssbClient, config) {
     if (!profile) {
       profile = Profile(id, ssbClient.id)
       lookup.put(id, profile)
+      profileIds.push(id)
     }
 
     return profile
   }
 
+  function getPost (id) {
+    if (id.id) {
+      return id
+    }
+
+    var instance = postLookup.get(id)
+    if (!instance) {
+      instance = AudioPost(id, ssbClient.id)
+      postLookup.put(id, instance)
+    }
+
+    return instance
+  }
+
   function rankProfileIds (ids, max) {
     return computed(ids, (ids) => {
-      var result = ids.map(id => {
+      var result = []
+      ids.forEach((id) => {
         var profile = get(id)
         var displayNameBonus = profile.displayNames.keys().length ? 10 : 0
-        return [id, profile.postCount() + profile.followers.getLength() + displayNameBonus]
+        var imageBonus = profile.images.keys().length ? 2 : 0
+        var postBonus = Math.log(1 + profile.postCount())
+        var followerBonus = postBonus ? Math.log(1 + profile.followers.getLength()) : Math.log(profile.followers.getLength() / 100)
+        result.push([id, postBonus + followerBonus + displayNameBonus + imageBonus])
       })
-      result = result.sort((a, b) => b[1] - a[1]).slice(0, 10).map(x => x[0])
+      result = result.sort((a, b) => b[1] - a[1]).map(x => x[0])
       if (max) {
         result = result.slice(0, max)
       }
@@ -124,25 +157,37 @@ module.exports = function (ssbClient, config) {
 
   function getSuggested (max) {
     var yourProfile = get(ssbClient.id)
+    var lastUpdated = 0
+    var cacheTime = 30 * 1000
     var ids = computed([sync, lookup], (sync, profiles) => {
       if (sync) {
-        var result = []
-        for (var id in profiles) {
-          var profile = get(id)
-          if (!yourProfile.following.has(id) && id !== yourProfile.id && profile.displayName() && !profile.isPub()) {
-            result.push([id, profile.postCount() + profile.followers.getLength()])
+        if (lastUpdated + cacheTime < Date.now()) {
+          lastUpdated = Date.now()
+
+          var result = []
+          for (var id in profiles) {
+            var profile = get(id)
+            if ((!config.friends.scope || profile.scopes.has(config.friends.scope)) && !yourProfile.following.has(id) && id !== yourProfile.id && profile.displayNames.keys().length && !profile.isPub()) {
+              var postBonus = Math.log(1 + profile.postCount())
+              var followerBonus = postBonus ? Math.log(1 + profile.followers.getLength()) : Math.log(profile.followers.getLength() / 100)
+              result.push([id, postBonus + followerBonus])
+            }
           }
-        }
-        // super hacky nonsense!
-        result = result.sort((a, b) => b[1] - a[1])
+          // super hacky nonsense!
+          result = result.sort((a, b) => b[1] - a[1])
 
-        if (max) {
-          result = result.slice(0, max)
-        }
+          if (max) {
+            result = result.slice(0, max)
+          }
 
-        return result.map(x => x[0])
+          return result.map(x => x[0])
+        } else {
+          return computed.NO_CHANGE
+        }
       }
     }, { nextTick: true })
-    return MutantMap(ids, get, { maxTime: 10 })
+    var result = MutantMap(ids, get)
+    result.sync = sync
+    return result
   }
 }

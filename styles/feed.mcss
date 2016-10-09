@@ -13,6 +13,29 @@ Feed {
     h1 {
       margin-bottom: 20px
     }
+
+    div.loading {
+      height: 50%
+      display: flex
+      align-items: center
+      justify-content: center
+
+      ::before {
+        content: ' '
+        height: 100px
+        width: 100px
+        background-image: svg(waitingIcon)
+        background-repeat: no-repeat
+        background-position: center
+        background-size: contain
+        animation: playIconSpin 1s infinite linear
+      }
+
+      ::after {
+        font-size: 200%
+        content: 'Loading...'
+      }
+    }
   }
 
   div.side {
@@ -22,5 +45,12 @@ Feed {
     background: linear-gradient(100deg, #3f3840, #5b5c7f);
     border-left: 1px solid #5a5757;
     overflow-y: auto;
+
+    h2 {
+      span.sub {
+        font-weight: normal
+        font-size: 90%
+      }
+    }
   }
 }

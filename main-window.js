@@ -7,6 +7,7 @@ var electron = require('electron')
 var Player = require('./widgets/player')
 var onceTrue = require('./lib/once-true')
 var watch = require('@mmckegg/mutant/watch')
+var MutantMap = require('@mmckegg/mutant/map')
 
 var views = {
   discoveryFeed: require('./views/discovery-feed'),
@@ -36,35 +37,42 @@ module.exports = function (client, config) {
         canGoForward.set(false)
         canGoBack.set(true)
         forwardHistory.length = 0
-        backHistory.push(currentView())
+        backHistory.push([currentView(), mainElement.scrollTop])
         currentView.set(newView)
+        mainElement.scrollTop = 0
       }
     }
   }
 
   background.stats(x => console.log(x))
 
+  var profile = api.getOwnProfile()
   var discoveryFeed = api.getDiscoveryFeed()
   var suggestedProfiles = api.getSuggestedProfiles(15)
+  var following = MutantMap(api.rankProfileIds(profile.following), id => api.getProfile(id))
+  var followingFeed = api.getFollowingFeed()
 
   // hold these open
   watch(suggestedProfiles)
   watch(discoveryFeed)
 
-  var context = { config, api, background, actions, discoveryFeed, suggestedProfiles }
+  var context = { config, api, background, actions, discoveryFeed, followingFeed, suggestedProfiles, following, profile }
   var player = context.player = Player(context)
-  var profile = api.getOwnProfile()
+
+  var rootElement = computed(currentView, (data) => {
+    if (Array.isArray(data) && views[data[0]]) {
+      return views[data[0]](context, ...data.slice(1))
+    }
+  })
+
+  var mainElement = h('div.main', [
+    rootElement
+  ])
 
   onceTrue(api.profilesLoaded, (value) => {
     if (!profile.displayName()) {
       // prompt use to set up profile the first time they open app
       openEditProfileWindow()
-    }
-  })
-
-  var rootElement = computed(currentView, (data) => {
-    if (Array.isArray(data) && views[data[0]]) {
-      return views[data[0]](context, ...data.slice(1))
     }
   })
 
@@ -103,9 +111,7 @@ module.exports = function (client, config) {
         h('a -add', {href: '#', 'ev-click': openAddWindow}, ['+ Add Audio'])
       ])
     ]),
-    h('div.main', [
-      rootElement
-    ]),
+    mainElement,
     h('div.bottom', [
       player.audioElement
     ])
@@ -116,16 +122,24 @@ module.exports = function (client, config) {
   function goBack () {
     if (backHistory.length) {
       canGoForward.set(true)
-      forwardHistory.push(currentView())
-      currentView.set(backHistory.pop())
+      forwardHistory.push([currentView(), mainElement.scrollTop])
+      var item = backHistory.pop()
+      currentView.set(item[0])
+      setTimeout(() => {
+        mainElement.scrollTop = item[1]
+      }, 50)
       canGoBack.set(backHistory.length > 0)
     }
   }
 
   function goForward () {
     if (forwardHistory.length) {
-      backHistory.push(currentView())
-      currentView.set(forwardHistory.pop())
+      backHistory.push([currentView(), mainElement.scrollTop])
+      var item = forwardHistory.pop()
+      currentView.set(item[0])
+      setTimeout(() => {
+        mainElement.scrollTop = item[1]
+      }, 50)
       canGoForward.set(forwardHistory.length > 0)
       canGoBack.set(true)
     }

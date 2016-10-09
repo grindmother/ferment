@@ -1,0 +1,28 @@
+Loading {
+  height: 50%
+  display: flex
+  align-items: center
+  justify-content: center
+
+  -large {
+    ::before {
+      height: 100px
+      width: 100px
+    }
+    ::after {
+      content: 'Loading...'
+      font-size: 200%
+    }
+  }
+
+  ::before {
+    content: ' '
+    height: 50px
+    width: 50px
+    background-image: svg(waitingIcon)
+    background-repeat: no-repeat
+    background-position: center
+    background-size: contain
+    animation: playIconSpin 3s infinite linear
+  }
+}

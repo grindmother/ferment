@@ -2,8 +2,10 @@ var h = require('../lib/h')
 var when = require('@mmckegg/mutant/when')
 var send = require('@mmckegg/mutant/send')
 var computed = require('@mmckegg/mutant/computed')
+var colorHash = require('../lib/color-hash')
 
 module.exports = function (context, profile) {
+  var color = colorHash.hex(profile.id)
   return h('MiniProfile', {
     classList: [
       when(profile.isPub, '-pub')
@@ -16,7 +18,8 @@ module.exports = function (context, profile) {
   }, [
     h('div.image', {
       style: {
-        'background-image': computed(profile.image, url => url ? `url('${context.api.getBlobUrl(url)}')` : '')
+        'background-image': computed(profile.image, url => url ? `url('${context.api.getBlobUrl(url)}')` : ''),
+        'background-color': color
       }
     }),
     h('div.main', [

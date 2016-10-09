@@ -1,12 +1,9 @@
-var pull = require('pull-stream')
-var MutantArray = require('@mmckegg/mutant/array')
 var MutantMap = require('@mmckegg/mutant/map')
-var AudioPost = require('../models/audio-post')
 var electron = require('electron')
 var Profiles = require('./profiles')
 var schemas = require('ssb-msg-schemas')
-var Value = require('@mmckegg/mutant/value')
 var Proxy = require('@mmckegg/mutant/proxy')
+var computed = require('@mmckegg/mutant/computed')
 var mlib = require('ssb-msgs')
 
 var callbacks = {}
@@ -19,38 +16,39 @@ electron.ipcRenderer.on('response', (ev, id, ...args) => {
 })
 
 module.exports = function (ssbClient, config) {
-  var itemCache = new Map()
   var windowId = Date.now()
   var seq = 0
   var profiles = null
   var profilesLoaded = Proxy()
-  var requesting = new Map()
   var scope = (config.friends || {}).scope
 
   return {
     id: ssbClient.id,
     getDiscoveryFeed (cb) {
       checkProfilesLoaded()
-      return toMutantArray(pull(
-        getGlobalFeed(),
-        ofType('ferment/audio')
-      ), cb)
+      return lookupItems(sortedPostIds(profiles.postIds))
     },
 
     getFollowingFeed (cb) {
       checkProfilesLoaded()
-      return toMutantArray(pull(
-        getGlobalFeed(),
-        ofType('ferment/audio'),
-        byAuthor(profiles.get(ssbClient.id).following())
-      ), cb)
+      var profile = profiles.get(ssbClient.id)
+      var postIds = computed([profile.following, profiles.lookup], (following, profiles) => {
+        var result = []
+        following.forEach((id) => {
+          var otherProfile = profiles[id]
+          if (otherProfile) {
+            otherProfile.posts.forEach(x => result.push(x))
+          }
+        })
+        return result
+      }, { nextTick: true })
+
+      return lookupItems(sortedPostIds(postIds))
     },
 
     getProfileFeed (id, cb) {
-      return toMutantArray(pull(
-        ssbClient.createHistoryStream({id, live: true}),
-        ofType('ferment/audio')
-      ), cb)
+      checkProfilesLoaded()
+      return lookupItems(profiles.get(id).posts)
     },
 
     setOwnDisplayName (name, cb) {
@@ -68,7 +66,6 @@ module.exports = function (ssbClient, config) {
     },
 
     profilesLoaded,
-    requestItem,
 
     getProfile (id) {
       checkProfilesLoaded()
@@ -138,8 +135,10 @@ module.exports = function (ssbClient, config) {
 
   // scoped
 
-  function getGlobalFeed () {
-    return ssbClient.createFeedStream({live: true})
+  function sortedPostIds (ids) {
+    return computed([ids, profiles.postIds], function (ids, postIds) {
+      return postIds.filter(x => ids.includes(x)).reverse()
+    }, { nextTick: true })
   }
 
   function checkProfilesLoaded () {
@@ -157,83 +156,11 @@ module.exports = function (ssbClient, config) {
   }
 
   function lookupItems (ids) {
-    return MutantMap(ids, (id, invalidateOn) => {
-      if (itemCache.has(id)) {
-        return itemCache.get(id)
-      } else {
-        invalidateOn(requestItem(id))
-      }
-    }, { maxTime: 10 })
-  }
-
-  function requestItem (id) {
-    if (requesting.has(id)) {
-      return requesting.get(id)
-    } else {
-      var marker = Proxy()
-      requesting.set(id, marker)
-      ssbClient.get(id, function (err, value) {
-        if (!err) {
-          var instance = AudioPost(id, profiles.get(value.author))
-          instance.set(value.content)
-          itemCache.set(id, instance)
-          marker.set(instance)
-          requesting.delete(id)
-        }
-      })
-      return marker
-    }
-  }
-
-  function toMutantArray (readStream, cb) {
-    checkProfilesLoaded()
-    var result = MutantArray()
-    result.sync = Value(false)
-    var processor = pull.drain(function (item) {
-      if (item.sync) {
-        cb && cb(result)
-        result.sync.set(true)
-      } else {
-        if (item.value.content.type === 'ferment/audio') {
-          var instance = itemCache.get(item.key)
-          if (!instance) {
-            instance = AudioPost(item.key, profiles.get(item.value.author))
-            instance.set(item.value.content)
-            itemCache.set(item.key, instance)
-          }
-          result.insert(instance, 0)
-        }
-      }
+    var result = MutantMap(ids, (id) => {
+      return profiles.postLookup.get(id)
     })
 
-    pull(readStream, processor)
-
-    result.destroy = function () {
-      processor.abort()
-    }
-
+    result.sync = profiles.sync
     return result
   }
-}
-
-function ofType (types) {
-  types = Array.isArray(types) ? types : [types]
-  return pull.filter((item) => {
-    if (item.value) {
-      return types.includes(item.value.content.type)
-    } else {
-      return true
-    }
-  })
-}
-
-function byAuthor (authorIds) {
-  authorIds = Array.isArray(authorIds) ? authorIds : [authorIds]
-  return pull.filter((item) => {
-    if (item.value) {
-      return authorIds.includes(item.value.author)
-    } else {
-      return true
-    }
-  })
 }

@@ -5,6 +5,7 @@ var MutantArray = require('@mmckegg/mutant/array')
 var MutantSet = require('@mmckegg/mutant/set')
 var computed = require('@mmckegg/mutant/computed')
 var mlib = require('ssb-msgs')
+var watch = require('@mmckegg/mutant/watch')
 
 module.exports = function (id, myId) {
   var obj = Struct({
@@ -14,6 +15,8 @@ module.exports = function (id, myId) {
     followers: MutantSet(),
     following: MutantSet(),
     postCount: Value(0),
+    scopes: MutantSet(),
+    posts: MutantSet(),
     likes: MutantSet(),
     isPub: Value(false)
   })
@@ -25,6 +28,9 @@ module.exports = function (id, myId) {
   obj.displayName = computed([obj.self.displayName, obj.byMe.displayName, obj.displayNames], getSocialValue, { nextTick: true })
   obj.image = computed([obj.self.image, obj.byMe.image, obj.images], getSocialValue, { nextTick: true })
   obj.updateFrom = updateFrom.bind(null, obj)
+
+  // hold the line open
+  watch(obj.displayName)
 
   return obj
 }

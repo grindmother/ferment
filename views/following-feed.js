@@ -11,9 +11,7 @@ function FollowingFeed (context) {
   var profile = context.api.getProfile(context.api.id)
   var followingCount = computed(profile.following, (list) => list.length)
 
-  var profiles = MutantMap(context.api.rankProfileIds(profile.following), id => context.api.getProfile(id), {
-    maxTime: 5
-  })
+  context.player.currentFeed.set(context.followingFeed)
 
   return h('Feed', [
     h('div.main', [
@@ -21,28 +19,22 @@ function FollowingFeed (context) {
         h('strong', 'Latest Posts'),
         ' from people you follow'
       ]),
-      computed(followingCount, (count) => {
-        if (count === 0) {
-          return h('div.info', [
+      when(context.followingFeed.sync,
+        when(followingCount,
+          MutantMap(context.followingFeed, (item) => renderAudioPost(context, item), {
+            maxTime: 5
+          }),
+          h('div.info', [
             `You're not following anyone 😞 ... once you do, you'll start seeing their latest posts on this page!`
           ])
-        } else {
-          var feed = context.api.getFollowingFeed()
-          context.player.currentFeed.set(feed)
-          return when(feed.sync,
-            MutantMap(feed, (item) => renderAudioPost(context, item), {
-              unlisten: feed.destroy,
-              maxTime: 5
-            }),
-            h('div.loading')
-          )
-        }
-      })
+        ),
+        h('Loading')
+      )
     ]),
     h('div.side', [
-      h('h2', 'Following'),
-      MutantMap(profiles, (item) => renderMiniProfile(context, item), {
-        maxTime: 5
+      h('h2', ['Following ', h('span.sub', [followingCount])]),
+      MutantMap(context.following, (item) => renderMiniProfile(context, item), {
+        maxTime: 1000 / 30
       }),
       h('button -full -pub', {href: '#', 'ev-click': context.actions.openJoinPubWindow}, ['+ Join Pub'])
     ])

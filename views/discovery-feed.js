@@ -11,7 +11,7 @@ module.exports = DiscoveryFeed
 function DiscoveryFeed (context) {
   context.player.currentFeed.set(context.discoveryFeed)
 
-  var suggestedProfiles = context.api.getSuggestedProfiles(15)
+  var suggestedProfiles = context.suggestedProfiles
   var suggestedProfilesCount = computed(suggestedProfiles, x => x.length)
 
   return h('Feed', [
@@ -21,25 +21,30 @@ function DiscoveryFeed (context) {
         MutantMap(context.discoveryFeed, (item) => renderAudioPost(context, item), {
           maxTime: 5
         }),
-        h('div.loading')
+        h('Loading -large')
       )
     ]),
 
     h('div.side', [
       h('h2', 'Who to follow'),
-      when(suggestedProfilesCount,
-        MutantMap(suggestedProfiles, (item) => renderMiniProfile(context, item), {
-          maxTime: 5
-        }),
-        h('div', [
-          h('p', `Sorry, there's no one here right now 😞`),
-          h('p', h('a', {
-            href: '#',
-            'ev-click': send(context.actions.openJoinPubWindow)
-          }, `Maybe try joining a pub?`))
-        ])
-      ),
-      h('button -full -pub', {href: '#', 'ev-click': context.actions.openJoinPubWindow}, ['+ Join Pub'])
+      when(suggestedProfiles.sync, [
+        when(suggestedProfilesCount,
+          MutantMap(suggestedProfiles, (item) => renderMiniProfile(context, item), {
+            maxTime: 5,
+            nextTick: true
+          }),
+          h('div', [
+            h('p', `Sorry, there's no one here right now 😞`),
+            h('p', h('a', {
+              href: '#',
+              'ev-click': send(context.actions.openJoinPubWindow)
+            }, `Maybe try joining a pub?`))
+          ]),
+          h('button -full -pub', {href: '#', 'ev-click': context.actions.openJoinPubWindow}, ['+ Join Pub'])
+        )
+      ], [
+        h('Loading')
+      ])
     ])
   ])
 }

@@ -7,16 +7,19 @@ var FollowButton = require('../widgets/follow-button')
 var when = require('@mmckegg/mutant/when')
 var renderMiniProfile = require('../widgets/mini-profile')
 var renderMiniAudioPost = require('../widgets/mini-audio-post')
+var colorHash = require('../lib/color-hash')
 
 module.exports = ProfileView
 
 function ProfileView (context, profileId) {
   var profile = context.api.getProfile(profileId)
   var feed = context.api.getProfileFeed(profileId)
+  var color = colorHash.hex(profileId)
+
   context.player.currentFeed.set(feed)
 
-  var rankedFollowingIds = context.api.rankProfileIds(profile.following)
-  var rankedFollowerIds = context.api.rankProfileIds(profile.followers, profileId === context.api.id ? null : 6)
+  var rankedFollowingIds = context.api.rankProfileIds(profile.following, 12)
+  var rankedFollowerIds = context.api.rankProfileIds(profile.followers, profileId === context.api.id ? 20 : 6)
   var uniqueFollowingIds = computed([rankedFollowingIds, rankedFollowerIds, 6], (ids, otherIds) => {
     var result = []
     for (var i = 0; i < ids.length; i++) {
@@ -44,7 +47,8 @@ function ProfileView (context, profileId) {
     h('header', [
       h('div.image', {
         style: {
-          'background-image': computed(profile.image, url => url ? `url('${context.api.getBlobUrl(url)}')` : '')
+          'background-image': computed(profile.image, url => url ? `url('${context.api.getBlobUrl(url)}')` : ''),
+          'background-color': color
         }
       }),
       h('div.main', [

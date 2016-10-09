@@ -23,7 +23,8 @@ MiniProfile {
     overflow: hidden;
     height: 50px;
     width: 50px;
-    background: linear-gradient(100deg, #c7af84, #669ba7);
+    background: linear-gradient(100deg, #c7af84, rgba(0,0,0,0));
+    background-color: #777;
     background-size: cover;
     background-position: 50% 50%;
   }
