@@ -41,9 +41,7 @@ function ProfileView (context, profileId) {
 
   var likesCount = computed(profile.likes, (list) => list.length)
 
-  return h('Profile', {
-    hooks: [ UnlistenHook(feed.destroy) ]
-  }, [
+  return h('Profile', [
     h('header', [
       h('div.image', {
         style: {
@@ -87,10 +85,4 @@ function ProfileView (context, profileId) {
       ])
     ])
   ])
-}
-
-function UnlistenHook (cb) {
-  return function (element) {
-    return cb
-  }
 }

@@ -48,7 +48,7 @@ module.exports = function (ssbClient, config) {
 
     getProfileFeed (id, cb) {
       checkProfilesLoaded()
-      return lookupItems(profiles.get(id).posts)
+      return lookupItems(sortedPostIds(profiles.get(id).posts))
     },
 
     setOwnDisplayName (name, cb) {
