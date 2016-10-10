@@ -7,6 +7,7 @@ var fs = require('fs')
 var ipc = electron.ipcRenderer
 var watchEvent = require('./lib/watch-event')
 var rimraf = require('rimraf')
+var MutantDict = require('@mmckegg/mutant/dict')
 
 console.log = electron.remote.getGlobal('console').log
 process.exit = electron.remote.app.quit
@@ -23,6 +24,7 @@ module.exports = function (client, config) {
   var releases = {}
   var prioritizeReleases = []
   var paused = []
+  var torrentState = MutantDict()
 
   setInterval(pollStats, 5000)
 
@@ -50,7 +52,7 @@ module.exports = function (client, config) {
     function updateNow () {
       clearTimeout(timer)
       updating = false
-      ipc.send('bg-torrent-status', torrent.infoHash, {
+      var state = {
         progress: torrent.progress,
         downloadSpeed: torrent.downloadSpeed,
         uploadSpeed: torrent.uploadSpeed,
@@ -58,7 +60,8 @@ module.exports = function (client, config) {
         downloaded: torrent.downloaded,
         uploaded: torrent.uploaded,
         loading: false
-      })
+      }
+      broadcastTorrentState(torrent.infoHash, state)
       timer = setTimeout(updateNow, 1000)
     }
   })
@@ -110,6 +113,10 @@ module.exports = function (client, config) {
     }
   })
 
+  ipc.on('bg-get-all-torrent-state', (ev, id) => {
+    ipc.send('bg-response', id, torrentState())
+  })
+
   ipc.on('bg-delete-torrent', (ev, id, torrentId) => {
     var torrentInfo = parseTorrent(torrentId)
     var torrent = torrentClient.get(torrentInfo.infoHash)
@@ -147,8 +154,13 @@ module.exports = function (client, config) {
 
   // scoped
 
+  function broadcastTorrentState (infoHash, state) {
+    torrentState.put(infoHash, state)
+    ipc.send('bg-torrent-status', infoHash, state)
+  }
+
   function pollStats () {
-    ipc.send('bg-torrent-stats', {
+    ipc.send('bg-global-torrent-status', {
       progress: torrentClient.progress,
       down: torrentClient.downloadSpeed,
       up: torrentClient.uploadSpeed
@@ -244,10 +256,9 @@ module.exports = function (client, config) {
       torrentClient.torrents.forEach(function (t) {
         if (t !== torrent && t.progress < 0.9) {
           paused.push(t.torrentFile)
-          ipc.send('bg-torrent-status', t.infoHash, {
+          broadcastTorrentState(torrent.infoHash, {
             paused: true
           })
-
           t.destroy()
         }
       })

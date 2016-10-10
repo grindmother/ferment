@@ -30,7 +30,7 @@ function getTorrentStatus (infoHash) {
 }
 
 var stats = Value({})
-ipc.on('bg-torrent-stats', function (ev, value) {
+ipc.on('bg-global-torrent-status', function (ev, value) {
   stats.set(value)
 })
 
@@ -66,8 +66,19 @@ module.exports = function (config) {
       self.target.send('bg-delete-torrent', id, torrentId)
     },
 
+    getAllTorrentState (cb) {
+      var id = seq++
+      callbacks[id] = cb
+      self.target.send('bg-get-all-torrent-state', id)
+    },
+
     getTorrentStatus
   }
+
+  self.getAllTorrentState((state) => {
+    console.log(state)
+    Object.keys(state).forEach(key => getTorrentStatus(key).set(state[key]))
+  })
 
   return self
 }
