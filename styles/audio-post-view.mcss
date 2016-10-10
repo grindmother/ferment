@@ -62,18 +62,20 @@ AudioPostView {
           height: 44px;
           width: 44px;
           border-radius: 5px;
-          margin-top: -3px;
         }
         header {
           margin-left: 10px
           flex: 1
           a.feedTitle {
+            display: inline-block
             padding: 3px 6px
             -webkit-user-select: text
             color: #BBB
+            margin-bottom: 3px
             background-color: #333
           }
           span.title {
+            display: inline-block
             padding: 3px 6px
             -webkit-user-select: text
             color: #EEE
