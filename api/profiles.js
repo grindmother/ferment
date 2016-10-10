@@ -83,6 +83,12 @@ module.exports = function (ssbClient, config) {
         post.author = profile
         profile.posts.add(data.key)
         postIds.push(data.key)
+      } else if (data.value.content.type === 'ferment/update') {
+        const update = mlib.link(data.value.content.update, 'msg')
+        const post = postLookup.get(update.link)
+        if (post) {
+          post.updateFrom(data)
+        }
       } else if (data.value.content.type === 'ferment/like') {
         const profile = get(data.value.author)
         const like = mlib.link(data.value.content.like, 'msg')

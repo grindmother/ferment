@@ -28,6 +28,7 @@ module.exports = function (client, config) {
   var actions = {
     openEditProfileWindow,
     openJoinPubWindow,
+    editPost,
     viewProfile (id) {
       actions.setView('profile', id)
     },
@@ -157,7 +158,13 @@ module.exports = function (client, config) {
   }
 }
 
-function openAddWindow () {
+function editPost (opts) {
+  if (opts.id && opts.item.type === 'ferment/audio') {
+    electron.ipcRenderer.send('open-add-window', opts)
+  }
+}
+
+function openAddWindow (opts) {
   electron.ipcRenderer.send('open-add-window')
 }
 

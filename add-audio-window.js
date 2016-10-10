@@ -13,7 +13,7 @@ var fs = require('fs')
 var extend = require('xtend')
 var sanitizeFileName = require('sanitize-filename')
 
-module.exports = function (client, config) {
+module.exports = function (client, config, edit) {
   var context = {
     config,
     api: require('./api')(client, config),
@@ -33,15 +33,15 @@ module.exports = function (client, config) {
     placeholder: 'Describe your audio'
   })
 
-  setTimeout(() => title.focus(), 50)
+  setTimeout(() => {
+    title.focus()
+    title.select()
+  }, 50)
 
   var audioInfo = Value()
   var waitingToSave = Value(false)
   var publishing = Value(false)
   var processing = computed(audioInfo, (info) => info && info.processing)
-  var overview = computed(audioInfo, (info) => info && info.overview)
-
-  var audioSvg = AudioOverview(overview, 600, 100)
   var lastAutoTitle = title.value
   var cancelLastImport = null
 
@@ -85,11 +85,40 @@ module.exports = function (client, config) {
     }
   }
 
+  var defaultImage = null
+  var editOverride = null
+
+  if (edit && edit.item) {
+    description.value = edit.item.description
+    title.value = edit.item.title
+    defaultImage = edit.item.artworkSrc && context.api.getBlobUrl(edit.item.artworkSrc)
+    editOverride = {
+      type: 'ferment/update',
+      update: edit.id
+    }
+  }
+
+  var overview = computed([audioInfo, edit], (info, edit) => {
+    if (info) {
+      return info.overview
+    } else if (edit && edit.item) {
+      return edit.item.overview
+    }
+  })
+
   return h('Dialog', [
     h('section AddAudioPost', [
       h('div.artwork', {
         style: {
-          'background-image': computed(artworkPath, p => p ? `url('file://${p}')` : '')
+          'background-image': computed([artworkPath, defaultImage], (path, defaultImage) => {
+            if (path) {
+              return `url('file://${path}')`
+            } else if (defaultImage) {
+              return `url('${defaultImage}')`
+            } else {
+              return ''
+            }
+          })
         }
       }, [
         h('span', ['🖼 Choose Artwork...']), artworkInput
@@ -103,7 +132,7 @@ module.exports = function (client, config) {
             when(processing, '-processing')
           ]
         }, [
-          audioSvg,
+          AudioOverview(overview, 600, 100),
           h('span', ['📂 Choose Audio File...']),
           audioInput
         ])
@@ -116,7 +145,7 @@ module.exports = function (client, config) {
           h('button', {'disabled': true}, ['Processing, please wait...']),
           h('button -stop', {'ev-click': cancelPost}, ['Cancel Post'])
         ], [
-          h('button -save', {'ev-click': save}, ['Publish Audio']),
+          h('button -save', {'ev-click': save}, [editOverride ? 'Save' : 'Publish Audio']),
           h('button -cancel', {'ev-click': cancel}, ['Cancel'])
         ])
       )
@@ -135,7 +164,7 @@ module.exports = function (client, config) {
         waitingToSave.set(true)
         return
       }
-    } else {
+    } else if (!editOverride) {
       electron.remote.dialog.showMessageBox(electron.remote.getCurrentWindow(), {
         type: 'info',
         title: 'Cannot Publish',
@@ -146,11 +175,20 @@ module.exports = function (client, config) {
     }
 
     publishing.set(true)
-    commitAndSeed(extend(audioInfo(), {
+
+    var item = extend({
       type: 'ferment/audio',
       title: title.value,
       description: description.value
-    }), function (err, item) {
+    }, editOverride)
+
+    if (audioInfo()) {
+      commitAndSeed(extend(audioInfo(), item), next)
+    } else {
+      next(null, item)
+    }
+
+    function next (err, item) {
       if (err) throw err
       if (artworkPath()) {
         context.api.addBlob(artworkPath(), (err, hash) => {
@@ -162,7 +200,7 @@ module.exports = function (client, config) {
       } else {
         publish(item)
       }
-    })
+    }
   }
 
   function commitAndSeed (info, cb) {

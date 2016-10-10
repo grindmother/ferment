@@ -78,7 +78,7 @@ electron.ipcMain.once('ipcBackgroundReady', (e) => {
 
     pull(
       context.sbot.createLogStream({ live: true }),
-      ofType('ferment/audio'),
+      ofType(['ferment/audio', 'ferment/update']),
       pull.drain((item) => {
         if (item.sync) {
           tracker.listen(ssbConfig.trackerPort, ssbConfig.host, (err) => {

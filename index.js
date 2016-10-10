@@ -66,7 +66,7 @@ electron.app.on('activate', function (e) {
   openMainWindow()
 })
 
-electron.ipcMain.on('open-add-window', openAddWindow)
+electron.ipcMain.on('open-add-window', (ev, data) => openAddWindow(data))
 electron.ipcMain.on('open-edit-profile-window', (ev, data) => openEditProfileWindow(data))
 electron.ipcMain.on('open-join-pub-window', openJoinPubWindow)
 electron.ipcMain.on('open-background-devtools', openBackgroundDevTools)
@@ -93,7 +93,7 @@ function openMainWindow () {
   }
 }
 
-function openAddWindow () {
+function openAddWindow (opts) {
   var window = openWindow(context, Path.join(__dirname, 'add-audio-window.js'), {
     parent: windows.main,
     show: true,
@@ -104,9 +104,10 @@ function openAddWindow () {
     fullscreenable: false,
     skipTaskbar: true,
     resizable: false,
-    title: 'Add Audio File',
+    title: opts && opts.id ? 'Edit Audio File' : 'Add Audio File',
     backgroundColor: '#444',
-    acceptFirstMouse: true
+    acceptFirstMouse: true,
+    data: opts
   })
 
   windows.dialogs.add(window)

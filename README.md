@@ -157,13 +157,13 @@ xvfb-run npm run server -- --host={yourhostname} --seed {YOUR_ID}
 - [x] Backgrounding (keep seeding / syncing when main window is closed)
 - [x] Invite to pub
 - [x] Make torrents more reliable via pub server trackers [still need to make this work for other pubs though, hard coded to pub.ferment.audio right now]
-- [ ] Automatically download/seed from profiles you follow
+- [x] Allow revisions (some kind of special reply that replaces the content with new content)
 - [ ] Make Save / Download buttons work
 - [ ] Allow "delete" of audio posts (some kind of tombstoning)
+- [ ] Automatically download/seed items you like
 - [ ] Reposting
 - [ ] Playlists
 - [ ] Show seed stats
-- [ ] Allow revisions (some kind of special reply that replaces the content with new content)
 - [ ] Figure out a way to track listens? [Would be difficult given the decentralized nature of this. Might be better to show swarm strength or some other clever metric]
 - [ ] Commenting? This is a pretty major part of soundcloud, but I'm personally not really a fan
 
