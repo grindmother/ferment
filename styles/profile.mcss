@@ -28,11 +28,13 @@ Profile {
         color: #1e5282
       }
       h1 {
+        -webkit-user-select: text
         color: #6e804e;
         text-shadow: none;
         font-size: 250%;
       }
       div.description {
+        -webkit-user-select: text
         color: #4e4e4e
       }
     }

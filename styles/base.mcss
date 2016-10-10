@@ -6,7 +6,6 @@ html, body {
   height: 100%
   font-size: 12px
   -webkit-user-select: none
-  user-select: none
   color: #DDD
 }
 

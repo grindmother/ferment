@@ -76,11 +76,13 @@ AudioPost {
       header {
         margin-left: 10px
         flex: 1
-        div.feedTitle {
+        a.feedTitle {
+          -webkit-user-select: text
           color: #BBB
           font-size: 90%
         }
         div.title {
+          -webkit-user-select: text
           color: #EEE
           font-size: 130%
         }
