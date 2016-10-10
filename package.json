@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/mmckegg/ferment#readme",
   "dependencies": {
-    "@mmckegg/mutant": "~3.5.1",
+    "@mmckegg/mutant": "~3.5.3",
     "bittorrent-tracker": "^8.0.12",
     "color-hash": "^1.0.3",
     "create-torrent": "~3.25.1",
