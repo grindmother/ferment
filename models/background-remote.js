@@ -2,6 +2,8 @@ var electron = require('electron')
 var seq = Date.now()
 var ipc = electron.ipcRenderer || electron.ipcMain
 var Value = require('@mmckegg/mutant/value')
+var TorrentStatus = require('./torrent-status')
+var MutantDict = require('@mmckegg/mutant/dict')
 
 var callbacks = {}
 ipc.on('bg-response', function (ev, id, ...args) {
@@ -12,13 +14,20 @@ ipc.on('bg-response', function (ev, id, ...args) {
   }
 })
 
-var listeners = {}
-ipc.on('bg-multi-response', function (ev, id, ...args) {
-  var listener = listeners[id]
-  if (listener) {
-    listener(...args)
-  }
+var torrentLookup = MutantDict()
+ipc.on('bg-torrent-status', function (ev, infoHash, status) {
+  var target = getTorrentStatus(infoHash)
+  target.set(status)
 })
+
+function getTorrentStatus (infoHash) {
+  var target = torrentLookup.get(infoHash)
+  if (!target) {
+    target = TorrentStatus(infoHash)
+    torrentLookup.put(infoHash, target)
+  }
+  return target
+}
 
 var stats = Value({})
 ipc.on('bg-torrent-stats', function (ev, value) {
@@ -51,15 +60,7 @@ module.exports = function (config) {
       self.target.send('bg-check-torrent', id, torrentId)
     },
 
-    subscribeProgress (torrentId, listener) {
-      var id = seq++
-      listeners[id] = listener
-      self.target.send('bg-subscribe-progress', id, torrentId)
-      return () => {
-        delete listeners[id]
-        self.target.send('bg-release', id)
-      }
-    }
+    getTorrentStatus
   }
 
   return self

@@ -1,15 +1,16 @@
 var h = require('../lib/h')
-var Value = require('@mmckegg/mutant/value')
 var send = require('@mmckegg/mutant/send')
 var computed = require('@mmckegg/mutant/computed')
 var when = require('@mmckegg/mutant/when')
 var AudioOverview = require('./audio-overview')
 var prettyBytes = require('prettier-bytes')
 var contextMenu = require('../lib/context-menu')
+var magnet = require('magnet-uri')
 
 module.exports = function (context, item) {
   var player = context.player
-  var torrentStatus = TorrentStatus(context, item)
+  var torrent = magnet.decode(item.audioSrc())
+  var torrentStatus = context.background.getTorrentStatus(torrent.infoHash)
   var profile = context.api.getProfile(context.api.id)
   var likes = context.api.getLikesFor(item.id)
   var likeCount = computed(likes, x => x.length)
@@ -24,7 +25,6 @@ module.exports = function (context, item) {
   })
 
   return h('AudioPost', {
-    hooks: [ torrentStatus.hook ],
     'ev-contextmenu': contextMenu.bind(null, context, item),
     classList: [
       computed(item.state, (s) => `-${s}`)
@@ -68,11 +68,26 @@ module.exports = function (context, item) {
           '💚 ', when(likeCount, likeCount, 'Like')
         ]),
         h('a.repost', { href: '#', 'ev-click': repost }, '📡 Repost'),
-        h('a.save', { href: '#', 'ev-click': save }, '⬇️ Save'),
-        when(torrentStatus.downloading, h('span', [
-          h('strong', 'Downloading: '),
-          computed(torrentStatus.downloadProgress, percent), ' (', computed(torrentStatus.downloadSpeed, value => `${prettyBytes(value)}/s`), ')'
-        ]))
+        h('a.save', { href: '#', 'ev-click': save }, '💾 Save'),
+        h('div.status', [
+          when(torrentStatus.active, [
+            when(torrentStatus.isDownloading,
+              h('span', [computed(torrentStatus.progress, percent)])
+            ),
+
+            when(torrentStatus.downloadSpeed, [
+              h('span', [ computed(torrentStatus.downloadSpeed, value => `${prettyBytes(value)}/s 🔽`) ])
+            ]),
+
+            when(torrentStatus.uploadSpeed, [
+              h('span', [ computed(torrentStatus.uploadSpeed, value => `${prettyBytes(value)}/s 🔼`) ])
+            ]),
+
+            when(torrentStatus.numPeers, [
+              h('span -peers', [h('strong', torrentStatus.numPeers), ' 🍻'])
+            ])
+          ])
+        ])
       ])
     ])
   ])
@@ -130,21 +145,6 @@ function formatTime (value) {
   var minutes = Math.floor(value / 60)
   var seconds = Math.floor(value % 60)
   return minutes + ':' + ('0' + seconds).slice(-2)
-}
-
-function TorrentStatus (context, item) {
-  var info = Value({})
-  return {
-    downloadProgress: computed(info, (x) => x.progress || 0),
-    downloadSpeed: computed(info, (x) => x.downloadSpeed || 0),
-    downloading: computed(info, (x) => x.progress !== null && x.progress < 1),
-    paused: computed(info, (x) => x.paused || false),
-    hook: function (element) {
-      if (context.background) {
-        return context.background.subscribeProgress(item.audioSrc(), info.set)
-      }
-    }
-  }
 }
 
 function showDialog (opts) {

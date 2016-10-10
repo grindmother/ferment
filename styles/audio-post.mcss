@@ -134,8 +134,10 @@ AudioPost {
     }
 
     div.options {
+      display: flex
+      height: 24px
       a {
-        padding: 2px 5px
+        padding: 4px 6px
         margin-right: 5px
         border: 1px solid #656363
         border-radius: 4px
@@ -155,6 +157,21 @@ AudioPost {
           color: white;
           border-width: 2px;
           margin-right: 4px;
+        }
+      }
+
+      div.status {
+        text-align: right
+        flex: 1
+        font-color: #AAA
+
+        span {
+          display: inline-block
+          padding: 4px 5px
+          -peers {
+            background: #555
+            border-radius: 4px
+          }
         }
       }
     }

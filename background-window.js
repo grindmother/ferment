@@ -5,8 +5,6 @@ var Path = require('path')
 var getExt = require('path').extname
 var fs = require('fs')
 var ipc = electron.ipcRenderer
-var watch = require('@mmckegg/mutant/watch')
-var Value = require('@mmckegg/mutant/value')
 var watchEvent = require('./lib/watch-event')
 
 console.log = electron.remote.getGlobal('console').log
@@ -24,27 +22,43 @@ module.exports = function (client, config) {
   var releases = {}
   var prioritizeReleases = []
   var paused = []
-  var torrentStatuses = {}
 
   setInterval(pollStats, 5000)
 
   startSeeding()
 
   torrentClient.on('torrent', function (torrent) {
-    var status = torrentStatuses[torrent.infoHash]
-    if (!status) {
-      status = Value({loading: true})
-      torrentStatuses[torrent.infoHash] = status
-    }
-
+    var updating = false
+    var timer = null
     torrent.on('download', update)
+    torrent.on('upload', update)
+    torrent.on('done', update)
+    torrent.on('noPeers', update)
+    torrent.on('ready', update)
+    torrent.on('wire', update)
+
     update()
 
     function update () {
-      status.set({
+      if (!updating) {
+        updating = true
+        setTimeout(updateNow, 500)
+      }
+    }
+
+    function updateNow () {
+      clearTimeout(timer)
+      updating = false
+      ipc.send('bg-torrent-status', torrent.infoHash, {
         progress: torrent.progress,
-        downloadSpeed: torrent.downloadSpeed
+        downloadSpeed: torrent.downloadSpeed,
+        uploadSpeed: torrent.uploadSpeed,
+        numPeers: torrent.numPeers,
+        downloaded: torrent.downloaded,
+        uploaded: torrent.uploaded,
+        loading: false
       })
+      timer = setTimeout(updateNow, 1000)
     }
   })
 
@@ -54,11 +68,6 @@ module.exports = function (client, config) {
       releases[id] = null
       release()
     }
-  })
-
-  ipc.on('bg-subscribe-progress', (ev, id, torrentId) => {
-    var torrent = parseTorrent(torrentId)
-    addWatcherSubscription(torrent.infoHash, id)
   })
 
   ipc.on('bg-stream-torrent', (ev, id, torrentId) => {
@@ -217,7 +226,10 @@ module.exports = function (client, config) {
       torrentClient.torrents.forEach(function (t) {
         if (t !== torrent && t.progress < 0.9) {
           paused.push(t.torrentFile)
-          torrentStatuses[t.infoHash].set({paused: true})
+          ipc.send('bg-torrent-status', t.infoHash, {
+            paused: true
+          })
+
           t.destroy()
         }
       })
@@ -230,19 +242,6 @@ module.exports = function (client, config) {
         }
       }))
     }
-  }
-
-  function addWatcherSubscription (infoHash, id) {
-    var status = torrentStatuses[infoHash]
-
-    if (!status) {
-      status = Value({loading: true})
-      torrentStatuses[infoHash] = status
-    }
-
-    releases[id] = watch(status, (value) => {
-      ipc.send('bg-multi-response', id, value)
-    })
   }
 }
 
