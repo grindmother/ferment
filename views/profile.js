@@ -8,6 +8,7 @@ var when = require('@mmckegg/mutant/when')
 var renderMiniProfile = require('../widgets/mini-profile')
 var renderMiniAudioPost = require('../widgets/mini-audio-post')
 var colorHash = require('../lib/color-hash')
+var contextMenu = require('../lib/context-menu')
 
 module.exports = ProfileView
 
@@ -41,7 +42,9 @@ function ProfileView (context, profileId) {
 
   var likesCount = computed(profile.likes, (list) => list.length)
 
-  return h('Profile', [
+  return h('Profile', {
+    'ev-contextmenu': contextMenu.bind(null, context, profile)
+  }, [
     h('header', [
       h('div.image', {
         style: {

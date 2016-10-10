@@ -28,6 +28,7 @@ module.exports = function (id, myId) {
   obj.displayName = computed([obj.byMe.displayName, obj.self.displayName, obj.displayNames], getSocialValue, { nextTick: true })
   obj.image = computed([obj.byMe.image, obj.self.image, obj.images], getSocialValue, { nextTick: true })
   obj.updateFrom = updateFrom.bind(null, obj)
+  obj._type = 'ferment/profile'
 
   // hold the line open
   watch(obj.displayName)

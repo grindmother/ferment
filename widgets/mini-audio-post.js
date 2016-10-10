@@ -1,6 +1,7 @@
 var h = require('../lib/h')
 var when = require('@mmckegg/mutant/when')
 var computed = require('@mmckegg/mutant/computed')
+var contextMenu = require('../lib/context-menu')
 
 module.exports = function (context, item) {
   var likes = context.api.getLikesFor(item.id)
@@ -16,6 +17,7 @@ module.exports = function (context, item) {
 
   return h('MiniAudioPost', {
     'ev-click': (ev) => context.actions.viewProfile(item.author.id, item.id),
+    'ev-contextmenu': contextMenu.bind(null, context, item),
     'tab-index': 0,
     classList: [
       computed(item.state, (s) => s ? `-${s}` : null)

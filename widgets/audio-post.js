@@ -5,6 +5,7 @@ var computed = require('@mmckegg/mutant/computed')
 var when = require('@mmckegg/mutant/when')
 var AudioOverview = require('./audio-overview')
 var prettyBytes = require('prettier-bytes')
+var contextMenu = require('../lib/context-menu')
 
 module.exports = function (context, item) {
   var player = context.player
@@ -24,6 +25,7 @@ module.exports = function (context, item) {
 
   return h('AudioPost', {
     hooks: [ torrentStatus.hook ],
+    'ev-contextmenu': contextMenu.bind(null, context, item),
     classList: [
       computed(item.state, (s) => `-${s}`)
     ]

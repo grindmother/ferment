@@ -3,6 +3,7 @@ var when = require('@mmckegg/mutant/when')
 var send = require('@mmckegg/mutant/send')
 var computed = require('@mmckegg/mutant/computed')
 var colorHash = require('../lib/color-hash')
+var contextMenu = require('../lib/context-menu')
 
 module.exports = function (context, profile) {
   var color = colorHash.hex(profile.id)
@@ -10,6 +11,7 @@ module.exports = function (context, profile) {
     classList: [
       when(profile.isPub, '-pub')
     ],
+    'ev-contextmenu': contextMenu.bind(null, context, profile),
     'ev-click': send(context.actions.viewProfile, profile.id),
     'tab-index': 0,
     style: {

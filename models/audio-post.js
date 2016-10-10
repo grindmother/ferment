@@ -14,6 +14,7 @@ function AudioPost (id) {
     artworkSrc: Value()
   })
 
+  result._type = 'ferment/audio'
   result.id = id
   result.position = Value(0)
   result.state = Value()
