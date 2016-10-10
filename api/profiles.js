@@ -7,12 +7,15 @@ var mlib = require('ssb-msgs')
 var computed = require('@mmckegg/mutant/computed')
 var MutantMap = require('@mmckegg/mutant/map')
 var MutantArray = require('@mmckegg/mutant/array')
+var MutantSet = require('@mmckegg/mutant/set')
 var Value = require('@mmckegg/mutant/value')
+var concat = require('@mmckegg/mutant/concat')
 var AudioPost = require('../models/audio-post')
 var SetDict = require('../lib/set-dict')
 var ip = require('ip')
 
 module.exports = function (ssbClient, config) {
+  var pubIds = MutantSet()
   var lookup = MutantDict()
   var postLookup = MutantDict()
   var postIds = MutantArray()
@@ -21,6 +24,13 @@ module.exports = function (ssbClient, config) {
   var lookupByName = MutantLookup(profilesList, 'displayName')
   var sync = Value(false)
   var postLikes = SetDict()
+
+  var pubFriends = concat(MutantMap(pubIds, (id) => get(id).following))
+  var pubFriendPostIds = computed([pubFriends, postIds], (pubFriends, postIds) => {
+    return postIds.filter((id) => {
+      return pubFriends.includes(postLookup.get(id).author.id)
+    })
+  })
 
   pollPeers()
   setInterval(pollPeers, 5000)
@@ -48,11 +58,19 @@ module.exports = function (ssbClient, config) {
               if (typeof data.value.content.scope === 'string') {
                 target.scopes.add(data.value.content.scope)
               }
+
+              if (data.value.author === ssbClient.id && data.value.content.pub) {
+                pubIds.add(link.link)
+              }
+
             } else {
               author.following.delete(link.link)
               const target = lookup.get(link.link)
               if (target) {
                 target.followers.delete(data.value.author)
+              }
+              if (data.value.author === ssbClient.id) {
+                pubIds.delete(link.link)
               }
             }
           }
@@ -82,6 +100,7 @@ module.exports = function (ssbClient, config) {
   return {
     get,
     getSuggested,
+    pubFriendPostIds,
     rankProfileIds,
     getLikesFor: postLikes.getValue,
     lookup,

@@ -18,10 +18,8 @@ function TorrentStatus (infoHash) {
   result.infoHash = infoHash
   result.isDownloading = computed([result.progress], progress => progress < 1)
 
-  result.active = computed([result.progress, result.numPeers, result.loading], (progress, numPeers, loading) => {
-    if (!loading) {
-      return !!(progress || numPeers)
-    }
+  result.active = computed([result.loading], (loading) => {
+    return !loading
   })
 
   result.done = computed([result.progress], (progress) => {

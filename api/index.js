@@ -5,6 +5,7 @@ var schemas = require('ssb-msg-schemas')
 var Proxy = require('@mmckegg/mutant/proxy')
 var computed = require('@mmckegg/mutant/computed')
 var mlib = require('ssb-msgs')
+var onceTrue = require('../lib/once-true')
 
 var callbacks = {}
 electron.ipcRenderer.on('response', (ev, id, ...args) => {
@@ -26,7 +27,7 @@ module.exports = function (ssbClient, config) {
     id: ssbClient.id,
     getDiscoveryFeed (cb) {
       checkProfilesLoaded()
-      return lookupItems(sortedPostIds(profiles.postIds))
+      return lookupItems(sortedPostIds(profiles.pubFriendPostIds))
     },
 
     getFollowingFeed (cb) {
@@ -90,9 +91,15 @@ module.exports = function (ssbClient, config) {
     publish,
 
     follow (id, cb) {
-      var msg = schemas.follow(id)
-      msg.scope = scope
-      publish(msg, cb)
+      checkProfilesLoaded(() => {
+        var profile = profiles.get(id)
+        var msg = schemas.follow(id)
+        msg.scope = scope
+        if (profile.isPub()) {
+          msg.pub = true
+        }
+        publish(msg, cb)
+      })
     },
 
     unfollow (id, cb) {
@@ -141,10 +148,15 @@ module.exports = function (ssbClient, config) {
     }, { nextTick: true })
   }
 
-  function checkProfilesLoaded () {
+  function checkProfilesLoaded (cb) {
     if (!profiles) {
       profiles = Profiles(ssbClient, config)
       profilesLoaded.set(profiles.sync)
+      if (cb) {
+        onceTrue(profiles.sync, cb)
+      }
+    } else if (cb) {
+      cb()
     }
   }
 

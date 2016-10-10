@@ -224,7 +224,8 @@ module.exports = function (client, config) {
       console.log(`restarting ${paused.length} torrent(s)`)
       while (paused.length) {
         var torrentFile = paused.pop()
-        torrentClient.add(torrentFile, { path: mediaPath, announce }, (torrent) => {
+        var torrent = parseTorrent(torrentFile)
+        torrentClient.add(torrent, { path: getTorrentDataPath(torrent.infoHash), announce }, (torrent) => {
           remaining -= 1
           if (remaining === 0) {
             cb && cb()
