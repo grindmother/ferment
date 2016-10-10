@@ -4,8 +4,7 @@ var computed = require('@mmckegg/mutant/computed')
 var contextMenu = require('../lib/context-menu')
 
 module.exports = function (context, item) {
-  var likes = context.api.getLikesFor(item.id)
-  var likeCount = computed(likes, x => x.length)
+  var likeCount = computed(item.likes, x => x.length)
 
   var url = computed(item.artworkSrc, (src) => {
     if (src && src.startsWith('blobstore:')) {
@@ -16,7 +15,7 @@ module.exports = function (context, item) {
   })
 
   return h('MiniAudioPost', {
-    'ev-click': (ev) => context.actions.viewProfile(item.author.id, item.id),
+    'ev-click': (ev) => context.actions.viewPost(item.id),
     'ev-contextmenu': contextMenu.bind(null, context, item),
     'tab-index': 0,
     classList: [

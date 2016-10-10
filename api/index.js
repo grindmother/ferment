@@ -115,9 +115,9 @@ module.exports = function (ssbClient, config) {
       }, cb)
     },
 
-    getLikesFor (id) {
+    getPost (id) {
       checkProfilesLoaded()
-      return profiles.getLikesFor(id)
+      return profiles.getPost(id)
     },
 
     unlike (id, cb) {
@@ -135,8 +135,12 @@ module.exports = function (ssbClient, config) {
       electron.ipcRenderer.send('add-blob', id, path)
     },
 
-    getBlobUrl (hash) {
-      return `http://localhost:${config.blobsPort}/${hash}`
+    getBlobUrl (id) {
+      if (id && id.startsWith('blobstore:')) {
+        return `http://localhost:${config.blobsPort}/${id.slice(10)}`
+      } else {
+        return `http://localhost:${config.blobsPort}/${id}`
+      }
     }
   }
 

@@ -11,7 +11,6 @@ var MutantSet = require('@mmckegg/mutant/set')
 var Value = require('@mmckegg/mutant/value')
 var concat = require('@mmckegg/mutant/concat')
 var AudioPost = require('../models/audio-post')
-var SetDict = require('../lib/set-dict')
 var ip = require('ip')
 
 module.exports = function (ssbClient, config) {
@@ -23,7 +22,6 @@ module.exports = function (ssbClient, config) {
   var profilesList = toCollection(lookup)
   var lookupByName = MutantLookup(profilesList, 'displayName')
   var sync = Value(false)
-  var postLikes = SetDict()
 
   var pubFriends = concat(MutantMap(pubIds, (id) => get(id).following))
   var pubFriendPostIds = computed([pubFriends, postIds], (pubFriends, postIds) => {
@@ -62,7 +60,6 @@ module.exports = function (ssbClient, config) {
               if (data.value.author === ssbClient.id && data.value.content.pub) {
                 pubIds.add(link.link)
               }
-
             } else {
               author.following.delete(link.link)
               const target = lookup.get(link.link)
@@ -92,12 +89,14 @@ module.exports = function (ssbClient, config) {
       } else if (data.value.content.type === 'ferment/like') {
         const profile = get(data.value.author)
         const like = mlib.link(data.value.content.like, 'msg')
+        const post = postLookup.get(like.link)
+
         if (like.value) {
-          postLikes.addValue(like.link, data.value.author)
           profile.likes.add(like.link)
+          if (post) post.likes.add(data.value.author)
         } else {
-          postLikes.deleteValue(like.link, data.value.author)
           profile.likes.delete(like.link)
+          if (post) post.likes.delete(data.value.author)
         }
       }
     })
@@ -105,10 +104,10 @@ module.exports = function (ssbClient, config) {
 
   return {
     get,
+    getPost,
     getSuggested,
     pubFriendPostIds,
     rankProfileIds,
-    getLikesFor: postLikes.getValue,
     lookup,
     lookupByName,
     postIds,

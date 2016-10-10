@@ -1,5 +1,6 @@
 var Value = require('@mmckegg/mutant/value')
 var Struct = require('@mmckegg/mutant/struct')
+var MutantSet = require('@mmckegg/mutant/set')
 
 module.exports = AudioPost
 
@@ -13,7 +14,8 @@ function AudioPost (id) {
     overview: Value(),
     duration: Value(0, {defaultValue: 0}),
     audioSrc: Value(),
-    artworkSrc: Value()
+    artworkSrc: Value(),
+    likes: MutantSet()
   })
 
   result._type = 'ferment/audio'

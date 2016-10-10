@@ -51,7 +51,7 @@ AudioPost {
   div.artwork {
     height: 160px
     width: 160px
-    background: linear-gradient(100deg, #7B7B7B, #6A6B8C)
+    background: linear-gradient(100deg, #7B7B7B, transparent)
     background-size: cover
     background-position: 50% 50%
   }
@@ -77,11 +77,13 @@ AudioPost {
         margin-left: 10px
         flex: 1
         a.feedTitle {
+          display: block
           -webkit-user-select: text
           color: #BBB
           font-size: 90%
         }
-        div.title {
+        a.title {
+          display: block
           -webkit-user-select: text
           color: #EEE
           font-size: 130%

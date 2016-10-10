@@ -3,7 +3,6 @@ process.on('uncaughtException', function (err) {
   process.exit()
 })
 
-
 var electron = require('electron')
 var setupIpc = require('./lib/background-ipc')
 var openWindow = require('./lib/window')

@@ -12,7 +12,8 @@ var MutantMap = require('@mmckegg/mutant/map')
 var views = {
   discoveryFeed: require('./views/discovery-feed'),
   followingFeed: require('./views/following-feed'),
-  profile: require('./views/profile')
+  profile: require('./views/profile'),
+  post: require('./views/audio-post')
 }
 
 module.exports = function (client, config) {
@@ -31,6 +32,9 @@ module.exports = function (client, config) {
     editPost,
     viewProfile (id) {
       actions.setView('profile', id)
+    },
+    viewPost (id) {
+      actions.setView('post', id)
     },
     setView: function (view, ...args) {
       var newView = [view, ...args]

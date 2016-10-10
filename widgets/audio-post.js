@@ -6,15 +6,18 @@ var AudioOverview = require('./audio-overview')
 var prettyBytes = require('prettier-bytes')
 var contextMenu = require('../lib/context-menu')
 var magnet = require('magnet-uri')
+var electron = require('electron')
+var colorHash = require('../lib/color-hash')
 
 module.exports = function (context, item) {
   var player = context.player
   var torrent = magnet.decode(item.audioSrc())
   var torrentStatus = context.background.getTorrentStatus(torrent.infoHash)
   var profile = context.api.getProfile(context.api.id)
-  var likes = context.api.getLikesFor(item.id)
-  var likeCount = computed(likes, x => x.length)
+  var likeCount = computed(item.likes, x => x.length)
   var liked = computed([profile.likes, item.id], (likes, id) => likes.includes(id))
+  var isOwner = context.api.id === item.author.id
+  var color = colorHash.hex(item.id)
 
   var url = computed(item.artworkSrc, (src) => {
     if (src && src.startsWith('blobstore:')) {
@@ -30,9 +33,14 @@ module.exports = function (context, item) {
       computed(item.state, (s) => `-${s}`)
     ]
   }, [
-    h('div.artwork', { style: {
-      'background-image': computed(url, (src) => src ? `url("${src}")` : '')
-    }}),
+    h('div.artwork', {
+      style: {
+        'background-image': computed(url, (src) => src ? `url("${src}")` : ''),
+        'background-color': color,
+        'cursor': 'pointer'
+      },
+      'ev-click': send(context.actions.viewPost, item.id)
+    }),
     h('div.main', [
       h('div.title', [
         h('a.play', { 'ev-click': send(player.togglePlay, item), href: '#' }),
@@ -40,7 +48,9 @@ module.exports = function (context, item) {
           h('a.feedTitle', {
             href: '#', 'ev-click': send(context.actions.viewProfile, item.author.id)
           }, [item.author.displayName]),
-          h('div.title', [item.title])
+          h('a.title', {
+            href: '#', 'ev-click': send(context.actions.viewPost, item.id)
+          }, [item.title])
         ])
       ]),
       h('div.display', {
@@ -69,6 +79,9 @@ module.exports = function (context, item) {
         ]),
         h('a.repost', { href: '#', 'ev-click': repost }, '📡 Repost'),
         h('a.save', { href: '#', 'ev-click': save }, '💾 Save'),
+        when(isOwner,
+          h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit')
+        ),
         h('div.status', [
           when(torrentStatus.active, [
             when(torrentStatus.isDownloading,
@@ -103,6 +116,13 @@ module.exports = function (context, item) {
     showDialog({
       message: `This button doesn't do anything yet, but when it does, you'll be able to repost content from other peoples feed to your own!`,
       buttons: ['Okay, hurry up and add it!']
+    })
+  }
+
+  function edit () {
+    context.actions.editPost({
+      id: item.id,
+      item: item()
     })
   }
 }
