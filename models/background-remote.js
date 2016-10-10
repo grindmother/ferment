@@ -60,6 +60,12 @@ module.exports = function (config) {
       self.target.send('bg-check-torrent', id, torrentId)
     },
 
+    deleteTorrent (torrentId, cb) {
+      var id = seq++
+      callbacks[id] = cb
+      self.target.send('bg-delete-torrent', id, torrentId)
+    },
+
     getTorrentStatus
   }
 

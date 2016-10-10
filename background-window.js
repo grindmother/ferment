@@ -6,6 +6,7 @@ var getExt = require('path').extname
 var fs = require('fs')
 var ipc = electron.ipcRenderer
 var watchEvent = require('./lib/watch-event')
+var rimraf = require('rimraf')
 
 console.log = electron.remote.getGlobal('console').log
 process.exit = electron.remote.app.quit
@@ -109,6 +110,21 @@ module.exports = function (client, config) {
     }
   })
 
+  ipc.on('bg-delete-torrent', (ev, id, torrentId) => {
+    var torrentInfo = parseTorrent(torrentId)
+    var torrent = torrentClient.get(torrentInfo.infoHash)
+    if (torrent) {
+      torrent.destroy()
+    }
+
+    fs.unlink(getTorrentPath(torrentInfo.infoHash), function () {
+      rimraf(getTorrentDataPath(torrentInfo.infoHash), function () {
+        console.log('Deleted torrent', torrentInfo.infoHash)
+        ipc.send('bg-response', id)
+      })
+    })
+  })
+
   ipc.on('bg-seed-torrent', (ev, id, infoHash) => {
     var torrent = torrentClient.get(infoHash)
     if (torrent) {
@@ -181,16 +197,17 @@ module.exports = function (client, config) {
       var item = items[i]
       setTimeout(function () {
         fs.readFile(item, function (err, buffer) {
-          if (err) throw err
-          var torrent = parseTorrent(buffer)
-          torrent.announce = announce.slice()
-          torrentClient.add(torrent, {
-            path: getTorrentDataPath(Path.basename(item, '.torrent'))
-          }, function (torrent) {
-            console.log('seeding', torrent.infoHash)
-            i += 1
-            if (i < items.length) next()
-          })
+          if (!err) {
+            var torrent = parseTorrent(buffer)
+            torrent.announce = announce.slice()
+            torrentClient.add(torrent, {
+              path: getTorrentDataPath(Path.basename(item, '.torrent'))
+            }, function (torrent) {
+              console.log('seeding', torrent.infoHash)
+              i += 1
+              if (i < items.length) next()
+            })
+          }
         })
         // wait 15 seconds before seeding next file
       }, 15000)
