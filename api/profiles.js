@@ -11,6 +11,7 @@ var MutantSet = require('@mmckegg/mutant/set')
 var Value = require('@mmckegg/mutant/value')
 var concat = require('@mmckegg/mutant/concat')
 var AudioPost = require('../models/audio-post')
+var throttle = require('@mmckegg/mutant/throttle')
 var ip = require('ip')
 
 module.exports = function (ssbClient, config) {
@@ -23,6 +24,9 @@ module.exports = function (ssbClient, config) {
   var lookupByName = MutantLookup(profilesList, 'displayName')
   var sync = Value(false)
 
+  var followingPubs = computed([pubIds, get(ssbClient.id).following], (pubIds, following) => {
+    return pubIds.filter(x => following.includes(x))
+  })
   var pubFriends = concat(MutantMap(pubIds, (id) => get(id).following))
   var pubFriendPostIds = computed([pubFriends, postIds], (pubFriends, postIds) => {
     return postIds.filter((id) => {
@@ -57,22 +61,22 @@ module.exports = function (ssbClient, config) {
               if (typeof data.value.content.scope === 'string') {
                 target.scopes.add(data.value.content.scope)
               }
-
-              if (data.value.author === ssbClient.id && data.value.content.pub) {
-                pubIds.add(link.link)
-              }
             } else {
               author.following.delete(link.link)
               const target = lookup.get(link.link)
               if (target) {
                 target.followers.delete(data.value.author)
               }
-              if (data.value.author === ssbClient.id) {
-                pubIds.delete(link.link)
-              }
             }
           }
         })
+      } else if (data.value.content.type === 'pub') {
+        if (data.value.author === ssbClient.id) {
+          if (data.value.content.address && data.value.content.address.key) {
+            const id = mlib.link(data.value.content.address.key, 'feed')
+            if (id) pubIds.add(id.link)
+          }
+        }
       } else if (data.value.content.type === 'ferment/audio') {
         const profile = get(data.value.author)
         const post = getPost(data.key)
@@ -182,32 +186,27 @@ module.exports = function (ssbClient, config) {
   function getSuggested (max) {
     var yourProfile = get(ssbClient.id)
     var lastUpdated = 0
-    var cacheTime = 30 * 1000
-    var ids = computed([sync, lookup], (sync, profiles) => {
+    var ids = computed([sync, throttle(profileIds, 2000), throttle(pubFriends, 2000)], (sync, ids) => {
       if (sync) {
-        if (lastUpdated + cacheTime < Date.now()) {
-          lastUpdated = Date.now()
+        lastUpdated = Date.now()
 
-          var result = []
-          for (var id in profiles) {
-            var profile = get(id)
-            if ((!config.friends.scope || profile.scopes.has(config.friends.scope)) && !yourProfile.following.has(id) && id !== yourProfile.id && profile.displayNames.keys().length && !profile.isPub()) {
-              var postBonus = Math.log(1 + profile.postCount())
-              var followerBonus = postBonus ? Math.log(1 + profile.followers.getLength()) : Math.log(profile.followers.getLength() / 100)
-              result.push([id, postBonus + followerBonus])
-            }
+        var result = []
+        ids.forEach((id) => {
+          var profile = get(id)
+          if ((!config.friends.scope || profile.scopes.has(config.friends.scope)) && !yourProfile.following.has(id) && id !== yourProfile.id && profile.displayNames.keys().length && !profile.isPub()) {
+            var postBonus = Math.log(1 + profile.postCount())
+            var followerBonus = postBonus ? Math.log(1 + profile.followers.getLength()) : Math.log(profile.followers.getLength() / 100)
+            result.push([id, postBonus + followerBonus])
           }
-          // super hacky nonsense!
-          result = result.sort((a, b) => b[1] - a[1])
+        })
 
-          if (max) {
-            result = result.slice(0, max)
-          }
+        result = result.sort((a, b) => b[1] - a[1])
 
-          return result.map(x => x[0])
-        } else {
-          return computed.NO_CHANGE
+        if (max) {
+          result = result.slice(0, max)
         }
+
+        return result.map(x => x[0])
       }
     }, { nextTick: true })
     var result = MutantMap(ids, get)

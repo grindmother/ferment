@@ -67,7 +67,7 @@ module.exports = function (client, config, data) {
             message: 'An error occured while attempting to redeem invite. The pub server may be unavailable or the invite code may have expired.',
             detail: err.message
           })
-          throw err
+          console.log(err)
         } else {
           close()
         }

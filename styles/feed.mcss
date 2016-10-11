@@ -4,7 +4,7 @@ Feed {
   div.main {
     flex: 3
     padding: 24px 40px;
-    overflow-y: scroll
+    overflow-y: auto
     div.info {
       font-size: 110%
       margin: 20px 0
