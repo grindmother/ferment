@@ -61,7 +61,7 @@ $ ferment --rebuild
 Install latest updates:
 
 ```bash
-$ npm install -g ferment@latest
+$ npm install -g ferment@latest && ferment --rebuild
 ```
 
 If you get weird issues, trash it and reinstall:
