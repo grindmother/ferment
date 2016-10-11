@@ -33,10 +33,10 @@ function FollowingFeed (context) {
     ]),
     h('div.side', [
       h('h2', ['Following ', h('span.sub', [followingCount])]),
+      h('button -full -pub', {href: '#', 'ev-click': context.actions.openJoinPubWindow}, ['+ Join Pub']),
       MutantMap(context.following, (item) => renderMiniProfile(context, item), {
         maxTime: 1000 / 30
-      }),
-      h('button -full -pub', {href: '#', 'ev-click': context.actions.openJoinPubWindow}, ['+ Join Pub'])
+      })
     ])
   ])
 }
