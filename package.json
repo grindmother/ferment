@@ -45,6 +45,7 @@
     "electron": "~1.4.2",
     "electron-default-menu": "^1.0.0",
     "graphmitter": "^1.6.3",
+    "human-time": "0.0.1",
     "insert-css": "^1.0.0",
     "mdmanifest": "^1.0.8",
     "micro-css": "^0.6.1",

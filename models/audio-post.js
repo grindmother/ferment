@@ -8,6 +8,7 @@ var updateWhiteList = ['title', 'description', 'license', 'overview', 'duration'
 
 function AudioPost (id) {
   var result = Struct({
+    timestamp: Value(),
     title: Value(),
     description: Value(),
     license: Value(),

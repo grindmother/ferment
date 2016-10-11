@@ -147,8 +147,8 @@ module.exports = function (ssbClient, config) {
   // scoped
 
   function sortedPostIds (ids) {
-    return computed([ids, profiles.postIds], function (ids, postIds) {
-      return postIds.filter(x => ids.includes(x)).reverse()
+    return computed([ids], function (ids) {
+      return ids.map(id => profiles.getPost(id)).sort((a, b) => b.timestamp() - a.timestamp()).map(x => x.id)
     }, { nextTick: true })
   }
 

@@ -12,6 +12,7 @@ var Value = require('@mmckegg/mutant/value')
 var concat = require('@mmckegg/mutant/concat')
 var AudioPost = require('../models/audio-post')
 var throttle = require('@mmckegg/mutant/throttle')
+var extend = require('xtend')
 var ip = require('ip')
 
 module.exports = function (ssbClient, config) {
@@ -78,7 +79,7 @@ module.exports = function (ssbClient, config) {
         const profile = get(data.value.author)
         const post = getPost(data.key)
         profile.postCount.set(profile.postCount() + 1)
-        post.set(data.value.content)
+        post.set(extend(data.value.content, { timestamp: data.value.timestamp }))
         post.author = profile
         profile.posts.add(data.key)
         postIds.push(data.key)

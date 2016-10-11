@@ -10,6 +10,7 @@ var send = require('@mmckegg/mutant/send')
 var AudioOverview = require('../widgets/audio-overview')
 var markdown = require('../lib/markdown')
 var colorHash = require('../lib/color-hash')
+var humanTime = require('human-time')
 
 module.exports = AudioPostView
 
@@ -49,6 +50,9 @@ function AudioPostView (context, postId) {
               href: '#', 'ev-click': send(context.actions.viewProfile, post.author.id)
             }, [post.author.displayName]), h('br'),
             h('span.title', [post.title])
+          ]),
+          h('div.timestamp', [
+            humanTime(Date.now() / 1000 - post.timestamp() / 1000)
           ])
         ]),
         h('div.display', {

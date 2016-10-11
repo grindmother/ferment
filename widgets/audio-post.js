@@ -8,6 +8,7 @@ var contextMenu = require('../lib/context-menu')
 var magnet = require('magnet-uri')
 var electron = require('electron')
 var colorHash = require('../lib/color-hash')
+var humanTime = require('human-time')
 
 module.exports = function (context, item) {
   var player = context.player
@@ -51,6 +52,9 @@ module.exports = function (context, item) {
           h('a.title', {
             href: '#', 'ev-click': send(context.actions.viewPost, item.id)
           }, [item.title])
+        ]),
+        h('div.timestamp', [
+          humanTime(Date.now() / 1000 - item.timestamp() / 1000)
         ])
       ]),
       h('div.display', {
