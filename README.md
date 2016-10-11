@@ -13,7 +13,7 @@ It is made possible by combining these **amazing** projects: [ssb](https://scutt
 
 [📺 Watch a quick video demo](https://www.youtube.com/watch?v=xgvxXbWYmrI)
 [🔽 Download for macOS](https://github.com/mmckegg/ferment/releases)
-[🛠 Build from source][#install]
+[🛠 Build from source](#install)
 
 <img src="/assets/ferment-screenshot-0.0.0.jpg" alt="WebTorrent" width="888" height="688" />
 
