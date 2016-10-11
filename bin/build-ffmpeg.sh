@@ -1,3 +1,8 @@
+# on linux you need to:
+# sudo apt-get install libopus-dev yasm
+
+# all platform config and build
+
 ./configure --enable-static --disable-shared --disable-all --enable-ffmpeg --enable-avcodec --enable-avformat --enable-avutil \
   --enable-swresample --enable-swscale --enable-avfilter \
   --disable-network --disable-d3d11va --disable-dxva2 --disable-vaapi --disable-vda --disable-vdpau \
