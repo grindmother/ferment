@@ -26,7 +26,8 @@ module.exports = function (ssbClient, config) {
   var pubFriends = concat(MutantMap(pubIds, (id) => get(id).following))
   var pubFriendPostIds = computed([pubFriends, postIds], (pubFriends, postIds) => {
     return postIds.filter((id) => {
-      return pubFriends.includes(postLookup.get(id).author.id)
+      var authorId = postLookup.get(id).author.id
+      return pubFriends.includes(authorId) || authorId === ssbClient.id
     })
   })
 
