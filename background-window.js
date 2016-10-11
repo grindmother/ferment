@@ -180,12 +180,20 @@ module.exports = function (client, config) {
     var torrentPath = getTorrentPath(torrent.infoHash)
     torrent.announce = announce.slice()
 
-    torrentClient.add(torrent, {
-      path: getTorrentDataPath(torrent.infoHash)
-    }, function (torrent) {
-      console.log('add torrent', torrent.infoHash)
-      fs.writeFile(torrentPath, torrent.torrentFile, cb)
-    })
+    if (torrentClient.get(torrent.infoHash)) {
+      cb()
+    } else {
+      fs.exists(torrentPath, (exists) => {
+        torrentClient.add(exists ? torrentPath : torrent, {
+          path: getTorrentDataPath(torrent.infoHash),
+          announce
+        }, function (torrent) {
+          console.log('add torrent', torrent.infoHash)
+          if (!exists) fs.writeFile(torrentPath, torrent.torrentFile, cb)
+          else cb()
+        })
+      })
+    }
   }
 
   function startSeeding () {
