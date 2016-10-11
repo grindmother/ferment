@@ -19,7 +19,17 @@ window.addEventListener('error', function (e) {
 
 module.exports = function (client, config) {
   var announce = config.webtorrent.announceList
-  var torrentClient = new WebTorrent()
+  var torrentClient = new WebTorrent({
+    dhtPort: config.webtorrent.dhtPort
+  })
+
+  if (config.webtorrent.dhtSeeds) {
+    config.webtorrent.dhtSeeds.forEach((x) => {
+      console.log('adding dht seed', x[0], x[1])
+      torrentClient.dht.addNode({host: x[0], port: x[1]})
+    })
+  }
+
   var mediaPath = config.mediaPath
   var releases = {}
   var prioritizeReleases = []

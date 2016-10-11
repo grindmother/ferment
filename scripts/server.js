@@ -81,10 +81,10 @@ electron.ipcMain.once('ipcBackgroundReady', (e) => {
       ofType(['ferment/audio', 'ferment/update']),
       pull.drain((item) => {
         if (item.sync) {
-          tracker.listen(ssbConfig.trackerPort, ssbConfig.host, (err) => {
-            if (err) console.log('Cannot start tracker')
-            else console.log(`Tracker started at ws://${ssbConfig.host || 'localhost'}:${ssbConfig.trackerPort}`)
-          })
+          // tracker.listen(ssbConfig.trackerPort, ssbConfig.host, (err) => {
+          //   if (err) console.log('Cannot start tracker')
+          //   else console.log(`Tracker started at ws://${ssbConfig.host || 'localhost'}:${ssbConfig.trackerPort}`)
+          // })
         } else if (item.value && typeof item.value.content.audioSrc === 'string') {
           var torrent = magnet.decode(item.value.content.audioSrc)
           if (torrent.infoHash) {
