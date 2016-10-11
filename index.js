@@ -152,7 +152,10 @@ function openJoinPubWindow () {
     skipTaskbar: true,
     resizable: false,
     title: 'Join Public Server',
-    backgroundColor: '#444'
+    backgroundColor: '#444',
+    webPreferences: {
+      openerId: windows.main.webContents.id
+    }
   })
 
   windows.dialogs.add(window)
