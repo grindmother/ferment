@@ -27,9 +27,7 @@ I want to see a thriving audio sharing community (actually would be COMMUNITIES!
 
 ## Requirements
 
-- **You need `ffmpeg` installed to add audio files!** Otherwise you'll just receive an error when you choose the file.
-- If there is no [packaged app](https://github.com/mmckegg/ferment/releases) for your platform, you'll need a modern version of [`node` and `npm`](https://nodejs.org)
-- To build from source or npm you currently need to have `automake` and `libtool`
+If there is no [packaged app](https://github.com/mmckegg/ferment/releases) for your platform, you'll need to build from source using modern version of [`node` and `npm`](https://nodejs.org).
 
 ## Install
 
