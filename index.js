@@ -15,6 +15,7 @@ var Path = require('path')
 var fs = require('fs')
 var defaultMenu = require('electron-default-menu')
 var Menu = electron.Menu
+var dataUriToBuffer = require('data-uri-to-buffer')
 
 var windows = {
   dialogs: new Set()
@@ -46,7 +47,7 @@ if (process.argv.includes('--test-peer')) {
 
 electron.ipcMain.on('add-blob', (ev, id, path, cb) => {
   pull(
-    pullFile(path),
+    path.startsWith('data:') ? pull.values([dataUriToBuffer(path)]) : pullFile(path),
     context.sbot.blobs.add((err, hash) => {
       if (err) return ev.sender.send('response', id, err)
       ev.sender.send('response', id, null, hash)

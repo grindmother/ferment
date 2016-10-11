@@ -3,6 +3,7 @@ var computed = require('@mmckegg/mutant/computed')
 var when = require('@mmckegg/mutant/when')
 var Value = require('@mmckegg/mutant/value')
 var electron = require('electron')
+var processImage = require('./lib/process-image')
 
 module.exports = function (client, config, data) {
   var context = {
@@ -10,7 +11,7 @@ module.exports = function (client, config, data) {
     api: require('./api')(client, config)
   }
 
-  var imagePath = Value()
+  var imageUrl = Value()
   var publishing = Value(false)
 
   var imageInput = h('input', {type: 'file', accept: 'image/*'})
@@ -29,7 +30,12 @@ module.exports = function (client, config, data) {
   imageInput.onchange = function () {
     var file = imageInput.files[0]
     if (file) {
-      imagePath.set(file.path)
+      processImage(file.path, {
+        width: 500, height: 500, type: 'jpeg'
+      }, (err, url) => {
+        if (err) throw err
+        imageUrl.set(url)
+      })
     }
   }
 
@@ -42,7 +48,7 @@ module.exports = function (client, config, data) {
     h('section EditProfile', [
       h('div.image', {
         style: {
-          'background-image': url(computed(imagePath, p => p ? `file://${p}` : defaultImage))
+          'background-image': url(computed(imageUrl, p => p || defaultImage))
         }
       }, [
         h('span', ['🖼 Choose Profile Image...']), imageInput
@@ -77,8 +83,8 @@ module.exports = function (client, config, data) {
       item.description = description.value
     }
 
-    if (imagePath()) {
-      context.api.addBlob(imagePath(), (err, hash) => {
+    if (imageUrl()) {
+      context.api.addBlob(imageUrl(), (err, hash) => {
         if (err) throw err
         console.log('added blob', hash)
         item.image = {

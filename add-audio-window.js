@@ -12,6 +12,7 @@ var createTorrent = require('create-torrent')
 var fs = require('fs')
 var extend = require('xtend')
 var sanitizeFileName = require('sanitize-filename')
+var processImage = require('./lib/process-image')
 
 module.exports = function (client, config, edit) {
   var context = {
@@ -23,7 +24,7 @@ module.exports = function (client, config, edit) {
   var announce = config.webtorrent.announceList
 
   var mediaPath = config.mediaPath
-  var artworkPath = Value()
+  var artworkUrl = Value()
 
   var artworkInput = h('input', {type: 'file', accept: 'image/*'})
   var audioInput = h('input', {type: 'file', accept: 'audio/*'})
@@ -81,7 +82,12 @@ module.exports = function (client, config, edit) {
   artworkInput.onchange = function () {
     var file = artworkInput.files[0]
     if (file) {
-      artworkPath.set(file.path)
+      processImage(file.path, {
+        width: 500, height: 500, type: 'jpeg'
+      }, (err, url) => {
+        if (err) throw err
+        artworkUrl.set(url)
+      })
     }
   }
 
@@ -110,11 +116,9 @@ module.exports = function (client, config, edit) {
     h('section AddAudioPost', [
       h('div.artwork', {
         style: {
-          'background-image': computed([artworkPath, defaultImage], (path, defaultImage) => {
-            if (path) {
-              return `url('file://${path}')`
-            } else if (defaultImage) {
-              return `url('${defaultImage}')`
+          'background-image': computed([artworkUrl, defaultImage], (url, defaultImage) => {
+            if (url || defaultImage) {
+              return `url('${url || defaultImage}')`
             } else {
               return ''
             }
@@ -190,8 +194,8 @@ module.exports = function (client, config, edit) {
 
     function next (err, item) {
       if (err) throw err
-      if (artworkPath()) {
-        context.api.addBlob(artworkPath(), (err, hash) => {
+      if (artworkUrl()) {
+        context.api.addBlob(artworkUrl(), (err, hash) => {
           if (err) throw err
           console.log('added blob', hash)
           item.artworkSrc = `blobstore:${hash}`

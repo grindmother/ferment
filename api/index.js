@@ -129,10 +129,10 @@ module.exports = function (ssbClient, config) {
       }, cb)
     },
 
-    addBlob (path, cb) {
+    addBlob (dataOrPath, cb) {
       var id = `${windowId}-${seq++}`
       callbacks[id] = cb
-      electron.ipcRenderer.send('add-blob', id, path)
+      electron.ipcRenderer.send('add-blob', id, dataOrPath)
     },
 
     getBlobUrl (id) {
