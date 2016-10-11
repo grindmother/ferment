@@ -1,6 +1,6 @@
 {
   "name": "ferment",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Peer-to-peer audio publishing and streaming application. Like SoundCloud but decentralized. A mashup of ssb, webtorrent and electron.",
   "main": "index.js",
   "scripts": {
