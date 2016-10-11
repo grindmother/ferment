@@ -30,7 +30,7 @@ function DiscoveryFeed (context) {
               `You can start adding music to `,
               h('a', { href: '#', 'ev-click': send(context.actions.viewProfile, context.api.id) }, `your profile`),
               `, or `,
-              h('a', { href: '#', 'ev-click': context.actions.openJoinPubWindow }, `follow a pub server`),
+              h('a', { href: '#', 'ev-click': context.actions.openJoinPubWindow }, `join a pub server`),
               ` to really get things going! 🍻`
             ]),
             h('img', {
