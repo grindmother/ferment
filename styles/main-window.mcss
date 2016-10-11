@@ -96,6 +96,25 @@ MainWindow {
     }
   }
 
+  div.info {
+    a.message {
+      display: block
+      padding: 10px
+      background: #314427
+      transition: color 0.2s, background-color 0.2s
+
+      :hover {
+        text-decoration: none
+        color: white
+        background: #315427
+      }
+    }
+    box-shadow: 0 0 3px black
+    overflow: hidden
+    animation: 0.5s slide-in
+    position: relative
+  }
+
   div.main {
     flex: 1
     overflow: auto
@@ -127,5 +146,14 @@ MainWindow {
 
       width: 100%
     }
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    max-height: 0
+  }
+  100% {
+    max-height: 100px
   }
 }

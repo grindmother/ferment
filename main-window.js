@@ -8,6 +8,7 @@ var Player = require('./widgets/player')
 var onceTrue = require('./lib/once-true')
 var watch = require('@mmckegg/mutant/watch')
 var MutantMap = require('@mmckegg/mutant/map')
+var LatestUpdate = require('./lib/latest-update')
 
 var views = {
   discoveryFeed: require('./views/discovery-feed'),
@@ -25,6 +26,9 @@ module.exports = function (client, config) {
   var forwardHistory = []
   var canGoForward = Value(false)
   var canGoBack = Value(false)
+
+  var latestUpdate = LatestUpdate()
+  window.latestUpdate = latestUpdate
 
   var actions = {
     openEditProfileWindow,
@@ -116,6 +120,13 @@ module.exports = function (client, config) {
         h('a -add', {href: '#', 'ev-click': openAddWindow}, ['+ Add Audio'])
       ])
     ]),
+    when(latestUpdate,
+      h('div.info', [
+        h('a.message -update', { href: 'https://github.com/mmckegg/ferment/releases' }, [
+          h('strong', ['🎉 Ferment ', latestUpdate, ' has been released.']), ' Click here for more info!'
+        ])
+      ])
+    ),
     mainElement,
     h('div.bottom', [
       player.audioElement
