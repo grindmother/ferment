@@ -84,14 +84,10 @@ function mostPopular (obj) {
   return value
 }
 
-// allow space!
-var badNameCharsRegex = /[^A-z0-9\._-\s']/g
 function makeNameSafe (str) {
-  str = str.replace(badNameCharsRegex, '_')
-  if (str.charAt(str.length - 1) === '.') {
-    str = str.slice(0, -1) + '_'
-  }
-  return str
+  // TODO: figure out a good white list. Stuff that lets people be
+  //       creative, but doesn't destroy the page layout or anything.
+  return String(str)
 }
 
 function nonEmptyStr (str) {
