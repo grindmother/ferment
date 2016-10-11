@@ -81,7 +81,6 @@ function openMainWindow () {
       title: 'Ferment',
       show: true,
       backgroundColor: '#444',
-      acceptFirstMouse: true,
       webPreferences: {
         experimentalFeatures: true
       }
@@ -106,7 +105,6 @@ function openAddWindow (opts) {
     resizable: false,
     title: opts && opts.id ? 'Edit Audio File' : 'Add Audio File',
     backgroundColor: '#444',
-    acceptFirstMouse: true,
     data: opts
   })
 
@@ -131,7 +129,6 @@ function openEditProfileWindow (opts) {
     resizable: false,
     title: 'Edit Profile',
     backgroundColor: '#444',
-    acceptFirstMouse: true,
     data: opts
   })
 
@@ -155,8 +152,7 @@ function openJoinPubWindow () {
     skipTaskbar: true,
     resizable: false,
     title: 'Join Public Server',
-    backgroundColor: '#444',
-    acceptFirstMouse: true
+    backgroundColor: '#444'
   })
 
   windows.dialogs.add(window)
