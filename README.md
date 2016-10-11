@@ -12,8 +12,10 @@
 It is made possible by combining these **amazing** projects: [ssb](https://scuttlebot.io/), [webtorrent](https://webtorrent.io/) and [electron](http://electron.atom.io/).
 
 [📺 Watch a quick video demo](https://www.youtube.com/watch?v=xgvxXbWYmrI)
+[🔽 Download for macOS](https://github.com/mmckegg/ferment/releases)
+[🛠 Build from source][#install]
 
-![](/assets/ferment-screenshot-0.0.0.jpg)
+<img src="/assets/ferment-screenshot-0.0.0.jpg" alt="WebTorrent" width="888" height="688" />
 
 ## Experimental // EVERYTHING IS SUBJECT TO CHANGE AND BREAKING!
 
