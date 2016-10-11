@@ -64,10 +64,13 @@ module.exports = function (client, config, data) {
             type: 'error',
             title: 'Error',
             buttons: ['OK'],
-            message: 'An error occured while attempting to redeem invite.'
+            message: 'An error occured while attempting to redeem invite. The pub server may be unavailable or the invite code may have expired.',
+            detail: err.message
           })
+          throw err
+        } else {
+          close()
         }
-        close()
       })
     }
   }
