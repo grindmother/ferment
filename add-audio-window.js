@@ -265,12 +265,12 @@ module.exports = function (client, config, edit) {
       var tempDir = Path.join(mediaPath, `importing-${Date.now()}`)
       fs.mkdir(tempDir, function (err) {
         if (err) return cb && cb(err)
-        var fileName = `${Path.basename(path)}.ogg`
+        var fileName = `${Path.basename(path)}.webm`
         var toPath = Path.join(tempDir, fileName)
         convert(path, toPath, function (err) {
           if (cancelled) return
           if (err) return cb && cb(err)
-          console.log('converted to ogg')
+          console.log('converted to webm')
           cb(null, extend(meta, {
             fileName, tempDir
           }))
