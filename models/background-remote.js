@@ -75,9 +75,11 @@ module.exports = function (config) {
     getTorrentStatus
   }
 
-  self.getAllTorrentState((state) => {
-    Object.keys(state).forEach(key => getTorrentStatus(key).set(state[key]))
-  })
+  if (self.target.send) {
+    self.getAllTorrentState((state) => {
+      Object.keys(state).forEach(key => getTorrentStatus(key).set(state[key]))
+    })
+  }
 
   return self
 }
