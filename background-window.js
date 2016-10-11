@@ -33,12 +33,14 @@ module.exports = function (client, config) {
   torrentClient.on('torrent', function (torrent) {
     var updating = false
     var timer = null
-    torrent.on('download', update)
-    torrent.on('upload', update)
-    torrent.on('done', update)
-    torrent.on('noPeers', update)
-    torrent.on('ready', update)
-    torrent.on('wire', update)
+
+    torrent.releases = [
+      watchEvent(torrent, 'download', update),
+      watchEvent(torrent, 'upload', update),
+      watchEvent(torrent, 'done', update),
+      watchEvent(torrent, 'wire', update),
+      watchEvent(torrent, 'noPeers', update)
+    ]
 
     update()
 
@@ -50,19 +52,21 @@ module.exports = function (client, config) {
     }
 
     function updateNow () {
-      clearTimeout(timer)
-      updating = false
-      var state = {
-        progress: torrent.progress,
-        downloadSpeed: torrent.downloadSpeed,
-        uploadSpeed: torrent.uploadSpeed,
-        numPeers: torrent.numPeers,
-        downloaded: torrent.downloaded,
-        uploaded: torrent.uploaded,
-        loading: false
+      if (torrentClient.torrents.includes(torrent)) {
+        clearTimeout(timer)
+        updating = false
+        var state = {
+          progress: torrent.progress,
+          downloadSpeed: torrent.downloadSpeed,
+          uploadSpeed: torrent.uploadSpeed,
+          numPeers: torrent.numPeers,
+          downloaded: torrent.downloaded,
+          uploaded: torrent.uploaded,
+          loading: false
+        }
+        broadcastTorrentState(torrent.infoHash, state)
+        timer = setTimeout(updateNow, 1000)
       }
-      broadcastTorrentState(torrent.infoHash, state)
-      timer = setTimeout(updateNow, 1000)
     }
   })
 
@@ -126,6 +130,7 @@ module.exports = function (client, config) {
 
     fs.unlink(getTorrentPath(torrentInfo.infoHash), function () {
       rimraf(getTorrentDataPath(torrentInfo.infoHash), function () {
+        broadcastTorrentState(torrentInfo.infoHash, { loading: true })
         console.log('Deleted torrent', torrentInfo.infoHash)
         ipc.send('bg-response', id)
       })
