@@ -29,6 +29,22 @@ I want to see a thriving audio sharing community (actually would be COMMUNITIES!
 
 **It will also soon be possible to host your own server that allows people without the app to stream music from your profile (or others that you want to seed).** This will still be peer-to-peer but your server will act as a mirror and tracker.
 
+## How it works
+
+Ferment uses a peer-to-peer gossip protocol called [Secure Scuttlebutt](https://scuttlebot.io/more/protocols/secure-scuttlebutt.html). The best part about this is there is no central server and no single point of failure. In fact everyone on the network is a server, with a copy of all of their friends and their friend's friends data. You gossip with other peers to find out if any of your shared contacts have any new posts and share them. But by gossip, we mean cryptographically prove everything they've said since the last time you heard from them. It is impossible to skip a message.
+
+The actual audio files are just torrents (a special variant called [webtorrent](https://github.com/feross/webtorrent) that works over WebRTC). The SSB message contains a reference to its magnet url, and you seed the file to other ferment peers.
+
+Whenever you listen to something in Ferment, you start seeding that file with other peers. It will be cached on your machine until you remove it (right click > Stop Sharing Post). In the future this will be handled automatically (you'll only cache liked songs / selected songs from followed users that are weak on the network).
+
+## Ferment and Copyright
+
+Ferment is intended as an audio publishing platform for **copyright-owning creators** and **creative commons licensed material**.
+
+However as this is a decentralized, peer-to-peer community, this cannot be enforced. It's up to you as the user what you allow in your network. **You get to choose what level of sharing legality you are comfortable with.** If someone is sharing a lot of copyrighted material, and you don't want to share responsibility, just unfollow them. You could also try reporting to the owner of the pub.
+
+**My pub will unfollow anyone that continuously uploads copyrighted material that they do not have the rights to.**
+
 ## Requirements
 
 If there is no [packaged app](https://github.com/mmckegg/ferment/releases) for your platform, you'll need to build from source using modern version of [`node` and `npm`](https://nodejs.org).
