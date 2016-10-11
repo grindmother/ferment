@@ -13,6 +13,7 @@ var fs = require('fs')
 var extend = require('xtend')
 var sanitizeFileName = require('sanitize-filename')
 var processImage = require('./lib/process-image')
+var util = require('util')
 
 module.exports = function (client, config, edit) {
   var context = {
@@ -66,10 +67,12 @@ module.exports = function (client, config, edit) {
             type: 'error',
             title: 'Error',
             buttons: ['OK'],
-            message: 'An error occured while processing audio file. Check that "ffmpeg" is installed on your machine and that the file is a supported format.'
+            message: 'An error occured while processing audio file. Please check that the file is a supported format.',
+            detail: ffmpegError(err)
           })
           audioInfo.set({error: err})
-          throw err
+          console.log(err)
+          electron.remote.getGlobal('console').log(util.inspect(err))
         }
         audioInfo.set(info)
         if (waitingToSave()) {
@@ -290,4 +293,11 @@ module.exports = function (client, config, edit) {
 function getFileName (audioInfo) {
   var ext = Path.extname(audioInfo.fileName)
   return `${sanitizeFileName(audioInfo.title.trim()) || 'audio'}${ext}`
+}
+
+function ffmpegError (err) {
+  if (err.message) {
+    var lines = err.message.trim().split('\n')
+    return lines[lines.length - 1]
+  }
 }
