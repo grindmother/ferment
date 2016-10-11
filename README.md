@@ -35,7 +35,7 @@ Ferment uses a peer-to-peer gossip protocol called [Secure Scuttlebutt](https://
 
 The actual audio files are just torrents (a special variant called [webtorrent](https://github.com/feross/webtorrent) that works over WebRTC). The SSB message contains a reference to its magnet url, and you seed the file to other ferment peers.
 
-Whenever you listen to something in Ferment, you start seeding that file with other peers. It will be cached on your machine until you remove it (right click > Stop Sharing Post). In the future this will be handled automatically (you'll only cache liked songs / selected songs from followed users that are weak on the network).
+Whenever you listen to something in Ferment, you start seeding that file with other peers. It will be cached on your machine until you remove it (right-click > Stop Sharing Post). In the future this will be handled automatically (you'll only cache liked songs / selected songs from followed users that are weak on the network).
 
 ## Ferment and Copyright
 
@@ -123,7 +123,7 @@ $ npm install
 
 By default, **Ferment** will only see other users that are on the same local area network as you. In order to share with users on the internet, you need to be invited to a pub server.
 
-Since I'm a nice person 💖 you can hang out in my pub, and you don't even have to buy any drinks! 🍻
+Since I'm a nice person 💖 you can hang out in my pub, and you don't even have to buy any drinks! 🍻 But please be mindful about uploading content that you do not own the rights to. My pub will [unfollow anyone who uploads a lot of content that I don't think is _fair_ to the original creators](#ferment-and-copyright).
 
 **Click 'Join Pub' on the sidebar then paste the code below:**
 
