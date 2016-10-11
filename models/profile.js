@@ -85,7 +85,7 @@ function mostPopular (obj) {
 }
 
 // allow space!
-var badNameCharsRegex = /[^A-z0-9\._-\s]/g
+var badNameCharsRegex = /[^A-z0-9\._-\s']/g
 function makeNameSafe (str) {
   str = str.replace(badNameCharsRegex, '_')
   if (str.charAt(str.length - 1) === '.') {
