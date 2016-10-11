@@ -24,9 +24,6 @@ module.exports = function (ssbClient, config) {
   var lookupByName = MutantLookup(profilesList, 'displayName')
   var sync = Value(false)
 
-  var followingPubs = computed([pubIds, get(ssbClient.id).following], (pubIds, following) => {
-    return pubIds.filter(x => following.includes(x))
-  })
   var pubFriends = concat(MutantMap(pubIds, (id) => get(id).following))
   var pubFriendPostIds = computed([pubFriends, postIds], (pubFriends, postIds) => {
     return postIds.filter((id) => {

@@ -64,6 +64,7 @@ module.exports = function (client, config) {
   // hold these open
   watch(suggestedProfiles)
   watch(discoveryFeed)
+  watch(followingFeed)
 
   var context = { config, api, background, actions, discoveryFeed, followingFeed, suggestedProfiles, following, profile }
   var player = context.player = Player(context)
