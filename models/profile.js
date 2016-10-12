@@ -18,6 +18,7 @@ module.exports = function (id, myId) {
     scopes: MutantSet(),
     posts: MutantSet(),
     likes: MutantSet(),
+    reposts: MutantDict(),
     isPub: Value(false)
   })
 

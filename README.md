@@ -181,8 +181,8 @@ xvfb-run npm run server -- --host={yourhostname} --seed {YOUR_ID}
 - [x] Make torrents more reliable via pub server trackers [still need to make this work for other pubs though, hard coded to pub.ferment.audio right now]
 - [x] Allow revisions (some kind of special reply that replaces the content with new content)
 - [x] Show seed stats
-- [ ] Reposting
-- [ ] Make Save / Download buttons work
+- [x] Reposting
+- [x] Make Save / Download buttons work
 - [ ] Allow "delete" of audio posts (some kind of tombstoning)
 - [ ] Automatically download/seed items you like
 - [ ] Playlists

@@ -16,6 +16,7 @@ module.exports = function (context, item) {
   var torrentStatus = context.background.getTorrentStatus(torrent.infoHash)
   var profile = context.api.getProfile(context.api.id)
   var likeCount = computed(item.likes, x => x.length)
+  var reposted = computed([profile.posts, item.id], (posts, id) => posts.includes(id))
   var liked = computed([profile.likes, item.id], (likes, id) => likes.includes(id))
   var isOwner = context.api.id === item.author.id
   var color = colorHash.hex(item.id)
@@ -81,11 +82,17 @@ module.exports = function (context, item) {
         }, [
           '💚 ', when(likeCount, likeCount, 'Like')
         ]),
-        h('a.repost', { href: '#', 'ev-click': repost }, '📡 Repost'),
-        h('a.save', { href: '#', 'ev-click': save }, '💾 Save'),
         when(isOwner,
-          h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit')
+          h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit'),
+          h('a.repost', {
+            href: '#',
+            'ev-click': send(toggleRepost, { reposted, context, item }),
+            classList: [
+              when(reposted, '-active')
+            ]
+          }, '📡 Repost')
         ),
+        h('a.save', { href: '#', 'ev-click': send(context.actions.saveFile, item) }, '💾 Save'),
         h('div.status', [
           when(torrentStatus.active, [
             when(torrentStatus.isDownloading,
@@ -109,25 +116,19 @@ module.exports = function (context, item) {
     ])
   ])
 
-  function save () {
-    showDialog({
-      message: `This button doesn't do anything yet, but when it does, you'll be able to save this file to somewhere on your computer!`,
-      buttons: ['Okay, hurry up and add it!']
-    })
-  }
-
-  function repost () {
-    showDialog({
-      message: `This button doesn't do anything yet, but when it does, you'll be able to repost content from other peoples feed to your own!`,
-      buttons: ['Okay, hurry up and add it!']
-    })
-  }
-
   function edit () {
     context.actions.editPost({
       id: item.id,
       item: item()
     })
+  }
+}
+
+function toggleRepost (opts) {
+  if (opts.reposted()) {
+    opts.context.api.unrepost(opts.item.id)
+  } else {
+    opts.context.api.repost(opts.item.id)
   }
 }
 
@@ -169,8 +170,4 @@ function formatTime (value) {
   var minutes = Math.floor(value / 60)
   var seconds = Math.floor(value % 60)
   return minutes + ':' + ('0' + seconds).slice(-2)
-}
-
-function showDialog (opts) {
-  electron.remote.dialog.showMessageBox(electron.remote.getCurrentWindow(), opts)
 }

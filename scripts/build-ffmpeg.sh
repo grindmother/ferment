@@ -1,3 +1,5 @@
+# adapted from http://tealscientific.com/blog/?p=2661
+
 # on linux you need to:
 # apt-get install autoconf automake build-essential pkg-config
 

@@ -49,7 +49,7 @@ module.exports = function (ssbClient, config) {
 
     getProfileFeed (id, cb) {
       checkProfilesLoaded()
-      return lookupItems(sortedPostIds(profiles.get(id).posts))
+      return lookupItems(reverse(profiles.get(id).posts))
     },
 
     setOwnDisplayName (name, cb) {
@@ -115,11 +115,6 @@ module.exports = function (ssbClient, config) {
       }, cb)
     },
 
-    getPost (id) {
-      checkProfilesLoaded()
-      return profiles.getPost(id)
-    },
-
     unlike (id, cb) {
       var unlikeLink = mlib.link(id)
       unlikeLink.value = false
@@ -127,6 +122,29 @@ module.exports = function (ssbClient, config) {
         type: 'ferment/like',
         like: unlikeLink
       }, cb)
+    },
+
+    repost (id, cb) {
+      var repostLink = mlib.link(id)
+      repostLink.value = true
+      publish({
+        type: 'ferment/repost',
+        repost: repostLink
+      }, cb)
+    },
+
+    unrepost (id, cb) {
+      var unrepostLink = mlib.link(id)
+      unrepostLink.value = false
+      publish({
+        type: 'ferment/repost',
+        repost: unrepostLink
+      }, cb)
+    },
+
+    getPost (id) {
+      checkProfilesLoaded()
+      return profiles.getPost(id)
     },
 
     addBlob (dataOrPath, cb) {
@@ -150,6 +168,16 @@ module.exports = function (ssbClient, config) {
     return computed([ids], function (ids) {
       return ids.map(id => profiles.getPost(id)).sort((a, b) => b.timestamp() - a.timestamp()).map(x => x.id)
     }, { nextTick: true })
+  }
+
+  function reverse (ids) {
+    return computed([ids], function (ids) {
+      var result = []
+      ids.forEach((id, i) => {
+        result[ids.length - 1 - i] = id
+      })
+      return result
+    })
   }
 
   function checkProfilesLoaded (cb) {

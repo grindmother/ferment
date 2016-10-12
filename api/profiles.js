@@ -101,6 +101,20 @@ module.exports = function (ssbClient, config) {
           profile.likes.delete(like.link)
           if (post) post.likes.delete(data.value.author)
         }
+      } else if (data.value.content.type === 'ferment/repost') {
+        const profile = get(data.value.author)
+        const repost = mlib.link(data.value.content.repost, 'msg')
+        const post = postLookup.get(repost.link)
+
+        if (repost.value) {
+          profile.posts.add(repost.link)
+          profile.reposts.put(repost.link, data.value.timestamp)
+          if (post) post.reposters.add(data.value.author)
+        } else {
+          profile.posts.delete(repost.link)
+          profile.reposts.delete(repost.link)
+          if (post) post.reposters.delete(data.value.author)
+        }
       }
     })
   )

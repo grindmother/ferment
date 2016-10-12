@@ -16,7 +16,8 @@ function AudioPost (id) {
     duration: Value(0, {defaultValue: 0}),
     audioSrc: Value(),
     artworkSrc: Value(),
-    likes: MutantSet()
+    likes: MutantSet(),
+    reposters: MutantSet()
   })
 
   result._type = 'ferment/audio'

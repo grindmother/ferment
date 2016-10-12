@@ -48,6 +48,12 @@ module.exports = function (config) {
       }
     },
 
+    exportFile (torrentId, outputPath, cb) {
+      var id = seq++
+      callbacks[id] = cb
+      self.target.send('bg-export-torrent', id, torrentId, outputPath)
+    },
+
     seedTorrent (infoHash, cb) {
       var id = seq++
       callbacks[id] = cb

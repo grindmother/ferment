@@ -8,6 +8,7 @@ var ipc = electron.ipcRenderer
 var watchEvent = require('./lib/watch-event')
 var rimraf = require('rimraf')
 var MutantDict = require('@mmckegg/mutant/dict')
+var convert = require('./lib/convert')
 
 console.log = electron.remote.getGlobal('console').log
 process.exit = electron.remote.app.quit
@@ -103,6 +104,27 @@ module.exports = function (client, config) {
       releases[id] = () => {
         server.close()
       }
+    }
+  })
+
+  ipc.on('bg-export-torrent', (ev, id, torrentId, filePath) => {
+    unprioritize(true, () => {
+      var torrent = torrentClient.get(torrentId)
+      if (torrent) {
+        saveFile(id, torrentId, filePath)
+      } else {
+        addTorrent(torrentId, () => {
+          saveFile(id, torrentId, filePath)
+        })
+      }
+    })
+
+    function saveFile (id, torrentId, filePath) {
+      var torrent = torrentClient.get(torrentId)
+      torrent.files[0].createReadStream(0).pipe(convert.export(filePath, (err, info) => {
+        ipc.send('bg-response', id, err, info)
+        console.log(info)
+      }))
     }
   })
 

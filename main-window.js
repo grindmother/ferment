@@ -9,6 +9,7 @@ var onceTrue = require('./lib/once-true')
 var watch = require('@mmckegg/mutant/watch')
 var MutantMap = require('@mmckegg/mutant/map')
 var LatestUpdate = require('./lib/latest-update')
+var sanitizeFileName = require('sanitize-filename')
 
 var views = {
   discoveryFeed: require('./views/discovery-feed'),
@@ -34,6 +35,24 @@ module.exports = function (client, config) {
     openEditProfileWindow,
     openJoinPubWindow,
     editPost,
+    saveFile (item, cb) {
+      electron.remote.dialog.showSaveDialog(electron.remote.getCurrentWindow(), {
+        title: 'Export Audio File',
+        defaultPath: sanitizeFileName(`${item.author.displayName()} - ${item.title()}.mp3`),
+        filters: [
+          {name: 'MP3', extensions: ['mp3']}
+        ]
+      }, function (path) {
+        if (path) {
+          background.exportFile(item.audioSrc(), path, cb)
+        } else {
+          cb && cb(false)
+        }
+      })
+    },
+    repost (item) {
+      
+    },
     viewProfile (id) {
       actions.setView('profile', id)
     },
