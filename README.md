@@ -33,11 +33,11 @@ I want to see a thriving audio sharing community (actually would be COMMUNITIES!
 
 Ferment uses a peer-to-peer gossip protocol called [Secure Scuttlebutt](https://scuttlebot.io/more/protocols/secure-scuttlebutt.html). The best part about this is there is no central server and no single point of failure. In fact everyone on the network is a server, with a copy of all of their friends and their friend's friends data. You gossip with other peers to find out if any of your shared contacts have any new posts and share them. But by gossip, we mean cryptographically prove everything they've said since the last time you heard from them. It is impossible to skip a message.
 
-Finding peers across the complex topography of the internet is pretty difficult though. This is where pub servers come in. They act as gossip hubs where information can be shared across networks. A pub is just an ordinary Ferment peer that has a publicly accessible IP address and can be remotely connected to on demand.
+[Finding peers across the complex topography of the internet is pretty difficult though](https://scuttlebot.io/more/articles/design-challenge-avoid-centralization-and-singletons.html). This is where pub servers come in. They act as gossip hubs where information can be shared across networks. A pub is just an ordinary Ferment peer that has a publicly accessible IP address and can be remotely connected to on demand.
 
 The actual audio files are just torrents (a special variant called [webtorrent](https://github.com/feross/webtorrent) that works over WebRTC). The SSB message contains a reference to its magnet url, and you seed the file to other ferment peers.
 
-Whenever you listen to something in Ferment, you start seeding that file with other peers. It will be cached on your machine until you remove it (right-click > Stop Sharing Post). In the future this will be handled automatically (you'll only cache liked songs / selected songs from followed users that are weak on the network).
+Whenever you listen to something in Ferment, you start seeding that file with other peers. It will be cached on your machine until you remove it (right-click > Stop Sharing Post). In the future this will be handled automatically (you'll only cache material you have "liked" and selected content from followed users that are weak on the network).
 
 ## Ferment and Copyright
 
