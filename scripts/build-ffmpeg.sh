@@ -1,9 +1,45 @@
 # on linux you need to:
-# sudo apt-get install libopus-dev yasm libmp3lame-dev
+# apt-get install autoconf automake build-essential pkg-config
 
 # all platform config and build
 
-./configure --enable-static --disable-shared --disable-all --enable-ffmpeg --enable-avcodec --enable-avformat --enable-avutil \
+export FFSRC=$(pwd)/ffmpeg-src
+export FFBLD=$(pwd)/ffmpeg-build
+
+mkdir -p $FFSRC
+
+export PATH=$FFBLD/bin:$PATH
+export LD_LIBRARY_PATH=$FFBLD/lib:$LD_LIBRARY_PATH
+
+cd $FFSRC
+git clone --depth 1 git://github.com/yasm/yasm.git
+cd yasm
+autoreconf -fiv
+./configure --prefix=$FFBLD
+make
+make install
+
+cd $FFSRC
+wget http://downloads.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz
+tar xzvf lame-3.99.5.tar.gz
+cd lame-3.99.5
+./configure --prefix=$FFBLD --enable-static --enable-shared --enable-nasm
+make
+make install
+
+cd $FFSRC
+git clone git://git.opus-codec.org/opus.git
+cd opus
+autoreconf -fiv
+./configure --prefix=$FFBLD --enable-shared --enable-static
+make
+make install
+
+cd $FFSRC
+git clone --depth 1 git://source.ffmpeg.org/ffmpeg
+cd ffmpeg
+PKG_CONFIG_PATH="$FFBLD/lib/pkgconfig" ./configure --prefix=$FFBLD --extra-cflags="-I$FFBLD/include" --extra-ldflags="-L$FFBLD/lib" \
+  --enable-static --disable-shared --disable-all --enable-ffmpeg --enable-avcodec --enable-avformat --enable-avutil \
   --enable-swresample --enable-swscale --enable-avfilter \
   --disable-network --disable-d3d11va --disable-dxva2 --disable-vaapi --disable-vda --disable-vdpau \
   --disable-videotoolbox \
@@ -39,6 +75,7 @@
   --enable-muxer=pcm_s8 \
   --enable-muxer=webm \
   --enable-muxer=mp3 \
-  --enable-muxer=segment && make
+  --enable-muxer=segment
+make
 
 # build for windows: https://github.com/rdp/ffmpeg-windows-build-helpers
