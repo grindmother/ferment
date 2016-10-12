@@ -29,6 +29,7 @@ function Player (context) {
       } else {
         if (currentItem.get()) {
           audioElement.pause()
+          currentItem.get().state.set('paused')
         }
 
         if (viewingFeed.includes(item)) {
