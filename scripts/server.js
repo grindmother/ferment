@@ -18,6 +18,7 @@ var pull = require('pull-stream')
 var ssbConfig = require('../lib/ssb-config')('ferment')
 
 var seedWhiteList = new Set(ssbConfig.seed ? [].concat(ssbConfig.seed) : [])
+var enableDeepSeed = ssbConfig.deepSeed // should we seed friends of friends?
 var backgroundProcess = require('../models/background-remote')(ssbConfig)
 
 var windows = {}
@@ -67,12 +68,15 @@ electron.ipcMain.once('ipcBackgroundReady', (e) => {
     if (err) throw err
 
     var extendedList = new Set(seedWhiteList)
-    Array.from(seedWhiteList).forEach((id) => {
-      var moreIds = graph[id]
-      if (moreIds) {
-        Object.keys(moreIds).forEach(x => extendedList.add(x))
-      }
-    })
+
+    if (enableDeepSeed) {
+      Array.from(seedWhiteList).forEach((id) => {
+        var moreIds = graph[id]
+        if (moreIds) {
+          Object.keys(moreIds).forEach(x => extendedList.add(x))
+        }
+      })
+    }
 
     console.log(`Seeding torrents from: \n - ${Array.from(extendedList).join('\n - ')}`)
 
