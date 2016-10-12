@@ -33,17 +33,21 @@ I want to see a thriving audio sharing community (actually would be COMMUNITIES!
 
 Ferment uses a peer-to-peer gossip protocol called [Secure Scuttlebutt](https://scuttlebot.io/more/protocols/secure-scuttlebutt.html). The best part about this is there is no central server and no single point of failure. In fact everyone on the network is a server, with a copy of all of their friends and their friend's friends data. You gossip with other peers to find out if any of your shared contacts have any new posts and share them. But by gossip, we mean cryptographically prove everything they've said since the last time you heard from them. It is impossible to skip a message.
 
+Finding peers across the complex topography of the internet is pretty difficult though. This is where pub servers come in. They act as gossip hubs where information can be shared across networks. A pub is just an ordinary Ferment peer that has a publicly accessible IP address and can be remotely connected to on demand.
+
 The actual audio files are just torrents (a special variant called [webtorrent](https://github.com/feross/webtorrent) that works over WebRTC). The SSB message contains a reference to its magnet url, and you seed the file to other ferment peers.
 
 Whenever you listen to something in Ferment, you start seeding that file with other peers. It will be cached on your machine until you remove it (right-click > Stop Sharing Post). In the future this will be handled automatically (you'll only cache liked songs / selected songs from followed users that are weak on the network).
 
 ## Ferment and Copyright
 
-Ferment is intended as an audio publishing platform for **copyright-owning creators** and **creative commons licensed material**.
+Ferment is an audio publishing platform for **copyright-owning creators** and **creative commons licensed material**. As this is a decentralized, peer-to-peer community, what you culture in your network is up to you. **You get to choose what level of sharing legality you are comfortable with.**
 
-However as this is a decentralized, peer-to-peer community, this cannot be enforced. It's up to you as the user what you allow in your network. **You get to choose what level of sharing legality you are comfortable with.** If someone is sharing a lot of copyrighted material, and you don't want to share responsibility, just unfollow them. You could also try reporting to the owner of the pub.
+For example, if someone in your network adds copyrighted material, and you listen to it, your Ferment will start sharing the file. If you don't want to share the legal responsibility for this, right-click and select 'Stop Sharing Post.'
 
-**My pub will unfollow anyone that uploads copyrighted material that they do not have the rights to.**
+You could also consider unfollowing them and reporting the infringement to the owner of the pub to prevent the spread of the material.
+
+**A pub owner should unfollow anyone who adds material which infringes copyright.**
 
 ## Requirements
 
