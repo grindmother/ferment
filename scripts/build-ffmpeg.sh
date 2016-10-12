@@ -23,7 +23,7 @@ cd $FFSRC
 wget http://downloads.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz
 tar xzvf lame-3.99.5.tar.gz
 cd lame-3.99.5
-./configure --prefix=$FFBLD --enable-static --enable-shared --enable-nasm
+./configure --prefix=$FFBLD --enable-static --disable-shared --enable-nasm
 make
 make install
 
@@ -31,7 +31,7 @@ cd $FFSRC
 git clone git://git.opus-codec.org/opus.git
 cd opus
 autoreconf -fiv
-./configure --prefix=$FFBLD --enable-shared --enable-static
+./configure --prefix=$FFBLD --disable-shared --enable-static
 make
 make install
 
