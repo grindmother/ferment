@@ -1,5 +1,5 @@
 # on linux you need to:
-# sudo apt-get install libopus-dev yasm
+# sudo apt-get install libopus-dev yasm libmp3lame-dev
 
 # all platform config and build
 
