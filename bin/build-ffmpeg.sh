@@ -6,6 +6,9 @@
 ./configure --enable-static --disable-shared --disable-all --enable-ffmpeg --enable-avcodec --enable-avformat --enable-avutil \
   --enable-swresample --enable-swscale --enable-avfilter \
   --disable-network --disable-d3d11va --disable-dxva2 --disable-vaapi --disable-vda --disable-vdpau \
+  --disable-videotoolbox \
+  --enable-libopus \
+  --enable-libmp3lame \
   --enable-decoder=mp3 \
   --enable-decoder=aac \
   --enable-decoder=flac \
@@ -31,9 +34,11 @@
   --disable-zlib \
   --enable-filter=aresample \
   --enable-encoder=libopus \
+  --enable-encoder=libmp3lame \
   --enable-encoder=pcm_s8 \
   --enable-muxer=pcm_s8 \
   --enable-muxer=webm \
-  --enable-muxer=segment --enable-libopus && make
+  --enable-muxer=mp3 \
+  --enable-muxer=segment && make
 
 # build for windows: https://github.com/rdp/ffmpeg-windows-build-helpers

@@ -15,6 +15,8 @@ var sanitizeFileName = require('sanitize-filename')
 var processImage = require('./lib/process-image')
 var util = require('util')
 
+// TODO: rewrite all of this with less callback hell. Maybe pull streams?
+
 module.exports = function (client, config, edit) {
   var context = {
     config,
@@ -211,36 +213,49 @@ module.exports = function (client, config, edit) {
   }
 
   function commitAndSeed (info, cb) {
+    var baseName = sanitizeFileName(info.title.trim()) || 'audio'
     var tempDir = info.tempDir
+
     var tempFile = Path.join(tempDir, info.fileName)
-    var newFileName = getFileName(info)
+    var newFileName = `${baseName}.webm`
     var renamed = Path.join(tempDir, newFileName)
 
+    var fallbackTempFile = Path.join(tempDir, info.fallbackFileName)
+    var newFallbackFileName = `${baseName}.mp3`
+    var fallbackRenamed = Path.join(tempDir, newFallbackFileName)
+
     info = extend(info, {
-      fileName: newFileName
+      fileName: newFileName,
+      fallbackFileName: newFallbackFileName
     })
 
     delete info.tempDir
 
     console.log('renaming', tempFile, 'to', renamed)
     fs.rename(tempFile, renamed, function (err) {
-      if (err) throw err
-      createTorrent(renamed, { announce }, function (err, torrentFile) {
+      if (err) return cb(err)
+      fs.rename(fallbackTempFile, fallbackRenamed, function (err) {
         if (err) return cb(err)
-        var torrent = parseTorrentFile(torrentFile)
-        var torrentPath = Path.join(mediaPath, `${torrent.infoHash}.torrent`)
-        var finalPath = Path.join(mediaPath, `${torrent.infoHash}`)
-        console.log('created torrent', torrentPath)
-
-        fs.rename(audioInfo().tempDir, finalPath, (err) => {
+        createTorrent([renamed, fallbackRenamed], { announce, name: baseName }, function (err, torrentFile) {
           if (err) return cb(err)
-          fs.writeFile(torrentPath, torrentFile, (err) => {
+          var torrent = parseTorrentFile(torrentFile)
+          var torrentPath = Path.join(mediaPath, `${torrent.infoHash}.torrent`)
+          var containerPath = Path.join(mediaPath, `${torrent.infoHash}`)
+          var finalPath = Path.join(containerPath, baseName)
+          console.log('created torrent', torrentPath)
+          fs.mkdir(containerPath, (err) => {
             if (err) return cb(err)
-            context.background.seedTorrent(torrent.infoHash, function (err, magnetURI) {
-              if (err) throw err
-              console.log('seeding torrent', magnetURI)
-              info.audioSrc = magnetURI
-              cb(null, info)
+            fs.rename(audioInfo().tempDir, finalPath, (err) => {
+              if (err) return cb(err)
+              fs.writeFile(torrentPath, torrentFile, (err) => {
+                if (err) return cb(err)
+                context.background.seedTorrent(torrent.infoHash, function (err, magnetURI) {
+                  if (err) throw err
+                  console.log('seeding torrent', magnetURI)
+                  info.audioSrc = magnetURI
+                  cb(null, info)
+                })
+              })
             })
           })
         })
@@ -274,13 +289,21 @@ module.exports = function (client, config, edit) {
         if (err) return cb && cb(err)
         var fileName = `${Path.basename(path)}.webm`
         var toPath = Path.join(tempDir, fileName)
+        var fallbackFileName = `${Path.basename(path)}.mp3`
+        var toPathFallback = Path.join(tempDir, fallbackFileName)
         convert(path, toPath, function (err) {
           if (cancelled) return
           if (err) return cb && cb(err)
           console.log('converted to webm')
-          cb(null, extend(meta, {
-            fileName, tempDir
-          }))
+          // create an mp3 fallback for mobile platforms and browsers that don't support the future
+          convert.mp3(path, toPathFallback, function (err) {
+            if (cancelled) return
+            if (err) return cb && cb(err)
+            console.log('created fallback mp3 version')
+            cb(null, extend(meta, {
+              fileName, fallbackFileName, tempDir
+            }))
+          })
         })
       })
     })
@@ -289,10 +312,6 @@ module.exports = function (client, config, edit) {
       cancelled = true
     }
   }
-}
-function getFileName (audioInfo) {
-  var ext = Path.extname(audioInfo.fileName)
-  return `${sanitizeFileName(audioInfo.title.trim()) || 'audio'}${ext}`
 }
 
 function ffmpegError (err) {
