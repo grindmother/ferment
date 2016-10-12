@@ -11,7 +11,7 @@ function FollowingFeed (context) {
   var profile = context.api.getProfile(context.api.id)
   var followingCount = computed(profile.following, (list) => list.length)
 
-  context.player.currentFeed.set(context.followingFeed)
+  context.player.viewingFeed.set(context.followingFeed)
 
   return h('Feed', [
     h('div.main', [

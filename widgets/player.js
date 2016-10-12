@@ -7,6 +7,7 @@ module.exports = Player
 function Player (context) {
   var currentItem = Proxy()
   var currentFeed = ProxyCollection()
+  var viewingFeed = ProxyCollection()
   var audioElement = h('audio', { controls: true })
   var itemReleases = []
 
@@ -15,6 +16,7 @@ function Player (context) {
     currentItem,
     currentFeed,
     audioElement,
+    viewingFeed,
 
     togglePlay (item) {
       if (currentItem.get() === item || !item) {
@@ -27,6 +29,11 @@ function Player (context) {
       } else {
         if (currentItem.get()) {
           audioElement.pause()
+        }
+
+        if (viewingFeed.includes(item)) {
+          // switch to this feed instead
+          currentFeed.set(viewingFeed.get())
         }
 
         while (itemReleases.length) {
@@ -60,8 +67,7 @@ function Player (context) {
     },
 
     playNext () {
-      var index = currentFeed.indexOf(currentItem.get())
-      var next = currentFeed.get(index + 1)
+      var next = self.getNext()
       if (next) {
         next.position.set(0)
         self.togglePlay(next)
@@ -69,11 +75,22 @@ function Player (context) {
     },
 
     cueNext () {
-      var index = currentFeed.indexOf(currentItem.get())
-      var next = currentFeed.get(index + 1)
+      var next = self.getNext()
       if (next) {
         context.background.checkTorrent(next.audioSrc())
       }
+    },
+
+    getNext () {
+      // check viewing feed for the current song. If it's there, play from this feed instead
+      var index = viewingFeed.indexOf(currentItem.get())
+      var next = index >= 0 ? viewingFeed.get(index + 1) : null
+      if (!next) {
+        // otherwise fallback to main feed
+        index = currentFeed.indexOf(currentItem.get())
+        next = index >= 0 ? currentFeed.get(index + 1) : null
+      }
+      return next
     }
   }
 
