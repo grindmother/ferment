@@ -317,6 +317,6 @@ module.exports = function (client, config, edit) {
 function ffmpegError (err) {
   if (err.message) {
     var lines = err.message.trim().split('\n')
-    return lines[lines.length - 1]
+    return lines.slice(-3).join('\n')
   }
 }
