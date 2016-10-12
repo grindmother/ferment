@@ -23,6 +23,7 @@ function AudioPostView (context, postId) {
   var torrent = magnet.decode(post.audioSrc())
   var torrentStatus = context.background.getTorrentStatus(torrent.infoHash)
   var profile = context.api.getProfile(context.api.id)
+  var reposted = computed([profile.posts, post.id], (posts, id) => posts.includes(id))
   var liked = computed([profile.likes, postId], (likes, id) => likes.includes(id))
   var isOwner = context.api.id === post.author.id
   var color = colorHash.hex(postId)
@@ -80,8 +81,16 @@ function AudioPostView (context, postId) {
             '💚 ', when(likesCount, likesCount, 'Like')
           ]),
           when(isOwner,
-            h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit')
+            h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit'),
+            h('a.repost', {
+              href: '#',
+              'ev-click': send(toggleRepost, { reposted, context, post }),
+              classList: [
+                when(reposted, '-active')
+              ]
+            }, '📡 Repost')
           ),
+          h('a.save', { href: '#', 'ev-click': send(context.actions.saveFile, post) }, '💾 Save'),
           h('div.status', [
             when(torrentStatus.active, [
               when(torrentStatus.isDownloading,
@@ -138,9 +147,17 @@ function percent (value) {
 
 function toggleLike (opts) {
   if (opts.liked()) {
-    opts.context.api.unlike(opts.item.id)
+    opts.context.api.unlike(opts.post.id)
   } else {
-    opts.context.api.like(opts.item.id)
+    opts.context.api.like(opts.post.id)
+  }
+}
+
+function toggleRepost (opts) {
+  if (opts.reposted()) {
+    opts.context.api.unrepost(opts.post.id)
+  } else {
+    opts.context.api.repost(opts.post.id)
   }
 }
 
