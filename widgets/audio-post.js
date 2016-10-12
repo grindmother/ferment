@@ -6,22 +6,22 @@ var AudioOverview = require('./audio-overview')
 var prettyBytes = require('prettier-bytes')
 var contextMenu = require('../lib/context-menu')
 var magnet = require('magnet-uri')
-var electron = require('electron')
 var colorHash = require('../lib/color-hash')
 var humanTime = require('human-time')
 
-module.exports = function (context, item) {
+module.exports = function (context, post) {
   var player = context.player
-  var torrent = magnet.decode(item.audioSrc())
+  var torrent = magnet.decode(post.audioSrc())
   var torrentStatus = context.background.getTorrentStatus(torrent.infoHash)
   var profile = context.api.getProfile(context.api.id)
-  var likeCount = computed(item.likes, x => x.length)
-  var reposted = computed([profile.posts, item.id], (posts, id) => posts.includes(id))
-  var liked = computed([profile.likes, item.id], (likes, id) => likes.includes(id))
-  var isOwner = context.api.id === item.author.id
-  var color = colorHash.hex(item.id)
+  var likesCount = computed(post.likes, x => x.length)
+  var repostsCount = computed(post.reposters, (list) => list.length)
+  var reposted = computed([profile.posts, post.id], (posts, id) => posts.includes(id))
+  var liked = computed([profile.likes, post.id], (likes, id) => likes.includes(id))
+  var isOwner = context.api.id === post.author.id
+  var color = colorHash.hex(post.id)
 
-  var url = computed(item.artworkSrc, (src) => {
+  var url = computed(post.artworkSrc, (src) => {
     if (src && src.startsWith('blobstore:')) {
       return `http://localhost:${context.config.blobsPort}/${src.slice(10)}`
     } else {
@@ -30,9 +30,9 @@ module.exports = function (context, item) {
   })
 
   return h('AudioPost', {
-    'ev-contextmenu': contextMenu.bind(null, context, item),
+    'ev-contextmenu': contextMenu.bind(null, context, post),
     classList: [
-      computed(item.state, (s) => `-${s}`)
+      computed(post.state, (s) => `-${s}`)
     ]
   }, [
     h('div.artwork', {
@@ -41,58 +41,65 @@ module.exports = function (context, item) {
         'background-color': color,
         'cursor': 'pointer'
       },
-      'ev-click': send(context.actions.viewPost, item.id)
+      'ev-click': send(context.actions.viewPost, post.id)
     }),
     h('div.main', [
       h('div.title', [
-        h('a.play', { 'ev-click': send(player.togglePlay, item), href: '#' }),
+        h('a.play', { 'ev-click': send(player.togglePlay, post), href: '#' }),
         h('header', [
           h('a.feedTitle', {
-            href: '#', 'ev-click': send(context.actions.viewProfile, item.author.id)
-          }, [item.author.displayName]),
+            href: '#', 'ev-click': send(context.actions.viewProfile, post.author.id)
+          }, [post.author.displayName]),
           h('a.title', {
-            href: '#', 'ev-click': send(context.actions.viewPost, item.id)
-          }, [item.title])
+            href: '#', 'ev-click': send(context.actions.viewPost, post.id)
+          }, [post.title])
         ]),
         h('div.timestamp', [
-          humanTime(Date.now() / 1000 - item.timestamp() / 1000)
+          humanTime(Date.now() / 1000 - post.timestamp() / 1000)
         ])
       ]),
       h('div.display', {
         hooks: [
-          SetPositionHook(context, item)
+          SetPositionHook(context, post)
         ]
       }, [
-        AudioOverview(item.overview, 600, 100),
+        AudioOverview(post.overview, 600, 100),
         h('div.progress', {
           style: {
-            width: computed([item.position, item.duration], (pos, dur) => Math.round(pos / dur * 1000) / 10 + '%')
+            width: computed([post.position, post.duration], (pos, dur) => Math.round(pos / dur * 1000) / 10 + '%')
           }
         }),
-        when(item.position, h('span.position', computed(item.position, formatTime))),
-        h('span.duration', computed(item.duration, formatTime))
+        when(post.position, h('span.position', computed(post.position, formatTime))),
+        h('span.duration', computed(post.duration, formatTime))
       ]),
       h('div.options', [
         h('a.like', {
           href: '#',
-          'ev-click': send(toggleLike, { liked, context, item }),
+          'ev-click': send(toggleLike, { liked, context, post }),
           classList: [
             when(liked, '-active')
           ]
         }, [
-          '💚 ', when(likeCount, likeCount, 'Like')
+          '💚 ', when(likesCount, likesCount, 'Like')
         ]),
         when(isOwner,
-          h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit'),
+          h('a.repost -disabled', [
+            '📡 ', when(repostsCount, repostsCount, 'Repost')
+          ]),
           h('a.repost', {
             href: '#',
-            'ev-click': send(toggleRepost, { reposted, context, item }),
+            'ev-click': send(toggleRepost, { reposted, context, post }),
             classList: [
               when(reposted, '-active')
             ]
-          }, '📡 Repost')
+          }, [
+            '📡 ', when(repostsCount, repostsCount, 'Repost')
+          ])
         ),
-        h('a.save', { href: '#', 'ev-click': send(context.actions.saveFile, item) }, '💾 Save'),
+        when(isOwner,
+          h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit')
+        ),
+        h('a.save', { href: '#', 'ev-click': send(context.actions.saveFile, post) }, '💾 Save'),
         h('div.status', [
           when(torrentStatus.active, [
             when(torrentStatus.isDownloading,
@@ -118,25 +125,25 @@ module.exports = function (context, item) {
 
   function edit () {
     context.actions.editPost({
-      id: item.id,
-      item: item()
+      id: post.id,
+      item: post()
     })
   }
 }
 
 function toggleRepost (opts) {
   if (opts.reposted()) {
-    opts.context.api.unrepost(opts.item.id)
+    opts.context.api.unrepost(opts.post.id)
   } else {
-    opts.context.api.repost(opts.item.id)
+    opts.context.api.repost(opts.post.id)
   }
 }
 
 function toggleLike (opts) {
   if (opts.liked()) {
-    opts.context.api.unlike(opts.item.id)
+    opts.context.api.unlike(opts.post.id)
   } else {
-    opts.context.api.like(opts.item.id)
+    opts.context.api.like(opts.post.id)
   }
 }
 

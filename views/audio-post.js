@@ -19,6 +19,7 @@ function AudioPostView (context, postId) {
   var rankedLikedIds = context.api.rankProfileIds(post.likes, 12)
   var likes = MutantMap(rankedLikedIds, id => context.api.getProfile(id))
   var likesCount = computed(post.likes, (list) => list.length)
+  var repostsCount = computed(post.reposters, (list) => list.length)
   var player = context.player
   var torrent = magnet.decode(post.audioSrc())
   var torrentStatus = context.background.getTorrentStatus(torrent.infoHash)
@@ -81,14 +82,21 @@ function AudioPostView (context, postId) {
             '💚 ', when(likesCount, likesCount, 'Like')
           ]),
           when(isOwner,
-            h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit'),
+            h('a.repost -disabled', [
+              '📡 ', when(repostsCount, repostsCount, 'Repost')
+            ]),
             h('a.repost', {
               href: '#',
               'ev-click': send(toggleRepost, { reposted, context, post }),
               classList: [
                 when(reposted, '-active')
               ]
-            }, '📡 Repost')
+            }, [
+              '📡 ', when(repostsCount, repostsCount, 'Repost')
+            ])
+          ),
+          when(isOwner,
+            h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit')
           ),
           h('a.save', { href: '#', 'ev-click': send(context.actions.saveFile, post) }, '💾 Save'),
           h('div.status', [
