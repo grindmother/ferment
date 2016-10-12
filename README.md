@@ -43,7 +43,7 @@ Ferment is intended as an audio publishing platform for **copyright-owning creat
 
 However as this is a decentralized, peer-to-peer community, this cannot be enforced. It's up to you as the user what you allow in your network. **You get to choose what level of sharing legality you are comfortable with.** If someone is sharing a lot of copyrighted material, and you don't want to share responsibility, just unfollow them. You could also try reporting to the owner of the pub.
 
-**My pub will unfollow anyone that continuously uploads copyrighted material that they do not have the rights to.**
+**My pub will unfollow anyone that uploads copyrighted material that they do not have the rights to.**
 
 ## Requirements
 
@@ -123,7 +123,7 @@ $ npm install
 
 By default, **Ferment** will only see other users that are on the same local area network as you. In order to share with users on the internet, you need to be invited to a pub server.
 
-Since I'm a nice person 💖 you can hang out in my pub, and you don't even have to buy any drinks! 🍻 But please be mindful about uploading content that you do not own the rights to. My pub will [unfollow anyone who uploads a lot of content that I don't think is _fair_ to the original creators](#ferment-and-copyright).
+Since I'm a nice person 💖 you can hang out in my pub, and you don't even have to buy any drinks! 🍻 But please be mindful about uploading content that you do not own the rights to. My pub will [unfollow anyone who uploads content that I don't think is _fair_ to the original creators](#ferment-and-copyright).
 
 **Click 'Join Pub' on the sidebar then paste the code below:**
 
