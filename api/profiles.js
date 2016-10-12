@@ -183,11 +183,8 @@ module.exports = function (ssbClient, config) {
 
   function getSuggested (max) {
     var yourProfile = get(ssbClient.id)
-    var lastUpdated = 0
     var ids = computed([sync, throttle(profileIds, 2000), throttle(pubFriends, 2000)], (sync, ids) => {
       if (sync) {
-        lastUpdated = Date.now()
-
         var result = []
         ids.forEach((id) => {
           var profile = get(id)
