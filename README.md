@@ -17,6 +17,8 @@ It is made possible by combining these **amazing** projects: [ssb](https://scutt
 
 [🛠 Build from source](#install)
 
+[💖 Donate and support me on Patreon](https://www.patreon.com/MattMcKegg)
+
 <img src="/assets/ferment-screenshot-0.0.0.jpg" alt="WebTorrent" width="888" height="688" />
 
 ## Experimental // EVERYTHING IS SUBJECT TO CHANGE AND BREAKING!
