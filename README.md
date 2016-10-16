@@ -185,8 +185,8 @@ xvfb-run npm run server -- --host={yourhostname} --seed {YOUR_ID}
 - [x] Show seed stats
 - [x] Reposting
 - [x] Make Save / Download buttons work
+- [x] Automatically download/seed items from people you follow
 - [ ] Allow "delete" of audio posts (some kind of tombstoning)
-- [ ] Automatically download/seed items you like
 - [ ] Playlists
 - [ ] Commenting (time based)
 
@@ -194,7 +194,7 @@ xvfb-run npm run server -- --host={yourhostname} --seed {YOUR_ID}
 
 - [x] Pub server (invites, etc)
 - [x] Seed torrents from specified feeds
-- [ ] Web interface for viewing specified feeds
+- [ ] Web interface for viewing specified feeds (started in [branch](https://github.com/mmckegg/ferment/tree/web-lite-client))
 
 ## License
 
