@@ -4,7 +4,14 @@ var spawn = require('child_process').spawn
 var electron = require('electron')
 var join = require('path').join
 
-if (process.argv.includes('--rebuild')) {
+if (process.argv[2] === 'server') {
+  spawn(electron, ['server/index.js'].concat(process.argv.slice(3)), {
+    stdio: 'inherit',
+    cwd: join(__dirname, '..')
+  }).on('exit', function (i, m) {
+    process.exit()
+  })
+} else if (process.argv.includes('--rebuild')) {
   spawn('npm', ['run', 'rebuild'], {
     stdio: 'inherit',
     cwd: join(__dirname, '..')
