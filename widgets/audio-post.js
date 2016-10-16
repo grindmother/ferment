@@ -43,10 +43,10 @@ module.exports = function (context, post) {
         h('a.play', { 'ev-click': send(player.togglePlay, post), href: '#' }),
         h('header', [
           h('a.feedTitle', {
-            href: context.urlFor(post.author), 'ev-click': send(context.actions.viewProfile, post.author.id)
+            href: '#', 'ev-click': send(context.actions.viewProfile, post.author.id)
           }, [post.author.displayName]),
           h('a.title', {
-            href: context.urlFor(post), 'ev-click': send(context.actions.viewPost, post.id)
+            href: '#', 'ev-click': send(context.actions.viewPost, post.id)
           }, [post.title])
         ]),
         h('div.timestamp', [
