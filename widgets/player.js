@@ -28,14 +28,16 @@ function Player (context) {
         }
       } else {
         if (currentItem.get()) {
-          audioElement.pause()
           currentItem.get().state.set('paused')
+          audioElement.pause()
         }
 
         if (viewingFeed.includes(item)) {
           // switch to this feed instead
           currentFeed.set(viewingFeed.get())
         }
+
+        currentItem.set(item)
 
         while (itemReleases.length) {
           itemReleases.pop()()
@@ -62,7 +64,6 @@ function Player (context) {
           }
           audioElement.currentTime = item.position() || 0
           audioElement.play()
-          currentItem.set(item)
         }))
       }
     },
