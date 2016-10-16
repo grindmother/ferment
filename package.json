@@ -6,7 +6,7 @@
   "scripts": {
     "test": "standard",
     "start": "electron index.js",
-    "server": "electron scripts/server.js",
+    "server": "electron server/index.js",
     "postinstall": "npm run rebuild",
     "rebuild": "npm rebuild --runtime=electron --target=1.4.2 --abi=50 --disturl=https://atom.io/download/atom-shell"
   },
