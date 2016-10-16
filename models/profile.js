@@ -14,7 +14,6 @@ module.exports = function (id, myId) {
     descriptions: SocialValue(),
     followers: MutantSet(),
     following: MutantSet(),
-    postCount: Value(0),
     scopes: MutantSet(),
     posts: MutantSet(),
     likes: MutantSet(),
@@ -28,6 +27,7 @@ module.exports = function (id, myId) {
   obj.description = computed([obj.byMe.description, obj.self.description, obj.descriptions], getSocialValue, { nextTick: true })
   obj.displayName = computed([obj.byMe.displayName, obj.self.displayName, obj.displayNames], getSocialValue, { nextTick: true })
   obj.image = computed([obj.byMe.image, obj.self.image, obj.images], getSocialValue, { nextTick: true })
+  obj.postCount = computed([obj.posts], (x) => x.length)
   obj.updateFrom = updateFrom.bind(null, obj)
   obj._type = 'ferment/profile'
 

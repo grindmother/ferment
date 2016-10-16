@@ -78,7 +78,6 @@ module.exports = function (ssbClient, config) {
       } else if (data.value.content.type === 'ferment/audio') {
         const profile = get(data.value.author)
         const post = getPost(data.key)
-        profile.postCount.set(profile.postCount() + 1)
         post.set(extend(data.value.content, { timestamp: data.value.timestamp }))
         post.author = profile
         profile.posts.add(data.key)
