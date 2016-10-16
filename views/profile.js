@@ -17,7 +17,9 @@ function ProfileView (context, profileId) {
   var feed = context.api.getProfileFeed(profileId)
   var color = colorHash.hex(profileId)
 
-  context.player.viewingFeed.set(feed)
+  if (context.player) {
+    context.player.viewingFeed.set(feed)
+  }
 
   var rankedFollowingIds = context.api.rankProfileIds(profile.following, 12)
   var rankedFollowerIds = context.api.rankProfileIds(profile.followers, profileId === context.api.id ? 20 : 6)

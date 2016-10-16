@@ -19,7 +19,8 @@ module.exports = function (id, myId) {
     posts: MutantSet(),
     likes: MutantSet(),
     reposts: MutantDict(),
-    isPub: Value(false)
+    isPub: Value(false),
+    ref: Value()
   })
 
   obj.id = id

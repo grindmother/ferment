@@ -20,9 +20,9 @@ function AudioPostView (context, postId) {
   var likes = MutantMap(rankedLikedIds, id => context.api.getProfile(id))
   var likesCount = computed(post.likes, (list) => list.length)
   var repostsCount = computed(post.reposters, (list) => list.length)
-  var player = context.player
+  var player = context.player || {}
   var torrent = magnet.decode(post.audioSrc())
-  var torrentStatus = context.background.getTorrentStatus(torrent.infoHash)
+  var torrentStatus = context.background ? context.background.getTorrentStatus(torrent.infoHash) : {}
   var profile = context.api.getProfile(context.api.id)
   var reposted = computed([profile.posts, post.id], (posts, id) => posts.includes(id))
   var liked = computed([profile.likes, postId], (likes, id) => likes.includes(id))
@@ -40,7 +40,7 @@ function AudioPostView (context, postId) {
     h('header', [
       h('div.main', [
         h('div.title', [
-          h('a.play', { 'ev-click': send(player.togglePlay, post), href: '#' }),
+          h('a.play', { 'ev-click': player && send(player.togglePlay, post), href: '#' }),
           h('header', [
             h('a.feedTitle', {
               href: '#', 'ev-click': send(context.actions.viewProfile, post.author.id)

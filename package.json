@@ -42,6 +42,7 @@
     "compare-version": "^0.1.2",
     "create-torrent": "~3.25.1",
     "data-uri-to-buffer": "0.0.4",
+    "ecstatic": "^2.1.0",
     "electron": "~1.4.2",
     "electron-default-menu": "^1.0.0",
     "graphmitter": "^1.6.3",

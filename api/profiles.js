@@ -1,8 +1,6 @@
 var MutantDict = require('@mmckegg/mutant/dict')
 var pull = require('pull-stream')
 var Profile = require('../models/profile')
-var MutantLookup = require('@mmckegg/mutant/lookup')
-var toCollection = require('@mmckegg/mutant/dict-to-collection')
 var mlib = require('ssb-msgs')
 var computed = require('@mmckegg/mutant/computed')
 var MutantMap = require('@mmckegg/mutant/map')
@@ -21,8 +19,8 @@ module.exports = function (ssbClient, config) {
   var postLookup = MutantDict()
   var postIds = MutantArray()
   var profileIds = MutantArray()
-  var profilesList = toCollection(lookup)
-  var lookupByName = MutantLookup(profilesList, 'displayName')
+  var lookupRef = MutantDict()
+  var lookupByRef = MutantDict()
   var sync = Value(false)
 
   var pubFriends = concat(MutantMap(pubIds, (id) => get(id).following))
@@ -45,6 +43,10 @@ module.exports = function (ssbClient, config) {
         mlib.links(data.value.content.about, 'feed').forEach(function (link) {
           const profile = get(link.link)
           profile.updateFrom(data.value.author, data)
+
+          if (data.value.author === link.link && data.value.content.name) {
+            updateRef(link.link, getRef(data.value.content.name))
+          }
         })
       } else if (data.value.content.type === 'contact') {
         const following = data.value.content.following
@@ -126,7 +128,6 @@ module.exports = function (ssbClient, config) {
     pubFriendPostIds,
     rankProfileIds,
     lookup,
-    lookupByName,
     postIds,
     postLookup,
     sync
@@ -157,6 +158,7 @@ module.exports = function (ssbClient, config) {
       profile = Profile(id, ssbClient.id)
       lookup.put(id, profile)
       profileIds.push(id)
+      updateRef(id, `profile-${getRef(id.slice(1, 8))}`)
     }
 
     return profile
@@ -222,4 +224,27 @@ module.exports = function (ssbClient, config) {
     result.sync = sync
     return result
   }
+
+  function updateRef (id, ref) {
+    var oldRef = lookupRef.get(id)
+    if (oldRef !== ref) {
+      if (oldRef) {
+        lookupByRef.delete(oldRef)
+        lookupRef.delete(id)
+      }
+
+      if (lookupByRef.has(ref)) {
+        ref = `profile-${getRef(id.slice(1, 8))}`
+      }
+
+      lookupByRef.put(ref, id)
+      lookupRef.put(id, ref)
+      get(id).ref.set(ref)
+    }
+  }
+}
+
+var badCharsRegExp = /[^a-z0-9']+/g
+function getRef (name) {
+  return name.toLowerCase().replace(badCharsRegExp, '-')
 }

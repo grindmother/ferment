@@ -7,7 +7,8 @@ var contextMenu = require('../lib/context-menu')
 
 module.exports = function (context, profile) {
   var color = colorHash.hex(profile.id)
-  return h('MiniProfile', {
+  return h('a MiniProfile', {
+    href: context.urlFor(profile),
     classList: [
       when(profile.isPub, '-pub')
     ],

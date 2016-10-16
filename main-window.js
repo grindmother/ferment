@@ -50,9 +50,6 @@ module.exports = function (client, config) {
         }
       })
     },
-    repost (item) {
-      
-    },
     viewProfile (id) {
       actions.setView('profile', id)
     },
@@ -85,7 +82,7 @@ module.exports = function (client, config) {
   watch(discoveryFeed)
   watch(followingFeed)
 
-  var context = { config, api, background, actions, discoveryFeed, followingFeed, suggestedProfiles, following, profile }
+  var context = { config, api, background, actions, discoveryFeed, followingFeed, suggestedProfiles, following, profile, urlFor }
   var player = context.player = Player(context)
 
   var rootElement = computed(currentView, (data) => {
@@ -190,6 +187,10 @@ module.exports = function (client, config) {
 
   function openJoinPubWindow () {
     electron.ipcRenderer.send('open-join-pub-window')
+  }
+
+  function urlFor () {
+    return '#'
   }
 }
 
