@@ -149,6 +149,7 @@ AudioPost {
         border-radius: 4px
         background: #444444
         color: #C5C5C5
+        white-space: nowrap
 
         :hover {
           text-decoration: none
@@ -170,10 +171,12 @@ AudioPost {
         text-align: right
         flex: 1
         font-color: #AAA
+        overflow: hidden
 
         span {
           display: inline-block
           padding: 4px 5px
+          white-space: nowrap
           -peers {
             background: #555
             border-radius: 4px

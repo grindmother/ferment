@@ -8,7 +8,12 @@ var ipc = electron.ipcRenderer
 var watchEvent = require('./lib/watch-event')
 var rimraf = require('rimraf')
 var MutantDict = require('@mmckegg/mutant/dict')
+var MutantStruct = require('@mmckegg/mutant/struct')
 var convert = require('./lib/convert')
+var TorrentStatus = require('./models/torrent-status')
+var Tracker = require('bittorrent-tracker')
+var magnet = require('magnet-uri')
+var pull = require('pull-stream')
 
 console.log = electron.remote.getGlobal('console').log
 process.exit = electron.remote.app.quit
@@ -19,56 +24,32 @@ window.addEventListener('error', function (e) {
 })
 
 module.exports = function (client, config) {
+  var seedWhiteList = new Set(config.seedWhiteList ? [].concat(config.seedWhiteList) : [client.id])
+  var maxSeed = config.maxSeed == null ? parseInt(config.maxSeed, 10) : 15
+
   var announce = config.webtorrent.announceList
   var torrentClient = new WebTorrent()
   var mediaPath = config.mediaPath
   var releases = {}
   var prioritizeReleases = []
   var paused = []
+
+  var allTorrentStats = MutantStruct({
+    downloadSpeed: 0,
+    uploadSpeed: 0
+  }, {nextTick: true})
+
   var torrentState = MutantDict()
 
-  setInterval(pollStats, 5000)
+  setInterval(pollStats, 0.5 * 1000)
+  setInterval(scrapeInfo, 30 * 1000)
+  setInterval(seedRarest, 30 * 60 * 1000)
 
-  startSeeding()
+  seedRarest()
+  startAutoSeed()
 
   torrentClient.on('torrent', function (torrent) {
-    var updating = false
-    var timer = null
-
-    torrent.releases = [
-      watchEvent(torrent, 'download', update),
-      watchEvent(torrent, 'upload', update),
-      watchEvent(torrent, 'done', update),
-      watchEvent(torrent, 'wire', update),
-      watchEvent(torrent, 'noPeers', update)
-    ]
-
-    update()
-
-    function update () {
-      if (!updating) {
-        updating = true
-        setTimeout(updateNow, 500)
-      }
-    }
-
-    function updateNow () {
-      if (torrentClient.torrents.includes(torrent)) {
-        clearTimeout(timer)
-        updating = false
-        var state = {
-          progress: torrent.progress,
-          downloadSpeed: torrent.downloadSpeed,
-          uploadSpeed: torrent.uploadSpeed,
-          numPeers: torrent.numPeers,
-          downloaded: torrent.downloaded,
-          uploaded: torrent.uploaded,
-          loading: false
-        }
-        broadcastTorrentState(torrent.infoHash, state)
-        timer = setTimeout(updateNow, 1000)
-      }
-    }
+    watchTorrent(torrent.infoHash)
   })
 
   ipc.on('bg-release', function (ev, id) {
@@ -152,7 +133,6 @@ module.exports = function (client, config) {
 
     fs.unlink(getTorrentPath(torrentInfo.infoHash), function () {
       rimraf(getTorrentDataPath(torrentInfo.infoHash), function () {
-        broadcastTorrentState(torrentInfo.infoHash, { loading: true })
         console.log('Deleted torrent', torrentInfo.infoHash)
         ipc.send('bg-response', id)
       })
@@ -181,17 +161,60 @@ module.exports = function (client, config) {
 
   // scoped
 
-  function broadcastTorrentState (infoHash, state) {
-    torrentState.put(infoHash, state)
-    ipc.send('bg-torrent-status', infoHash, state)
+  function watchTorrent (infoHash) {
+    if (!torrentState.has(infoHash)) {
+      var state = TorrentStatus(infoHash)
+      torrentState.put(infoHash, state)
+      state(function (value) {
+        ipc.send('bg-torrent-status', infoHash, value)
+      })
+    }
+  }
+
+  function scrapeInfo () {
+    var keys = torrentState.keys()
+    getTorrentInfo(keys, (err, info) => {
+      if (err) return console.log(err)
+      Object.keys(info).forEach((key) => {
+        var state = torrentState.get(key)
+        if (state) {
+          state.complete.set(info[key].complete)
+        }
+      })
+    })
+  }
+
+  function scrapeInfoFor (infoHash) {
+    getTorrentInfo(infoHash, (err, info) => {
+      if (err) return console.log(err)
+      var state = torrentState.get(infoHash)
+      if (state && info) {
+        state.complete.set(info.complete)
+      }
+    })
   }
 
   function pollStats () {
-    ipc.send('bg-global-torrent-status', {
-      progress: torrentClient.progress,
-      down: torrentClient.downloadSpeed,
-      up: torrentClient.uploadSpeed
-    })
+    torrentState.keys().forEach(refreshTorrentState)
+    allTorrentStats.downloadSpeed.set(torrentClient.downloadSpeed)
+    allTorrentStats.uploadSpeed.set(torrentClient.uploadSpeed)
+  }
+
+  function refreshTorrentState (infoHash) {
+    var torrent = torrentClient.get(infoHash)
+    var state = torrentState.get(infoHash)
+    if (torrent) {
+      state.progress.set(torrent.progress)
+      state.downloadSpeed.set(torrent.downloadSpeed)
+      state.uploadSpeed.set(torrent.uploadSpeed)
+      state.uploaded.set(torrent.uploaded)
+      state.downloaded.set(torrent.downloaded)
+      state.numPeers.set(torrent.numPeers)
+      state.seeding.set(true)
+      state.loading.set(false)
+    } else {
+      state.seeding.set(false)
+    }
   }
 
   function getTorrentPath (infoHash) {
@@ -207,14 +230,18 @@ module.exports = function (client, config) {
     var torrentPath = getTorrentPath(torrent.infoHash)
     torrent.announce = announce.slice()
 
+    watchTorrent(torrent.infoHash)
+
     if (torrentClient.get(torrent.infoHash)) {
       cb()
     } else {
+      torrentState.get(torrent.infoHash).loading.set(true)
       fs.exists(torrentPath, (exists) => {
         torrentClient.add(exists ? torrentPath : torrent, {
           path: getTorrentDataPath(torrent.infoHash),
           announce
         }, function (torrent) {
+          scrapeInfoFor(torrent.infoHash)
           console.log('add torrent', torrent.infoHash)
           if (!exists) fs.writeFile(torrentPath, torrent.torrentFile, cb)
           else cb()
@@ -223,20 +250,83 @@ module.exports = function (client, config) {
     }
   }
 
-  function startSeeding () {
+  function getTorrentInfo (infoHashes, cb) {
+    if (infoHashes && infoHashes.length) {
+      Tracker.scrape({
+        announce: announce[0],
+        infoHash: infoHashes
+      }, function (err, info) {
+        if (err) return cb(err)
+        if (Array.isArray(infoHashes) && infoHashes.length === 1) info = {[info.infoHash]: info}
+        cb(null, info)
+      })
+    } else {
+      cb(null, {})
+    }
+  }
+
+  function startAutoSeed () {
+    client.friends.all((err, graph) => {
+      if (err) throw err
+
+      var extendedList = new Set(seedWhiteList)
+      Array.from(seedWhiteList).forEach((id) => {
+        var moreIds = graph[id]
+        if (moreIds) {
+          Object.keys(moreIds).forEach(x => extendedList.add(x))
+        }
+      })
+
+      console.log(`Seeding torrents from: \n - ${Array.from(extendedList).join('\n - ')}`)
+
+      pull(
+        client.createLogStream({ live: true, gt: Date.now() }),
+        ofType(['ferment/audio', 'ferment/update']),
+        pull.drain((item) => {
+          if (item.value && typeof item.value.content.audioSrc === 'string') {
+            var torrent = magnet.decode(item.value.content.audioSrc)
+            if (torrent.infoHash) {
+              if (extendedList.has(item.value.author)) {
+                fs.exists(Path.join(config.mediaPath, torrent.infoHash + '.torrent'), (exists) => {
+                  if (!exists) {
+                    if (!torrentClient.get(torrent.infoHash)) {
+                      addTorrent(torrent)
+                      console.log(`Auto seeding torrent ${torrent.infoHash}`)
+                    }
+                  }
+                })
+              }
+            }
+          }
+        })
+      )
+    })
+  }
+
+  function seedRarest () {
     var i = 0
     var items = []
+    var localTorrents = []
     fs.readdir(mediaPath, function (err, entries) {
       if (err) throw err
       entries.forEach((name) => {
         if (getExt(name) === '.torrent') {
-          items.push(Path.join(mediaPath, name))
+          localTorrents.push(Path.basename(name, '.torrent'))
         }
       })
 
-      // make sure the same torrents aren't being seeded every time
-      shuffle(items)
-      next()
+      // seed rarest torrents first
+      getTorrentInfo(localTorrents, (err, info) => {
+        if (err) return console.log(err)
+        localTorrents.map(infoHash => [infoHash, info[infoHash].complete]).sort((a, b) => {
+          return (a[1] + Math.random()) - (b[1] + Math.random())
+        }).slice(0, maxSeed).forEach((item) => {
+          watchTorrent(item[0])
+          torrentState.get(item[0]).complete.set(item[1])
+          items.push(Path.join(mediaPath, `${item[0]}.torrent`))
+        })
+        next()
+      })
     })
 
     function next () {
@@ -246,14 +336,18 @@ module.exports = function (client, config) {
         fs.readFile(item, function (err, buffer) {
           if (!err) {
             var torrent = parseTorrent(buffer)
-            torrent.announce = announce.slice()
-            torrentClient.add(torrent, {
-              path: getTorrentDataPath(Path.basename(item, '.torrent'))
-            }, function (torrent) {
-              console.log('seeding', torrent.infoHash)
-              i += 1
-              if (i < items.length) next()
-            })
+            if (!torrentClient.get(torrent.infoHash)) {
+              torrent.announce = announce.slice()
+              torrentClient.add(torrent, {
+                path: getTorrentDataPath(Path.basename(item, '.torrent'))
+              }, function (torrent) {
+                console.log('seeding', torrent.infoHash)
+                i += 1
+                if (i < items.length) next()
+              })
+            } else {
+              next()
+            }
           }
         })
         // wait 15 seconds before seeding next file
@@ -291,9 +385,6 @@ module.exports = function (client, config) {
       torrentClient.torrents.forEach(function (t) {
         if (t !== torrent && t.progress < 0.9) {
           paused.push(t.torrentFile)
-          broadcastTorrentState(torrent.infoHash, {
-            paused: true
-          })
           t.destroy()
         }
       })
@@ -309,14 +400,13 @@ module.exports = function (client, config) {
   }
 }
 
-function shuffle (array) {
-  var currentIndex = array.length
-  while (currentIndex !== 0) {
-    var randomIndex = Math.floor(Math.random() * currentIndex)
-    currentIndex -= 1
-    var temporaryValue = array[currentIndex]
-    array[currentIndex] = array[randomIndex]
-    array[randomIndex] = temporaryValue
-  }
-  return array
+function ofType (types) {
+  types = Array.isArray(types) ? types : [types]
+  return pull.filter((item) => {
+    if (item.value) {
+      return types.includes(item.value.content.type)
+    } else {
+      return true
+    }
+  })
 }

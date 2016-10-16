@@ -3,16 +3,15 @@ var send = require('@mmckegg/mutant/send')
 var computed = require('@mmckegg/mutant/computed')
 var when = require('@mmckegg/mutant/when')
 var AudioOverview = require('./audio-overview')
-var prettyBytes = require('prettier-bytes')
 var contextMenu = require('../lib/context-menu')
 var magnet = require('magnet-uri')
 var colorHash = require('../lib/color-hash')
 var humanTime = require('human-time')
+var TorrentStatusWidget = require('./torrent-status')
 
 module.exports = function (context, post) {
   var player = context.player || {}
   var infoHash = computed(post.audioSrc, (src) => magnet.decode(src).infoHash)
-  var torrentStatus = context.background ? context.background.getTorrentStatus(infoHash()) : {}
   var likesCount = computed(post.likes, x => x.length)
   var repostsCount = computed(post.reposters, (list) => list.length)
   var reposted = computed([context.profile && context.profile.posts, post.id], (posts, id) => posts && posts.includes(id))
@@ -95,25 +94,7 @@ module.exports = function (context, post) {
           h('a.edit', { href: '#', 'ev-click': edit }, '✨ Edit')
         ),
         h('a.save', { href: '#', 'ev-click': send(context.actions.saveFile, post) }, '💾 Save'),
-        h('div.status', [
-          when(torrentStatus.active, [
-            when(torrentStatus.isDownloading,
-              h('span', [computed(torrentStatus.progress, percent)])
-            ),
-
-            when(torrentStatus.downloadSpeed, [
-              h('span', [ computed(torrentStatus.downloadSpeed, value => `${prettyBytes(value || 0)}/s 🔽`) ])
-            ]),
-
-            when(torrentStatus.uploadSpeed, [
-              h('span', [ computed(torrentStatus.uploadSpeed, value => `${prettyBytes(value || 0)}/s 🔼`) ])
-            ]),
-
-            when(torrentStatus.numPeers, [
-              h('span -peers', [h('strong', torrentStatus.numPeers), ' 🍻'])
-            ])
-          ])
-        ])
+        TorrentStatusWidget(context, infoHash)
       ])
     ])
   ])
@@ -140,10 +121,6 @@ function toggleLike (opts) {
   } else {
     opts.context.api.like(opts.post.id)
   }
-}
-
-function percent (value) {
-  return Math.round(value * 100) + '%'
 }
 
 function SetPositionHook (context, item) {

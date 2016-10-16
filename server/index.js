@@ -16,9 +16,6 @@ var magnet = require('magnet-uri')
 var pull = require('pull-stream')
 
 var ssbConfig = require('../lib/ssb-config')('ferment')
-
-var seedWhiteList = new Set(ssbConfig.seed ? [].concat(ssbConfig.seed) : [])
-var enableDeepSeed = ssbConfig.deepSeed // should we seed friends of friends?
 var backgroundProcess = require('../models/background-remote')(ssbConfig)
 
 var windows = {}
@@ -63,49 +60,25 @@ var tracker = TorrentTracker({
   }
 })
 
+// only allow tracking torrents added by contacts
 electron.ipcMain.once('ipcBackgroundReady', (e) => {
-  context.sbot.friends.all((err, graph) => {
-    if (err) throw err
-
-    var extendedList = new Set(seedWhiteList)
-
-    if (enableDeepSeed) {
-      Array.from(seedWhiteList).forEach((id) => {
-        var moreIds = graph[id]
-        if (moreIds) {
-          Object.keys(moreIds).forEach(x => extendedList.add(x))
+  pull(
+    context.sbot.createLogStream({ live: true }),
+    ofType(['ferment/audio', 'ferment/update']),
+    pull.drain((item) => {
+      if (item.sync) {
+        tracker.listen(ssbConfig.trackerPort, ssbConfig.host, (err) => {
+          if (err) console.log('Cannot start tracker')
+          else console.log(`Tracker started at ws://${ssbConfig.host || 'localhost'}:${ssbConfig.trackerPort}`)
+        })
+      } else if (item.value && typeof item.value.content.audioSrc === 'string') {
+        var torrent = magnet.decode(item.value.content.audioSrc)
+        if (torrent.infoHash) {
+          torrentWhiteList.add(torrent.infoHash)
         }
-      })
-    }
-
-    console.log(`Seeding torrents from: \n - ${Array.from(extendedList).join('\n - ')}`)
-
-    pull(
-      context.sbot.createLogStream({ live: true }),
-      ofType(['ferment/audio', 'ferment/update']),
-      pull.drain((item) => {
-        if (item.sync) {
-          tracker.listen(ssbConfig.trackerPort, ssbConfig.host, (err) => {
-            if (err) console.log('Cannot start tracker')
-            else console.log(`Tracker started at ws://${ssbConfig.host || 'localhost'}:${ssbConfig.trackerPort}`)
-          })
-        } else if (item.value && typeof item.value.content.audioSrc === 'string') {
-          var torrent = magnet.decode(item.value.content.audioSrc)
-          if (torrent.infoHash) {
-            torrentWhiteList.add(torrent.infoHash)
-            if (extendedList.has(item.value.author)) {
-              fs.exists(Path.join(context.config.mediaPath, torrent.infoHash + '.torrent'), (exists) => {
-                if (!exists) {
-                  backgroundProcess.checkTorrent(item.value.content.audioSrc)
-                  console.log(`Seeding torrent ${torrent.infoHash}`)
-                }
-              })
-            }
-          }
-        }
-      })
-    )
-  })
+      }
+    })
+  )
 })
 
 function ofType (types) {

@@ -10,9 +10,11 @@ function TorrentStatus (infoHash) {
     downloadSpeed: Value(0, {defaultValue: 0}),
     uploadSpeed: Value(0, {defaultValue: 0}),
     numPeers: Value(0),
+    complete: Value(0),
     uploaded: Value(0),
     downloaded: Value(0),
-    loading: Value(true)
+    seeding: Value(false),
+    loading: Value(false)
   })
 
   result.infoHash = infoHash
@@ -20,6 +22,10 @@ function TorrentStatus (infoHash) {
 
   result.active = computed([result.loading], (loading) => {
     return !loading
+  })
+
+  result.solo = computed([result.progress, result.complete], (progress, complete) => {
+    return progress === 1 && complete <= 1
   })
 
   result.done = computed([result.progress], (progress) => {
