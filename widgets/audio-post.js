@@ -10,21 +10,22 @@ var colorHash = require('../lib/color-hash')
 var humanTime = require('human-time')
 
 module.exports = function (context, post) {
-  var player = context.player
-  var torrent = magnet.decode(post.audioSrc())
-  var torrentStatus = context.background.getTorrentStatus(torrent.infoHash)
-  var profile = context.api.getProfile(context.api.id)
+  var player = context.player || {}
+  var infoHash = computed(post.audioSrc, (src) => magnet.decode(src).infoHash)
+  var torrentStatus = context.background ? context.background.getTorrentStatus(infoHash()) : {}
   var likesCount = computed(post.likes, x => x.length)
   var repostsCount = computed(post.reposters, (list) => list.length)
-  var reposted = computed([profile.posts, post.id], (posts, id) => posts.includes(id))
-  var liked = computed([profile.likes, post.id], (likes, id) => likes.includes(id))
-  var isOwner = context.api.id === post.author.id
+  var reposted = computed([context.profile && context.profile.posts, post.id], (posts, id) => posts && posts.includes(id))
+  var liked = computed([context.profile && context.profile.likes, post.id], (likes, id) => likes && likes.includes(id))
+  var isOwner = context.profile && context.profile.id === post.author.id
   var color = colorHash.hex(post.id)
 
   var url = computed(post.artworkSrc, context.api.getBlobUrl)
 
   return h('AudioPost', {
     'ev-contextmenu': contextMenu.bind(null, context, post),
+    'data-info-hash': infoHash,
+    'data-duration': post.duration,
     classList: [
       computed(post.state, (s) => `-${s}`)
     ]
@@ -42,10 +43,10 @@ module.exports = function (context, post) {
         h('a.play', { 'ev-click': send(player.togglePlay, post), href: '#' }),
         h('header', [
           h('a.feedTitle', {
-            href: '#', 'ev-click': send(context.actions.viewProfile, post.author.id)
+            href: context.urlFor(post.author), 'ev-click': send(context.actions.viewProfile, post.author.id)
           }, [post.author.displayName]),
           h('a.title', {
-            href: '#', 'ev-click': send(context.actions.viewPost, post.id)
+            href: context.urlFor(post), 'ev-click': send(context.actions.viewPost, post.id)
           }, [post.title])
         ]),
         h('div.timestamp', [
@@ -101,11 +102,11 @@ module.exports = function (context, post) {
             ),
 
             when(torrentStatus.downloadSpeed, [
-              h('span', [ computed(torrentStatus.downloadSpeed, value => `${prettyBytes(value)}/s 🔽`) ])
+              h('span', [ computed(torrentStatus.downloadSpeed, value => `${prettyBytes(value || 0)}/s 🔽`) ])
             ]),
 
             when(torrentStatus.uploadSpeed, [
-              h('span', [ computed(torrentStatus.uploadSpeed, value => `${prettyBytes(value)}/s 🔼`) ])
+              h('span', [ computed(torrentStatus.uploadSpeed, value => `${prettyBytes(value || 0)}/s 🔼`) ])
             ]),
 
             when(torrentStatus.numPeers, [
