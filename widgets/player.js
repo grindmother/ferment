@@ -45,6 +45,12 @@ function Player (context) {
 
         item.state.set('waiting')
 
+        var giveUpTimer = setTimeout(function () {
+          if (item.state() === 'waiting' && currentItem.get() === item) {
+            self.playNext()
+          }
+        }, 30 * 1000)
+
         itemReleases.push(context.background.stream(item.audioSrc(), (err, url) => {
           if (err) throw err
           var cuedNext = false
@@ -56,7 +62,10 @@ function Player (context) {
             }
           }
           audioElement.onwaiting = () => item.state.set('waiting')
-          audioElement.onplaying = () => item.state.set('playing')
+          audioElement.onplaying = () => {
+            clearTimeout(giveUpTimer)
+            item.state.set('playing')
+          }
           audioElement.onpause = () => item.state.set('paused')
           audioElement.onended = () => {
             currentItem.get().position.set(0)
