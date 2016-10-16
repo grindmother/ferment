@@ -6,13 +6,7 @@ var contextMenu = require('../lib/context-menu')
 module.exports = function (context, item) {
   var likeCount = computed(item.likes, x => x.length)
 
-  var url = computed(item.artworkSrc, (src) => {
-    if (src && src.startsWith('blobstore:')) {
-      return `http://localhost:${context.config.blobsPort}/${src.slice(10)}`
-    } else {
-      return src
-    }
-  })
+  var url = computed(item.artworkSrc, context.api.getBlobUrl)
 
   return h('MiniAudioPost', {
     'ev-click': (ev) => context.actions.viewPost(item.id),

@@ -154,10 +154,13 @@ module.exports = function (ssbClient, config) {
     },
 
     getBlobUrl (id) {
-      if (id && id.startsWith('blobstore:')) {
-        return `http://localhost:${config.blobsPort}/${id.slice(10)}`
-      } else {
-        return `http://localhost:${config.blobsPort}/${id}`
+      var prefix = config.blobsPrefix != null ? config.blobsPrefix : `http://localhost:${config.blobsPort}`
+      var link = mlib.link(id, 'blob')
+      if (link) {
+        return `${prefix}/${encodeURIComponent(link.link)}`
+      } else if (typeof id === 'string' && id.startsWith('blobstore:')) {
+        // legacy ferment artwork blobs
+        return `${prefix}/${encodeURIComponent(id.slice(10))}`
       }
     }
   }

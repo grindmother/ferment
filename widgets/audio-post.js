@@ -21,13 +21,7 @@ module.exports = function (context, post) {
   var isOwner = context.api.id === post.author.id
   var color = colorHash.hex(post.id)
 
-  var url = computed(post.artworkSrc, (src) => {
-    if (src && src.startsWith('blobstore:')) {
-      return `http://localhost:${context.config.blobsPort}/${src.slice(10)}`
-    } else {
-      return src
-    }
-  })
+  var url = computed(post.artworkSrc, context.api.getBlobUrl)
 
   return h('AudioPost', {
     'ev-contextmenu': contextMenu.bind(null, context, post),
