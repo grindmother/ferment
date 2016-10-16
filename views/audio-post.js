@@ -29,13 +29,7 @@ function AudioPostView (context, postId) {
   var isOwner = context.api.id === post.author.id
   var color = colorHash.hex(postId)
 
-  var url = computed(post.artworkSrc, (src) => {
-    if (src && src.startsWith('blobstore:')) {
-      return `http://localhost:${context.config.blobsPort}/${src.slice(10)}`
-    } else {
-      return src
-    }
-  })
+  var url = computed(post.artworkSrc, context.api.getBlobUrl)
 
   return h('AudioPostView', {
     'ev-contextmenu': contextMenu.bind(null, context, post),
