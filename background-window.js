@@ -25,7 +25,7 @@ window.addEventListener('error', function (e) {
 
 module.exports = function (client, config) {
   var seedWhiteList = new Set(config.seedWhiteList ? [].concat(config.seedWhiteList) : [client.id])
-  var maxSeed = config.maxSeed == null ? parseInt(config.maxSeed, 10) : 15
+  var maxSeed = config.maxSeed == null ? 15 : parseInt(config.maxSeed, 10)
 
   var announce = config.webtorrent.announceList
   var torrentClient = new WebTorrent()
@@ -325,7 +325,9 @@ module.exports = function (client, config) {
           torrentState.get(item[0]).complete.set(item[1])
           items.push(Path.join(mediaPath, `${item[0]}.torrent`))
         })
-        next()
+        if (items.length) {
+          next()
+        }
       })
     })
 
