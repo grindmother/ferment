@@ -42,7 +42,6 @@ electron.app.on('ready', function () {
     skipTaskbar: true,
     title: 'ferment-background-window',
     useContentSize: true,
-    connect: false,
     width: 150
   })
   backgroundProcess.target = windows.background
