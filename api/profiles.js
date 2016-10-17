@@ -127,6 +127,7 @@ module.exports = function (ssbClient, config) {
     lookup,
     lookupByName,
     postIds,
+    pubIds,
     postLookup,
     sync
   }

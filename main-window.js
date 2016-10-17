@@ -51,7 +51,7 @@ module.exports = function (client, config) {
       })
     },
     repost (item) {
-      
+
     },
     viewProfile (id) {
       actions.setView('profile', id)
@@ -99,6 +99,9 @@ module.exports = function (client, config) {
   ])
 
   onceTrue(api.profilesLoaded, (value) => {
+    // make sure we're connected to the pub that invited us
+    api.reconnectToPub()
+    setInterval(api.reconnectToPub, 10 * 60 * 1000)
     if (!profile.displayName()) {
       // prompt use to set up profile the first time they open app
       openEditProfileWindow()

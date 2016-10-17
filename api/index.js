@@ -30,6 +30,8 @@ module.exports = function (ssbClient, config) {
       return lookupItems(sortedPostIds(profiles.pubFriendPostIds))
     },
 
+    reconnectToPub,
+
     getFollowingFeed (cb) {
       checkProfilesLoaded()
       var profile = profiles.get(ssbClient.id)
@@ -53,11 +55,11 @@ module.exports = function (ssbClient, config) {
     },
 
     setOwnDisplayName (name, cb) {
-      ssbClient.publish({
+      publish({
         type: 'about',
         about: ssbClient.id,
         name: name
-      }, (err) => cb && cb(err))
+      }, cb)
     },
 
     getLikedFeedFor (id) {
@@ -113,6 +115,9 @@ module.exports = function (ssbClient, config) {
         type: 'ferment/like',
         like: likeLink
       }, cb)
+      ssbClient.gossip.peers(function (err, data) {
+        console.log(err, data)
+      })
     },
 
     unlike (id, cb) {
@@ -198,7 +203,24 @@ module.exports = function (ssbClient, config) {
   function publish (message, cb) {
     ssbClient.publish(message, function (err, msg) {
       if (!cb && err) throw err
+      if (profiles) {
+        reconnectToPub()
+      }
       cb && cb(err, msg)
+    })
+  }
+
+  function reconnectToPub (cb) {
+    checkProfilesLoaded()
+    onceTrue(profilesLoaded, () => {
+      ssbClient.gossip.peers((err, peers) => {
+        if (err) return cb && cb(err)
+        peers.filter((p) => p.state !== 'connected' && profiles.pubIds.has(p.key)).forEach((peer) => {
+          console.log(peer)
+          ssbClient.gossip.connect(peer)
+        })
+        cb && cb()
+      })
     })
   }
 
