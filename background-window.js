@@ -26,6 +26,7 @@ window.addEventListener('error', function (e) {
 module.exports = function (client, config) {
   var seedWhiteList = new Set(config.seedWhiteList ? [].concat(config.seedWhiteList) : [client.id])
   var maxSeed = config.maxSeed == null ? 15 : parseInt(config.maxSeed, 10)
+  var seedInterval = config.seedInterval == null ? 15 : parseInt(config.seedInterval, 10)
 
   var announce = config.webtorrent.announceList
   var torrentClient = new WebTorrent()
@@ -352,8 +353,8 @@ module.exports = function (client, config) {
             }
           }
         })
-        // wait 15 seconds before seeding next file
-      }, 15000)
+        // wait before seeding next file
+      }, seedInterval * 1000)
     }
   }
 
