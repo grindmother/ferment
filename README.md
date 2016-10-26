@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="http://ferment.audio"><img src="/ferment-logo.png" alt="WebTorrent" width="200"></a>
+  <a href="http://ferment.audio"><img src="/ferment-logo.png" alt="Ferment" width="200"></a>
   <br>
   Ferment
   <br>
