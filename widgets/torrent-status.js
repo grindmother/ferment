@@ -33,7 +33,7 @@ function TorrentStatusWidget (context, infoHash) {
               title: 'Other people have this file'
             }, [
               h('strong', [others]),
-              when(torrentStatus.complete, ' 🍻', ' 🍺')
+              when(torrentStatus.complete, ' 🍻', ' 🍐')
             ])
           ], [
             h('span', [h('strong', 'Finding peers'), ' 🍐'])
