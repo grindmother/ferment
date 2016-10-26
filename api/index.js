@@ -214,9 +214,8 @@ module.exports = function (ssbClient, config) {
     checkProfilesLoaded()
     onceTrue(profilesLoaded, () => {
       ssbClient.gossip.peers((err, peers) => {
-        if (err) return cb && cb(err)
+        if (err) return cb ? cb(err) : console.log(err)
         peers.filter((p) => p.state !== 'connected' && profiles.pubIds.has(p.key)).forEach((peer) => {
-          console.log(peer)
           ssbClient.gossip.connect(peer)
         })
         cb && cb()
