@@ -180,6 +180,7 @@ AudioPostView {
     div.main {
       flex: 2.5
       font-size: 120%
+      -webkit-user-select: text
     }
     div.side {
       flex: 1
