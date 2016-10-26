@@ -10,6 +10,9 @@ function TorrentStatusWidget (context, infoHash) {
     var torrentStatus = context.background.getTorrentStatus(infoHash)
     var others = when(torrentStatus.complete, torrentStatus.complete, torrentStatus.numPeers)
     return h('div.status', [
+      when(torrentStatus.saving, [
+        h('span', [h('Loading -inline'), h('strong', 'Saving to disk...')])
+      ]),
       when(torrentStatus.seeding, [
         when(torrentStatus.isDownloading,
           h('span', [computed(torrentStatus.progress, percent)])

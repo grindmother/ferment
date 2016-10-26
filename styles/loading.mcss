@@ -4,6 +4,19 @@ Loading {
   align-items: center
   justify-content: center
 
+  -inline {
+    height: 16px
+    width: 16px
+    display: inline-block
+    margin: -3px 3px
+
+    ::before {
+      display: block
+      height: 16px
+      width: 16px
+    }
+  }
+
   -large {
     ::before {
       height: 100px

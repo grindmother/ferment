@@ -101,12 +101,23 @@ module.exports = function (client, config) {
       }
     })
 
-    function saveFile (id, torrentId, filePath) {
+    function saveFile (id, torrentId, exportPath) {
       var torrent = torrentClient.get(torrentId)
-      torrent.files[0].createReadStream(0).pipe(convert.export(filePath, (err, info) => {
-        ipc.send('bg-response', id, err, info)
-        console.log(info)
-      }))
+      torrentState.get(torrent.infoHash).saving.set(true)
+      if (torrent.progress === 1) {
+        done()
+      } else {
+        torrent.once('done', done)
+      }
+
+      function done () {
+        var originalPath = Path.join(getTorrentDataPath(torrent.infoHash), torrent.files[0].path)
+        convert.export(originalPath, exportPath, (err, info) => {
+          torrentState.get(torrent.infoHash).saving.set(false)
+          ipc.send('bg-response', id, err, info)
+          console.log(info.toString())
+        })
+      }
     }
   })
 

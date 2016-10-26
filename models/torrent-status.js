@@ -14,7 +14,8 @@ function TorrentStatus (infoHash) {
     uploaded: Value(0),
     downloaded: Value(0),
     seeding: Value(false),
-    loading: Value(false)
+    loading: Value(false),
+    saving: Value(false)
   })
 
   result.infoHash = infoHash
