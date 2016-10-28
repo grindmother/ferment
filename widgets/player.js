@@ -102,6 +102,33 @@ function Player (context) {
         next = index >= 0 ? currentFeed.get(index + 1) : null
       }
       return next
+    },
+
+    playPrevious () {
+      var previous = self.getPrevious()
+      if (previous) {
+        previous.position.set(0)
+        self.togglePlay(previous)
+      }
+    },
+
+    cuePrevious () {
+      var previous = self.getPrevious()
+      if (previous) {
+        context.background.checkTorrent(previous.audioSrc())
+      }
+    },
+
+    getPrevious () {
+      // check viewing feed for the current song. If it's there, play from this feed instead
+      var index = viewingFeed.indexOf(currentItem.get())
+      var previous = index > 0 ? viewingFeed.get(index - 1) : null
+      if (!previous) {
+        // otherwise fallback to main feed
+        index = currentFeed.indexOf(currentItem.get())
+        previous = index > 0 ? currentFeed.get(index - 1) : null
+      }
+      return previous
     }
   }
 
