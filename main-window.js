@@ -108,6 +108,18 @@ module.exports = function (client, config) {
     }
   })
 
+  electron.ipcRenderer.on('playPause', function () {
+    player.togglePlay()
+  })
+
+  electron.ipcRenderer.on('nextTrack', function () {
+    player.playNext()
+  })
+
+  electron.ipcRenderer.on('previousTrack', function () {
+    player.playPrevious()
+  })
+
   return h('MainWindow', {
     classList: [ '-' + process.platform ]
   }, [

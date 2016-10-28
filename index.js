@@ -16,6 +16,7 @@ var fs = require('fs')
 var defaultMenu = require('electron-default-menu')
 var Menu = electron.Menu
 var dataUriToBuffer = require('data-uri-to-buffer')
+var globalShortcut = electron.globalShortcut
 
 var windows = {
   dialogs: new Set()
@@ -87,8 +88,24 @@ function openMainWindow () {
       icon: './ferment-logo.png'
     })
     windows.main.setSheetOffset(40)
+
+    windows.main.once('show', function () {
+      globalShortcut.register('MediaPlayPause', function () {
+        if (windows.main) windows.main.webContents.send('playPause')
+      })
+
+      globalShortcut.register('MediaNextTrack', function () {
+        if (windows.main) windows.main.webContents.send('nextTrack')
+      })
+
+      globalShortcut.register('MediaPreviousTrack', function () {
+        if (windows.main) windows.main.webContents.send('previousTrack')
+      })
+    })
+
     windows.main.on('closed', function () {
       windows.main = null
+      globalShortcut.unregisterAll()
     })
   }
 }
