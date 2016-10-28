@@ -20,7 +20,7 @@ function Player (context) {
 
     togglePlay (item) {
       if (currentItem.get() === item || !item) {
-        if (item.state() !== 'paused') {
+        if (currentItem.get().state() !== 'paused') {
           audioElement.pause()
           currentItem.get().state.set('paused')
         } else {
