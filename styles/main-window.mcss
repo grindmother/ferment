@@ -14,12 +14,6 @@ MainWindow {
     }
   }
 
-  -win32 {
-    div.top {
-      padding-right: 70px
-    }
-  }
-
   div.top {
     -webkit-app-region: drag
     display: flex
