@@ -15,6 +15,8 @@ function DiscoveryFeed (context) {
   var suggestedProfiles = context.suggestedProfiles
   var suggestedProfilesCount = computed(suggestedProfiles, x => x.length)
   var postCount = computed(context.discoveryFeed, x => x.length)
+  var localProfiles = context.api.getLocalProfiles()
+  var localCount = computed(localProfiles, x => x.length)
 
   return h('Feed', [
     h('div.main', [
@@ -48,6 +50,15 @@ function DiscoveryFeed (context) {
     ]),
 
     h('div.side', [
+
+      when(localCount, [
+        h('h2', 'Local'),
+        MutantMap(localProfiles, (item) => renderMiniProfile(context, item), {
+          maxTime: 5,
+          nextTick: true
+        })
+      ]),
+
       h('h2', 'Who to follow'),
       when(suggestedProfiles.sync, [
         when(suggestedProfilesCount,

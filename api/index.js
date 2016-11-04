@@ -3,9 +3,11 @@ var electron = require('electron')
 var Profiles = require('./profiles')
 var schemas = require('ssb-msg-schemas')
 var Proxy = require('@mmckegg/mutant/proxy')
+var concat = require('@mmckegg/mutant/concat')
 var computed = require('@mmckegg/mutant/computed')
 var mlib = require('ssb-msgs')
 var onceTrue = require('../lib/once-true')
+var ObservLocal = require('../lib/obs-local')
 
 var callbacks = {}
 electron.ipcRenderer.on('response', (ev, id, ...args) => {
@@ -22,12 +24,13 @@ module.exports = function (ssbClient, config) {
   var profiles = null
   var profilesLoaded = Proxy()
   var scope = (config.friends || {}).scope
+  var localPeerIds = ObservLocal(ssbClient, config)
 
   return {
     id: ssbClient.id,
     getDiscoveryFeed (cb) {
       checkProfilesLoaded()
-      return lookupItems(sortedPostIds(profiles.pubFriendPostIds))
+      return lookupItems(sortedPostIds(concat([profiles.pubFriendPostIds, profiles.localPeerIds])))
     },
 
     getFollowingFeed (cb) {
@@ -67,6 +70,7 @@ module.exports = function (ssbClient, config) {
     },
 
     profilesLoaded,
+    localPeerIds,
 
     getProfile (id) {
       checkProfilesLoaded()
@@ -86,6 +90,11 @@ module.exports = function (ssbClient, config) {
     getSuggestedProfiles (max) {
       checkProfilesLoaded()
       return profiles.getSuggested(max)
+    },
+
+    getLocalProfiles (max) {
+      checkProfilesLoaded()
+      return MutantMap(localPeerIds, profiles.get)
     },
 
     publish,
