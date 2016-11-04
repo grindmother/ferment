@@ -30,8 +30,6 @@ module.exports = function (ssbClient, config) {
       return lookupItems(sortedPostIds(profiles.pubFriendPostIds))
     },
 
-    reconnectToPub,
-
     getFollowingFeed (cb) {
       checkProfilesLoaded()
       var profile = profiles.get(ssbClient.id)
@@ -203,25 +201,7 @@ module.exports = function (ssbClient, config) {
   function publish (message, cb) {
     ssbClient.publish(message, function (err, msg) {
       if (!cb && err) throw err
-      if (profiles) {
-        reconnectToPub()
-      }
       cb && cb(err, msg)
-    })
-  }
-
-  function reconnectToPub (cb) {
-    checkProfilesLoaded()
-    onceTrue(profilesLoaded, () => {
-      ssbClient.gossip.peers((err, peers) => {
-        if (err) return cb ? cb(err) : console.log(err)
-        peers.filter((p) => p.state !== 'connected' && profiles.pubIds.has(p.key)).forEach((peer) => {
-          ssbClient.gossip.connect(peer, (err) => {
-            if (err) console.log(err)
-          })
-        })
-        cb && cb()
-      })
     })
   }
 
