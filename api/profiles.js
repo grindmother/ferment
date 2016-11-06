@@ -14,6 +14,7 @@ var AudioPost = require('../models/audio-post')
 var throttle = require('@mmckegg/mutant/throttle')
 var extend = require('xtend')
 var ip = require('ip')
+var ObservLocal = require('../lib/obs-local')
 
 module.exports = function (ssbClient, config) {
   var pubIds = MutantSet()
@@ -21,12 +22,13 @@ module.exports = function (ssbClient, config) {
   var postLookup = MutantDict()
   var postIds = MutantArray()
   var profileIds = MutantArray()
+  var localPeerIds = ObservLocal(ssbClient, config)
   var profilesList = toCollection(lookup)
   var lookupByName = MutantLookup(profilesList, 'displayName')
   var sync = Value(false)
 
   var pubFriends = concat(MutantMap(pubIds, (id) => get(id).following))
-  var pubFriendPostIds = computed([pubFriends, postIds], (pubFriends, postIds) => {
+  var pubFriendPostIds = computed([concat([pubFriends, localPeerIds]), postIds], (pubFriends, postIds) => {
     return postIds.filter((id) => {
       var authorId = postLookup.get(id).author.id
       return pubFriends.includes(authorId) || authorId === ssbClient.id
