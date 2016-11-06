@@ -30,7 +30,7 @@ module.exports = function (ssbClient, config) {
     id: ssbClient.id,
     getDiscoveryFeed (cb) {
       checkProfilesLoaded()
-      return lookupItems(sortedPostIds(concat([profiles.pubFriendPostIds, profiles.localPeerIds])))
+      return lookupItems(sortedPostIds(profiles.pubFriendPostIds, {maxSameProfile: 2}))
     },
 
     getFollowingFeed (cb) {
@@ -179,9 +179,26 @@ module.exports = function (ssbClient, config) {
 
   // scoped
 
-  function sortedPostIds (ids) {
+  function sortedPostIds (ids, opts) {
     return computed([ids], function (ids) {
-      return ids.map(id => profiles.getPost(id)).sort((a, b) => b.timestamp() - a.timestamp()).map(x => x.id)
+      var sorted = ids.map(id => profiles.getPost(id)).sort((a, b) => b.timestamp() - a.timestamp())
+
+      var sameCount = 0
+      var lastAuthorId = null
+      var filtered = opts && opts.maxSameProfile ? sorted.filter((post) => {
+        if (post.author.id === lastAuthorId) {
+          sameCount += 1
+        } else {
+          sameCount = 0
+          lastAuthorId = post.author.id
+        }
+
+        if (sameCount < opts.maxSameProfile) {
+          return true
+        }
+      }) : sorted
+
+      return filtered.map(x => x.id)
     }, { nextTick: true })
   }
 
