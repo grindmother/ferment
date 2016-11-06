@@ -7,7 +7,7 @@
   <br>
 </h1>
 
-[Ferment](http://ferment.audio) is a peer-to-peer audio publishing and streaming application. It is an attempted re-creation of classic SoundCloud, but runs entirely decentralized instead of one corporation and its investors holding all the power. 💞 🍻
+[Ferment](http://ferment.audio) is a peer-to-peer audio publishing and streaming application. It is an attempted re-creation of classic SoundCloud, but runs entirely decentralized. 💞 🍻
 
 It is made possible by combining these **amazing** projects: [ssb](https://scuttlebot.io/), [webtorrent](https://webtorrent.io/) and [electron](http://electron.atom.io/).
 
@@ -21,15 +21,15 @@ It is made possible by combining these **amazing** projects: [ssb](https://scutt
 
 <img src="/assets/ferment-screenshot-0.0.0.jpg" alt="WebTorrent" width="888" height="688" />
 
-## Experimental // EVERYTHING IS SUBJECT TO CHANGE AND BREAKING!
+## Inspiration
 
-I'm just fiddling with ideas right now. My goal is to replace my need for SoundCloud as a [backyard musician that uploads WAY to much stuff](https://soundcloud.com/destroy-with-science). I no longer want to pay them $200 a year to host it all (also sick of being told to pay more money to get SoundCloud Go and having my feed ransomed out from underneath me).
+I'm trying to replace my need for SoundCloud as a [backyard musician that uploads WAY to much stuff](https://soundcloud.com/destroy-with-science).
 
-### The long-term vision ✨
+I'd been ranting to my friends for a few months about how much SoundCloud has changed since "the good old days". But the I thought about it and realised the changes did make a lot sense from their perspective. There is no money in hosting other people's content for free, and the company does need to stay in business and keep those investors happy.
 
-I want to see a thriving audio sharing community (actually would be COMMUNITIES! it's decentralized), a lot like SoundCloud used to encourage before it had to MONETIZE and start trying to make a profit (AND OH NOEZ, WE'RE GOING BANKRUPT 😞). Pretty sure that SoundCloud was doomed from the start (so glad we had all these great years off the pocket of those investors), but a _peer-to-peer decentralized not-for-profit open source_ might just work!
+It's just a real shame how much forced tie-in there is with these sorts of online services. APIs disappear one-by-one, data formats close up. You become dependent on them, and then they change all your favourite features or simply just shut down. **This is a rather unfortunate vision of a tech future that I don't want to live in.**
 
-**It will also soon be possible to host your own server that allows people without the app to stream music from your profile (or others that you want to seed).** This will still be peer-to-peer but your server will act as a mirror and tracker.
+The incentives are all in the wrong places. We need small scale systems that work on a personal level. Sure there are trade-offs, but I'm sick of this completely disconnected feeling you get in the globally connected world.
 
 ## How it works
 
