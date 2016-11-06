@@ -28,7 +28,7 @@ function TorrentStatusWidget (context, infoHash) {
 
         when(torrentStatus.solo, [
           h('span', {title: 'No one else has this file yet. Looking for peers...'}, [
-            h('strong', 'Waiting to share 💖')
+            h('strong', `Nobody else has this file.`), ` Waiting to share 💖`
           ])
         ], [
           when(others, [

@@ -148,6 +148,10 @@ module.exports = function (client, config, edit) {
       ])
     ]),
     h('footer', [
+      h('div.info', [
+        h('strong', 'Tip: '),
+        `Wait for the 🍻 status `, h('em', `before`), ` closing Ferment to make sure other people get your file.`
+      ]),
       when(publishing,
         h('button', {'disabled': true}, ['Publishing...']),
         when(waitingToSave, [
