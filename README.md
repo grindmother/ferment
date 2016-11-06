@@ -29,7 +29,7 @@ I'd been ranting to my friends for a few months about how much SoundCloud has ch
 
 It's just a real shame how much forced tie-in there is with these sorts of online services. APIs disappear one-by-one, data formats close up. You become dependent on them, and then they change all your favourite features or simply just shut down. **This is a rather unfortunate vision of a tech future that I don't want to live in.**
 
-The incentives are all in the wrong places. We need small scale systems that work on a personal level. Sure there are trade-offs, but I'm sick of this completely disconnected feeling you get in the globally connected world.
+The incentives are all in the wrong places. **We need small scale systems that work on a personal level.** Sure there are trade-offs, but I'm sick of this completely disconnected feeling you get in the globally connected world.
 
 ## How it works
 
