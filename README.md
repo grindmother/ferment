@@ -25,7 +25,7 @@ It is made possible by combining these **amazing** projects: [ssb](https://scutt
 
 I'm trying to replace my need for SoundCloud as a [backyard musician that uploads WAY to much stuff](https://soundcloud.com/destroy-with-science).
 
-I'd been ranting to my friends for a few months about how much SoundCloud has changed since "the good old days". But the I thought about it and realised the changes did make a lot sense from their perspective. There is no money in hosting other people's content for free, and the company does need to stay in business and keep those investors happy.
+I'd been ranting to my friends for a few months about how much SoundCloud has changed since "the good old days". But then I gave it some thought and realised the changes did make a lot sense from their perspective. There is no money in hosting other people's content for free, and the company does need to stay in business and keep those investors happy.
 
 It's just a real shame how much forced tie-in there is with these sorts of online services. APIs disappear one-by-one, data formats close up. You become dependent on them, and then they change all your favourite features or simply just shut down. **This is a rather unfortunate vision of a tech future that I don't want to live in.**
 
