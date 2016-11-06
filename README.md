@@ -145,6 +145,16 @@ However, if you don't see anything appear after about 30 seconds, try restarting
 
 **If you receive an error message, it probably means my pub server has locked up. This seems to be happening a bit at the moment, [trying to get to the bottom of it](https://github.com/mmckegg/ferment/issues/7).** Let me know and I'll restart it. In the mean time, you could start creating a shiny profile and adding some tunes!
 
+## Publishing Audio
+
+You can share audio with your followers by clicking the "+ Add Audio" button in the top right corner of the screen. [Make sure you read the section about copyright before publishing anything!](#ferment-and-copyright)
+
+After choosing a file and pressing **Publish**, Ferment will convert your audio into a format that compresses and streams well. At this point, you will start to seed the file.
+
+**To make sure other people can play your file, you'll need to wait until the status changes from "Waiting to share 💖" to the beer 🍻 icon.** Other users and pubs that follow you should start seeding your post soon after you add it, but if this doesn't happen for a few minutes, restarting Ferment can help.
+
+On start-up, Ferment checks the files you have cached (or added) against the tracker and prioritize seeding the rarest files on the network. However, any files you play will start seeding immediately.
+
 ## Hosting Your Own Pub Server
 
 See [this guide](http://ssbc.github.io/docs/scuttlebot/howto-setup-a-pub.html) for full info setting up [scuttlebot](http://ssbc.github.io/scuttlebot/).
