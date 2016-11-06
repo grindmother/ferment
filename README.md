@@ -33,17 +33,17 @@ The incentives are all in the wrong places. **We need small scale systems that w
 
 ## How it works
 
-Ferment uses a peer-to-peer gossip protocol called [Secure Scuttlebutt](https://scuttlebot.io/more/protocols/secure-scuttlebutt.html). The best part about this is there is no central server and no single point of failure. In fact everyone on the network is a server, with a copy of all of their friends and their friend's friends data. You gossip with other peers to find out if any of your shared contacts have any new posts and share them. But by gossip, we mean cryptographically prove everything they've said since the last time you heard from them. It is impossible to skip a message.
+Ferment uses a peer-to-peer gossip protocol called [Secure Scuttlebutt](https://scuttlebot.io/more/protocols/secure-scuttlebutt.html). The best part about this is there is **no central server** and **no single point of failure**. In fact everyone on the network is a server, with a copy of all of their friends and their friend's friends data. You gossip with other peers to find out if any of your shared contacts have any new posts and share them. But by gossip, we mean cryptographically prove everything they've said since the last time you heard from them. It is impossible to skip a message.
 
 [Finding peers across the complex topography of the internet is pretty difficult though](https://scuttlebot.io/more/articles/design-challenge-avoid-centralization-and-singletons.html). This is where pub servers come in. They act as gossip hubs where information can be shared across networks. A pub is just an ordinary Ferment peer that has a publicly accessible IP address and can be remotely connected to on demand.
 
 The actual audio files are just torrents (a special variant called [webtorrent](https://github.com/feross/webtorrent) that works over WebRTC). The SSB message contains a reference to its magnet url, and you seed the file to other ferment peers.
 
-Whenever you listen to something in Ferment, you start seeding that file with other peers. It will be cached on your machine until you remove it (right-click > Stop Sharing Post). In the future this will be handled automatically (you'll only cache material you have "liked" and selected content from followed users that are weak on the network).
+**Whenever you listen to something in Ferment, you start seeding that file with other peers.** It will be cached on your machine until you remove it (right-click > Stop Sharing Post). In the future this may be handled automatically (you'll only cache material you have "liked" and selected content from followed users that are weak on the network).
 
 ## Ferment and Copyright
 
-Ferment is an audio publishing platform for **copyright-owning creators** and **creative commons licensed material**. As this is a decentralized, peer-to-peer community, what you culture in your network is up to you. **You get to choose what level of sharing legality you are comfortable with.**
+Ferment is an audio publishing platform for **copyright-owning creators**, **creative commons licensed material**, **remix artists** and **DJs**. As this is a decentralized, peer-to-peer community, what you culture in your network is up to you. **You get to choose what level of sharing legality you are comfortable with.**
 
 For example, if someone in your network adds copyrighted material, and you listen to it, your Ferment will start sharing the file. If you don't want to share the legal responsibility for this, right-click and select 'Stop Sharing Post.'
 
@@ -51,11 +51,43 @@ You could also consider unfollowing them and reporting the infringement to the o
 
 **A pub owner should unfollow anyone who adds material which infringes copyright.**
 
+## Joining Pub Server
+
+By default, **Ferment** will only see other users that are on the same local area network as you. In order to share with users on the internet, you need to be invited to a pub server.
+
+Since I'm a nice person 💖 you can hang out in my pub, and you don't even have to buy any drinks! 🍻 But please be mindful about uploading content that you do not own the rights to. My pub will [unfollow anyone who uploads content that I don't think is _fair_ to the original creators](#ferment-and-copyright).
+
+**Click 'Join Pub' on the sidebar then paste the code below:**
+
+```
+pub.ferment.audio:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~MqAyQji/+ZHHtq9JM8Dl/w6hOujxXAxlOpYiFUfLgRM=
+```
+
+> **NOTE:** To avoid destroying my server, this code can only be used a limited amount of times. Please post an issue if it doesn't work for you, and I'll generate a new one.
+
+If all goes to well, you'll start to see audio appear before your eyes! Give that play button a spin.
+
+However, if you don't see anything appear after about 30 seconds, try restarting ferment. It may take a minute or two before it appears. You should be all good as long as `+connected pub.ferment.audio:43761:....` appears in your terminal.
+
+**If you receive an error message, it probably means my pub server has locked up. This seems to be happening a bit at the moment, [trying to get to the bottom of it](https://github.com/mmckegg/ferment/issues/7).** Let me know and I'll restart it. In the mean time, you could start creating a shiny profile and adding some tunes!
+
+## Publishing Audio
+
+You can share audio with your followers by clicking the "+ Add Audio" button in the top right corner of the screen. [Make sure you read the section about copyright before publishing anything!](#ferment-and-copyright)
+
+After choosing a file and pressing **Publish**, Ferment will convert your audio into a format that compresses and streams well. At this point, you will start to seed the file.
+
+**To make sure other people can play your file, you'll need to wait until the status changes from "Waiting to share 💖" to the beer 🍻 icon.** Other users and pubs that follow you should start seeding your post soon after you add it, but if this doesn't happen for a few minutes, restarting Ferment can help.
+
+On start-up, Ferment checks the files you have cached (or added) against the tracker and prioritize seeding the rarest files on the network. However, any files you play will start seeding immediately.
+
 ## Requirements
 
 If there is no [packaged app](https://github.com/mmckegg/ferment/releases) for your platform, you'll need to build from source using modern version of [`node` and `npm`](https://nodejs.org).
 
 ## Install
+
+Right now things are super easy if you are running macOS, but for other platforms you need to do some hard open-sourcey compilation stuff. Also it just doesn't work at all on Windows right now (will be addressed soon).
 
 ### on macOS
 
@@ -124,36 +156,6 @@ If you get weird issues, trash your `ferment/node_modules` directory:
 $ rm -rf node_modules
 $ npm install
 ```
-
-## Joining Pub Server
-
-By default, **Ferment** will only see other users that are on the same local area network as you. In order to share with users on the internet, you need to be invited to a pub server.
-
-Since I'm a nice person 💖 you can hang out in my pub, and you don't even have to buy any drinks! 🍻 But please be mindful about uploading content that you do not own the rights to. My pub will [unfollow anyone who uploads content that I don't think is _fair_ to the original creators](#ferment-and-copyright).
-
-**Click 'Join Pub' on the sidebar then paste the code below:**
-
-```
-pub.ferment.audio:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~MqAyQji/+ZHHtq9JM8Dl/w6hOujxXAxlOpYiFUfLgRM=
-```
-
-> **NOTE:** To avoid destroying my server, this code can only be used a limited amount of times. Please post an issue if it doesn't work for you, and I'll generate a new one.
-
-If all goes to well, you'll start to see audio appear before your eyes! Give that play button a spin.
-
-However, if you don't see anything appear after about 30 seconds, try restarting ferment. It may take a minute or two before it appears. You should be all good as long as `+connected pub.ferment.audio:43761:....` appears in your terminal.
-
-**If you receive an error message, it probably means my pub server has locked up. This seems to be happening a bit at the moment, [trying to get to the bottom of it](https://github.com/mmckegg/ferment/issues/7).** Let me know and I'll restart it. In the mean time, you could start creating a shiny profile and adding some tunes!
-
-## Publishing Audio
-
-You can share audio with your followers by clicking the "+ Add Audio" button in the top right corner of the screen. [Make sure you read the section about copyright before publishing anything!](#ferment-and-copyright)
-
-After choosing a file and pressing **Publish**, Ferment will convert your audio into a format that compresses and streams well. At this point, you will start to seed the file.
-
-**To make sure other people can play your file, you'll need to wait until the status changes from "Waiting to share 💖" to the beer 🍻 icon.** Other users and pubs that follow you should start seeding your post soon after you add it, but if this doesn't happen for a few minutes, restarting Ferment can help.
-
-On start-up, Ferment checks the files you have cached (or added) against the tracker and prioritize seeding the rarest files on the network. However, any files you play will start seeding immediately.
 
 ## Hosting Your Own Pub Server
 
