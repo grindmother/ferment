@@ -21,6 +21,12 @@ It is made possible by combining these **amazing** projects: [ssb](https://scutt
 
 <img src="/assets/ferment-screenshot-0.0.0.jpg" alt="WebTorrent" width="888" height="688" />
 
+## Requirements
+
+Right now things are [super easy](https://github.com/mmckegg/ferment/releases) if you are running macOS, but for other platforms you need to do some [hard open-sourcey compilation stuff](#install). Also it just doesn't work at all on Windows right now (will be [addressed soon](https://github.com/mmckegg/ferment/issues/30)).
+
+If there is no [packaged app](https://github.com/mmckegg/ferment/releases) for your platform, you'll need to build from source using modern version of [`node` and `npm`](https://nodejs.org).
+
 ## Inspiration
 
 I'm trying to replace my need for SoundCloud as a [backyard musician that uploads WAY to much stuff](https://soundcloud.com/destroy-with-science).
@@ -81,13 +87,7 @@ After choosing a file and pressing **Publish**, Ferment will convert your audio 
 
 On start-up, Ferment checks the files you have cached (or added) against the tracker and prioritize seeding the rarest files on the network. However, any files you play will start seeding immediately.
 
-## Requirements
-
-If there is no [packaged app](https://github.com/mmckegg/ferment/releases) for your platform, you'll need to build from source using modern version of [`node` and `npm`](https://nodejs.org).
-
 ## Install
-
-Right now things are super easy if you are running macOS, but for other platforms you need to do some hard open-sourcey compilation stuff. Also it just doesn't work at all on Windows right now (will be addressed soon).
 
 ### on macOS
 
