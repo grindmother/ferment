@@ -330,7 +330,7 @@ module.exports = function (client, config) {
       // seed rarest torrents first
       getTorrentInfo(localTorrents, (err, info) => {
         if (err) return console.log(err)
-        localTorrents.map(infoHash => [infoHash, info[infoHash].complete]).sort((a, b) => {
+        localTorrents.map(infoHash => [infoHash, info[infoHash] && info[infoHash].complete || 0]).sort((a, b) => {
           return (a[1] + Math.random()) - (b[1] + Math.random())
         }).slice(0, maxSeed).forEach((item) => {
           watchTorrent(item[0])
