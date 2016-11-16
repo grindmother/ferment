@@ -66,7 +66,7 @@ Since I'm a nice person 💖 you can hang out in my pub, and you don't even have
 **Click 'Join Pub' on the sidebar then paste the code below:**
 
 ```
-pub.ferment.audio:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~MqAyQji/+ZHHtq9JM8Dl/w6hOujxXAxlOpYiFUfLgRM=
+pub.ferment.audio:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~Dss0hBA6buBPJQS36BDCddkFxZmF6HV30LkHCj8QgjI=
 ```
 
 > **NOTE:** To avoid destroying my server, this code can only be used a limited amount of times. Please post an issue if it doesn't work for you, and I'll generate a new one.
