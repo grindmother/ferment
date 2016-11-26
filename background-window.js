@@ -50,7 +50,8 @@ module.exports = function (client, config) {
   setInterval(scrapeInfo, 30 * 1000)
   setInterval(seedRarest, 30 * 60 * 1000)
 
-  seedRarest()
+  setTimeout(seedRarest, 3000)
+
   startAutoSeed()
   findPeers()
 
