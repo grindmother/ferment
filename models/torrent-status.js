@@ -26,7 +26,7 @@ function TorrentStatus (infoHash) {
   })
 
   result.solo = computed([result.progress, result.complete], (progress, complete) => {
-    return progress === 1 && complete <= 1
+    return progress === 1 && complete === 1
   })
 
   result.done = computed([result.progress], (progress) => {

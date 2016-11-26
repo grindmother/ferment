@@ -14,6 +14,7 @@ var TorrentStatus = require('./models/torrent-status')
 var Tracker = require('bittorrent-tracker')
 var magnet = require('magnet-uri')
 var pull = require('pull-stream')
+var TrackerServer = require('./lib/tracker')
 
 console.log = electron.remote.getGlobal('console').log
 process.exit = electron.remote.app.quit
@@ -28,7 +29,10 @@ module.exports = function (client, config) {
   var maxSeed = config.maxSeed == null ? 15 : parseInt(config.maxSeed, 10)
   var seedInterval = config.seedInterval == null ? 15 : parseInt(config.seedInterval, 10)
 
-  var announce = config.webtorrent.announceList
+  var tracker = TrackerServer(client, config)
+  var announce = new Set()
+  announce.add(tracker.address)
+
   var torrentClient = new WebTorrent()
   var mediaPath = config.mediaPath
   var releases = {}
@@ -48,6 +52,7 @@ module.exports = function (client, config) {
 
   seedRarest()
   startAutoSeed()
+  findPeers()
 
   torrentClient.on('torrent', function (torrent) {
     watchTorrent(torrent.infoHash)
@@ -159,7 +164,7 @@ module.exports = function (client, config) {
       fs.readFile(getTorrentPath(infoHash), function (err, buffer) {
         if (err) return ipc.send('bg-response', id, err)
         var torrent = parseTorrent(buffer)
-        torrent.announce = announce.slice()
+        torrent.announce = Array.from(announce)
         torrentClient.add(torrent, {
           path: getTorrentDataPath(infoHash)
         }, function (torrent) {
@@ -240,7 +245,7 @@ module.exports = function (client, config) {
   function addTorrent (torrentId, cb) {
     var torrent = parseTorrent(torrentId)
     var torrentPath = getTorrentPath(torrent.infoHash)
-    torrent.announce = announce.slice()
+    torrent.announce = Array.from(announce)
 
     watchTorrent(torrent.infoHash)
 
@@ -251,7 +256,7 @@ module.exports = function (client, config) {
       fs.exists(torrentPath, (exists) => {
         torrentClient.add(exists ? torrentPath : torrent, {
           path: getTorrentDataPath(torrent.infoHash),
-          announce
+          announce: Array.from(announce)
         }, function (torrent) {
           scrapeInfoFor(torrent.infoHash)
           console.log('add torrent', torrent.infoHash)
@@ -265,7 +270,7 @@ module.exports = function (client, config) {
   function getTorrentInfo (infoHashes, cb) {
     if (infoHashes && infoHashes.length) {
       Tracker.scrape({
-        announce: announce[0],
+        announce: config.webtorrent.announceList[0],
         infoHash: infoHashes
       }, function (err, info) {
         if (err) return cb(err)
@@ -329,6 +334,7 @@ module.exports = function (client, config) {
 
       // seed rarest torrents first
       getTorrentInfo(localTorrents, (err, info) => {
+        console.log(info)
         if (err) return console.log(err)
         localTorrents.map(infoHash => [infoHash, info[infoHash] && info[infoHash].complete || 0]).sort((a, b) => {
           return (a[1] + Math.random()) - (b[1] + Math.random())
@@ -351,7 +357,7 @@ module.exports = function (client, config) {
           if (!err) {
             var torrent = parseTorrent(buffer)
             if (!torrentClient.get(torrent.infoHash)) {
-              torrent.announce = announce.slice()
+              torrent.announce = Array.from(announce)
               torrentClient.add(torrent, {
                 path: getTorrentDataPath(Path.basename(item, '.torrent'))
               }, function (torrent) {
@@ -380,7 +386,7 @@ module.exports = function (client, config) {
       while (paused.length) {
         var torrentFile = paused.pop()
         var torrent = parseTorrent(torrentFile)
-        torrentClient.add(torrent, { path: getTorrentDataPath(torrent.infoHash), announce }, (torrent) => {
+        torrentClient.add(torrent, { path: getTorrentDataPath(torrent.infoHash), announce: Array.from(announce) }, (torrent) => {
           remaining -= 1
           if (remaining === 0) {
             cb && cb()
@@ -411,6 +417,19 @@ module.exports = function (client, config) {
         }
       }))
     }
+  }
+
+  function findPeers () {
+    setInterval(() => {
+      client.gossip.peers((err, peers) => {
+        if (err) return console.error(err)
+        peers.filter(x => x.state === 'connected').forEach(function (peer) {
+          if (peer.port === config.port && peer.host === '10.0.1.9') {
+            announce.add(`ws://${peer.host}:${config.trackerPort}`)
+          }
+        })
+      })
+    }, 5000)
   }
 }
 
