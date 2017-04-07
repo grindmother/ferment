@@ -7,13 +7,15 @@
   <br>
 </h1>
 
---
+---
 
 **Ferment Pub offline**
 
-So this means you can't join right now. I'm in the process of rewriting ferment so that it can work with any standard ssb pub. Once this is done, you'll be able to use the app again, and I won't have to worry about bandwidth issues! 
+So this means you can't join right now. I'm in the process of rewriting ferment so that it can work with any standard ssb pub. Once this is done, you'll be able to use the app again, and I won't have to worry about bandwidth issues!
 
---
+More info: https://github.com/mmckegg/ferment/issues/48
+
+---
 
 [Ferment](http://ferment.audio) is a peer-to-peer audio publishing and streaming application. It is an attempted re-creation of classic SoundCloud, but runs entirely decentralized. 💞 🍻
 
