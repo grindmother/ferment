@@ -12,15 +12,13 @@ LolaShare is a peer-to-peer audio publishing and streaming application. Think So
 
 ---
 
-**Current Status**
-
-Since our initial Alpha release last year, we have made vast improvements to our underlying [peer to peer communication network](https://github.com/ssbc). Armed with the knowledge we have learned in the past year and our improved network software, we are working on taking LolaShare to the next level with our Beta release.
- 
-**LolaShare Network is offline**
+**Current Status: LolaShare Network is offline**
 
 Don't be worried! We'll be back online very soon.
 
-As we prepare our new Beta version we have taken the main LolaShare "pub" offline. This means that until our next release, you will not be able to join the p2p network.
+Since our initial Alpha release last year, we have made vast improvements to our underlying [peer to peer communication network](https://github.com/ssbc). Armed with the knowledge we have learned in the past year and our improved network software, we are working on taking LolaShare to the next level with a Beta release. 
+
+The Alpha version was using a custom fork of [SSB](https://github.com/ssbc), and we are now in the process to updating to the latest version of SSB. Until we are updated, there is no way for peers to find each other on the network.
 
 If you'd like to help please see our [Contributing](#contributing) section.
 
@@ -80,7 +78,11 @@ If you are curious, you can view our previous Alpha releases (codename: "Ferment
 <a name="contributing"></a>
 ## Contributing to the project
 
-**TODO**
+*Updated: 8/1/2017*
+
+We really appreciate the recent support we've been recieving for LolaShare. We are actively working on a contribution guide to help enable users to contribute to the project at many levels of involvement.
+
+Please check back with us in the next few days for an updated contribution guide and more information on how you can help.
 
 ## License
 
