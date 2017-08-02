@@ -14,6 +14,8 @@ LolaShare is a peer-to-peer audio publishing and streaming application. Think So
 
 **Current Status: LolaShare Network is offline**
 
+*Updated: 8/2/2017*
+
 Don't be worried! We'll be back online very soon.
 
 Since our initial Alpha release last year, we have made vast improvements to our underlying [peer to peer communication network](https://github.com/ssbc). Armed with the knowledge we have learned in the past year and our improved networking software, we are now taking LolaShare to the next level with a Beta release. 
