@@ -150,9 +150,9 @@ module.exports = function (client, config, edit) {
     h('footer', [
       h('div.info', [
         h('strong', 'Tip: '),
-        `Wait for the 🍻 status `, h('em', `before`), ` closing Ferment to `,
+        `Wait for the 🍻 status `, h('em', `before`), ` closing LolaShare to `,
         h('a', {
-          href: 'https://github.com/mmckegg/ferment#publishing-audio'
+          href: 'https://github.com/LolaShare/LolaShare/#publishing-audio'
         }, `make sure other people get your file`), `.`
       ]),
       when(publishing,
