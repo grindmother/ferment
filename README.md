@@ -82,7 +82,7 @@ If you are curious, you can view our previous Alpha releases (codename: *Ferment
 
 We really appreciate the recent support we've been receiving and are actively working on a contribution guide to help enable users to contribute to the project at many levels of involvement.
 
-The easiest way to get involved is to signup for announcements at https://lolashare.com, star the project here on Github, or pledge your support to our [Open Collective](https://opencollective.com/lolashare). 
+The easiest way to get involved is to signup for announcements at [https://lolashare.com](https://lolashare.com), star the project here on Github, follow us on [Twitter](https://twitter.com/lolashare), or pledge your support to our [Open Collective](https://opencollective.com/lolashare). 
 
 If you’d like to join the conversation with our developers, you can download the [Patchwork client](https://github.com/ssbc/patchwork), join a [public hub](https://github.com/ssbc/scuttlebot/wiki/Pub-Servers), and find us in the #lolashare room on the SSB network.
 
