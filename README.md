@@ -14,7 +14,7 @@ Lola is a peer-to-peer audio publishing and streaming application. Think SoundCl
 
 **Current Status: Lola Network is offline**
 
-*Updated: 8/2/2017*
+*Updated: 8/4/2017*
 
 Don't be worried! We'll be back online very soon.
 
@@ -80,8 +80,6 @@ If you are curious, you can view our previous Alpha releases (codename: *Ferment
 <a name="contributing"></a>
 ## Contributing to the project
 
-*Updated: 8/2/2017*
-
 We really appreciate the recent support we've been receiving and are actively working on a contribution guide to help enable users to contribute to the project at many levels of involvement.
 
 The easiest way to get involved is to signup for announcements at [https://lolashare.com](https://lolashare.com), star the project here on Github, follow us on [Twitter](https://twitter.com/lolashare), or pledge your support to our [Open Collective](https://opencollective.com/lolashare). 
@@ -92,7 +90,9 @@ If you’d like to join the conversation with our developers, you can download t
 
 Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/lolashare#backer)]
 
-<a href="https://opencollective.com/lolashare/backer/0/website" target="_blank"><img src="https://opencollective.com/lolashare/backer/0/avatar.svg"></a>
+<a href="https://opencollective.com/lolashare/backer/0/website" target="_blank">
+  <img src="https://opencollective.com/lolashare/backer/0/avatar.svg">
+</a>
 <a href="https://opencollective.com/lolashare/backer/1/website" target="_blank"><img src="https://opencollective.com/lolashare/backer/1/avatar.svg"></a>
 <a href="https://opencollective.com/lolashare/backer/2/website" target="_blank"><img src="https://opencollective.com/lolashare/backer/2/avatar.svg"></a>
 <a href="https://opencollective.com/lolashare/backer/3/website" target="_blank"><img src="https://opencollective.com/lolashare/backer/3/avatar.svg"></a>
