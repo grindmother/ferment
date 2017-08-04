@@ -90,9 +90,7 @@ If you’d like to join the conversation with our developers, you can download t
 
 Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/lolashare#backer)]
 
-<a href="https://opencollective.com/lolashare/backer/0/website" target="_blank">
-  <img src="https://opencollective.com/lolashare/backer/0/avatar.svg">
-</a>
+<a href="https://opencollective.com/lolashare/backer/0/website" target="_blank"><img src="https://opencollective.com/lolashare/backer/0/avatar.svg"/></a>
 <a href="https://opencollective.com/lolashare/backer/1/website" target="_blank"><img src="https://opencollective.com/lolashare/backer/1/avatar.svg"></a>
 <a href="https://opencollective.com/lolashare/backer/2/website" target="_blank"><img src="https://opencollective.com/lolashare/backer/2/avatar.svg"></a>
 <a href="https://opencollective.com/lolashare/backer/3/website" target="_blank"><img src="https://opencollective.com/lolashare/backer/3/avatar.svg"></a>
