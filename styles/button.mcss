@@ -1,14 +1,14 @@
 button {
-  border: 2px solid #7B7B7B
-  background: #505050
-  color: #CCCCCC
-  border-radius: 4px
-  padding: 4px 10px
+  color: #5f5f5f;
+  padding: 3px 6px;
+  background: white;
+  border: 2px solid #DDD;
+  border-radius: 4px;
   font-size: 130%
   cursor: pointer
 
   :hover {
-    color: white
+    color: black
     border-color: #8B8B8B
   }
 
@@ -17,54 +17,40 @@ button {
   }
 
   :active {
-    background-color: #333 !important
+    background-color: #DDD !important
   }
 
-  -follow {
-    border-color: #29b7c5;
-    background-color: #317a96;
-    text-shadow: 1px 1px 1px #000;
-    color: white;
-
-    :active {
-      background-color: #07425f !important
-    }
-
-    :hover {
-      background-color: #345d6d;
-      border-color: #4c98b5;
-    }
+  [disabled] {
+    color: #999797 !important;
+    background: #e3e2e2 !important;
+    border-color: #DDD !important;
   }
 
-  -stop {
-    border-color: #884949
-    background-color: #5D2524
-    text-shadow: 1px 1px 1px #000
-    color: white
+  -add {
+    color: #6a7e6a;
+    background-color: #ecfff0;
+    border-color: #8ba289;
+  }
 
-    :active {
-      background-color: #331F1F !important
-    }
-
-    :hover {
-      background-color: #6D3534
-      border-color: #B54C4C
-    }
+  -pub {
+    color: #6a7e6a;
+    background-color: #ecfff0;
+    border-color: #8ba289;
   }
 
   -save {
-    border-color: #498849
-    background-color: #255D24
-    text-shadow: 1px 1px 1px #000
-    color: white
+    border-color: #a7c7a6;
+    background-color: #eeffee;
+    color: #255D24;
 
     :active {
-      background-color: #1F331F !important
+      background-color: #c6e0c5 !important
     }
 
     :hover {
-      background-color: #356D34
-      border-color: #4CB54C
+      border-color: #3ac737;
+      background-color: #d4ffd4;
+      color: #21921f;
     }
   }
 
@@ -72,21 +58,5 @@ button {
     display: block
     width: 100%
     margin: 15px 0
-  }
-
-  -pub {
-    border-color: #884988
-    background-color: #5D245D
-    text-shadow: 1px 1px 1px #000
-    color: white
-
-    :active {
-      background-color: #331F33 !important
-    }
-
-    :hover {
-      background-color: #6D346D
-      border-color: #B54CB5
-    }
   }
 }

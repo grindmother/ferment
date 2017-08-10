@@ -5,14 +5,14 @@ var AudioOverview = require('./widgets/audio-overview')
 var computed = require('@mmckegg/mutant/computed')
 var when = require('@mmckegg/mutant/when')
 var Value = require('@mmckegg/mutant/value')
-var convert = require('./lib/convert')
-var generateMeta = require('./lib/generate-meta')
-var parseTorrentFile = require('parse-torrent-file')
-var createTorrent = require('create-torrent')
+//var convert = require('./lib/convert')
+//var generateMeta = require('./lib/generate-meta')
+//var parseTorrentFile = require('parse-torrent-file')
+//var createTorrent = require('create-torrent')
 var fs = require('fs')
 var extend = require('xtend')
 var sanitizeFileName = require('sanitize-filename')
-var processImage = require('./lib/process-image')
+//var processImage = require('./lib/process-image')
 var util = require('util')
 
 // TODO: rewrite all of this with less callback hell. Maybe pull streams?
@@ -130,7 +130,7 @@ module.exports = function (client, config, edit) {
           })
         }
       }, [
-        h('span', ['🖼 Choose Artwork...']), artworkInput
+        h('span', [' Choose Artwork...']), artworkInput
       ]),
       h('div.main', [
         h('div.info', [
@@ -140,17 +140,17 @@ module.exports = function (client, config, edit) {
           classList: [
             when(processing, '-processing')
           ]
-        }, [
+        }/*, [
           AudioOverview(overview, 600, 100),
-          h('span', ['📂 Choose Audio File...']),
+          h('span', [' Choose Audio File...']),
           audioInput
-        ])
+        ]*/)
       ])
     ]),
     h('footer', [
       h('div.info', [
         h('strong', 'Tip: '),
-        `Wait for the 🍻 status `, h('em', `before`), ` closing LolaShare to `,
+        `Wait for the  status `, h('em', `before`), ` closing LolaShare to `,
         h('a', {
           href: 'https://github.com/LolaShare/LolaShare/#publishing-audio'
         }, `make sure other people get your file`), `.`

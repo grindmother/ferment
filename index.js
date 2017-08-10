@@ -4,111 +4,69 @@ process.on('uncaughtException', function (err) {
 })
 
 var electron = require('electron')
-var setupIpc = require('./lib/background-ipc')
 var openWindow = require('./lib/window')
-var createSbot = require('./lib/ssb-server')
-var serveBlobs = require('./lib/serve-blobs')
-var makeSingleInstance = require('./lib/make-single-instance')
-var pull = require('pull-stream')
-var pullFile = require('pull-file')
+
 var Path = require('path')
-var fs = require('fs')
 var defaultMenu = require('electron-default-menu')
+var WindowState = require('electron-window-state')
 var Menu = electron.Menu
-var dataUriToBuffer = require('data-uri-to-buffer')
-var globalShortcut = electron.globalShortcut
+var extend = require('xtend')
+var ssbKeys = require('ssb-keys')
 
 var windows = {
   dialogs: new Set()
 }
+var ssbConfig = null
+var quitting = false
 
-var context = null
-// TODO: rewrite this to just use ssbConfig
-if (process.argv.includes('--test-peer')) {
-  // helpful for testing peers on a single machine
-  context = setupContext('ferment-peer', {
-    port: 43762
+electron.app.on('ready', () => {
+  setupContext('ssb', {
+    server: !(process.argv.includes('-g') || process.argv.includes('--use-global-ssb'))
+  }, () => {
+    var menu = defaultMenu(electron.app, electron.shell)
+    var view = menu.find(x => x.label === 'View')
+    view.submenu = [
+      { role: 'reload' },
+      { role: 'toggledevtools' },
+      { type: 'separator' },
+      { role: 'resetzoom' },
+      { role: 'zoomin' },
+      { role: 'zoomout' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' }
+    ]
+    if (process.platform === 'darwin') {
+      var win = menu.find(x => x.label === 'Window')
+      win.submenu = [
+        { role: 'minimize' },
+        { role: 'zoom' },
+        { role: 'close', label: 'Close' },
+        { type: 'separator' },
+        { role: 'front' }
+      ]
+    }
+    Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
+    openMainWindow()
   })
-} else if (process.argv.includes('--create-invite')) {
-  context = setupContext('ferment', { allowPrivate: true })
-  context.sbot.invite.create(1, (err, code) => {
-    if (err) throw err
-    console.log(`invite code:\n\n${code}\n`)
+
+  electron.app.on('activate', function (e) {
+    if (windows.main) {
+      windows.main.show()
+    }
   })
-} else if (process.argv.includes('--use-global-ssb') || process.argv.includes('-g')) {
-  context = setupContext('ssb', {
-    port: 8008,
-    blobsPort: 7777,
-    server: false
+
+  electron.app.on('before-quit', function () {
+    quitting = true
   })
-} else {
-  makeSingleInstance(windows, openMainWindow)
-  context = setupContext('ferment')
-}
+  
+  electron.ipcMain.on('open-add-window', (ev, data) => openAddWindow(data))
 
-electron.ipcMain.on('add-blob', (ev, id, path, cb) => {
-  pull(
-    path.startsWith('data:') ? pull.values([dataUriToBuffer(path)]) : pullFile(path),
-    context.sbot.blobs.add((err, hash) => {
-      if (err) return ev.sender.send('response', id, err)
-      ev.sender.send('response', id, null, hash)
-    })
-  )
+  electron.ipcMain.on('open-background-devtools', function (ev, config) {
+    if (windows.background) {
+      windows.background.webContents.openDevTools({detach: true})
+    }
+  })
 })
-
-electron.app.on('ready', function () {
-  Menu.setApplicationMenu(Menu.buildFromTemplate(defaultMenu(electron.app, electron.shell)))
-  setupIpc(windows)
-  startBackgroundProcess()
-  openMainWindow()
-})
-
-electron.app.on('activate', function (e) {
-  openMainWindow()
-})
-
-electron.ipcMain.on('open-add-window', (ev, data) => openAddWindow(data))
-electron.ipcMain.on('open-edit-profile-window', (ev, data) => openEditProfileWindow(data))
-electron.ipcMain.on('open-join-pub-window', openJoinPubWindow)
-electron.ipcMain.on('open-background-devtools', openBackgroundDevTools)
-
-function openMainWindow () {
-  if (!windows.main) {
-    windows.main = openWindow(context, Path.join(__dirname, 'main-window.js'), {
-      minWidth: 800,
-      width: 1024,
-      height: 768,
-      titleBarStyle: 'hidden-inset',
-      title: 'LolaShare',
-      show: true,
-      backgroundColor: '#444',
-      webPreferences: {
-        experimentalFeatures: true
-      },
-      icon: './lolashare-logo.png'
-    })
-    windows.main.setSheetOffset(40)
-
-    windows.main.once('show', function () {
-      globalShortcut.register('MediaPlayPause', function () {
-        if (windows.main) windows.main.webContents.send('playPause')
-      })
-
-      globalShortcut.register('MediaNextTrack', function () {
-        if (windows.main) windows.main.webContents.send('nextTrack')
-      })
-
-      globalShortcut.register('MediaPreviousTrack', function () {
-        if (windows.main) windows.main.webContents.send('previousTrack')
-      })
-    })
-
-    windows.main.on('closed', function () {
-      windows.main = null
-      globalShortcut.unregisterAll()
-    })
-  }
-}
 
 function openAddWindow (opts) {
   var window = openWindow(context, Path.join(__dirname, 'add-audio-window.js'), {
@@ -133,94 +91,80 @@ function openAddWindow (opts) {
   })
 }
 
-function openEditProfileWindow (opts) {
-  var window = openWindow(context, Path.join(__dirname, 'edit-profile-window.js'), {
-    parent: windows.main,
-    modal: true,
-    show: true,
-    width: 800,
-    height: 300,
-    useContentSize: true,
-    maximizable: false,
-    fullscreenable: false,
-    skipTaskbar: true,
-    resizable: false,
-    title: 'Edit Profile',
-    backgroundColor: '#444',
-    data: opts
-  })
-
-  windows.dialogs.add(window)
-
-  window.on('closed', function () {
-    windows.dialogs.delete(window)
-  })
-}
-
-function openJoinPubWindow () {
-  var window = openWindow(context, Path.join(__dirname, 'join-pub-window.js'), {
-    parent: windows.main,
-    modal: true,
-    show: true,
-    width: 650,
-    height: 280,
-    useContentSize: true,
-    maximizable: false,
-    fullscreenable: false,
-    skipTaskbar: true,
-    resizable: false,
-    title: 'Join Public Server',
-    backgroundColor: '#444',
-    webPreferences: {
-      openerId: windows.main.webContents.id
-    }
-  })
-
-  windows.dialogs.add(window)
-
-  window.on('closed', function () {
-    windows.dialogs.delete(window)
-  })
-}
-
-function startBackgroundProcess () {
-  windows.background = openWindow(context, Path.join(__dirname, 'background-window.js'), {
-    center: true,
-    fullscreen: false,
-    fullscreenable: false,
-    height: 150,
-    maximizable: false,
-    minimizable: false,
-    resizable: false,
-    show: false,
-    skipTaskbar: true,
-    title: 'ferment-background-window',
-    useContentSize: true,
-    width: 150
-  })
-}
-
-function openBackgroundDevTools () {
-  if (windows.background) {
-    windows.background.webContents.openDevTools({detach: true})
+function openMainWindow () {
+  if (!windows.main) {
+    var windowState = WindowState({
+      defaultWidth: 1024,
+      defaultHeight: 768
+    })
+    windows.main = openWindow(ssbConfig, Path.join(__dirname, 'main-window.js'), {
+      minWidth: 800,
+      x: windowState.x,
+      y: windowState.y,
+      width: windowState.width,
+      height: windowState.height,
+      titleBarStyle: 'hidden-inset',
+      autoHideMenuBar: true,
+      title: 'Patchwork',
+      show: true,
+      backgroundColor: '#EEE',
+      webPreferences: {
+        experimentalFeatures: true
+      },
+      icon: './assets/icon.png'
+    })
+    windowState.manage(windows.main)
+    windows.main.setSheetOffset(40)
+    windows.main.on('close', function (e) {
+      if (!quitting && process.platform === 'darwin') {
+        e.preventDefault()
+        windows.main.hide()
+      }
+    })
+    windows.main.on('closed', function () {
+      windows.main = null
+      if (process.platform !== 'darwin') electron.app.quit()
+    })
   }
 }
 
-function setupContext (appName, opts) {
-  var ssbConfig = require('./lib/ssb-config')(appName, opts)
-  if (opts && opts.server === false) {
-    return {
-      config: ssbConfig
-    }
+function setupContext (appName, opts, cb) {
+  ssbConfig = require('ssb-config/inject')(appName, extend({
+    port: 8008,
+    blobsPort: 7777
+  }, opts))
+
+  ssbConfig.keys = ssbKeys.loadOrCreateSync(Path.join(ssbConfig.path, 'secret'))
+
+  // fix offline on windows by specifying 127.0.0.1 instead of localhost (default)
+  var id = ssbConfig.keys.id
+  ssbConfig.remote = `net:127.0.0.1:${ssbConfig.port}~shs:${id.slice(1).replace('.ed25519', '')}`
+
+  if (opts.server === false) {
+    cb && cb()
   } else {
-    var context = {
-      sbot: createSbot(ssbConfig),
-      config: ssbConfig
-    }
-    ssbConfig.manifest = context.sbot.getManifest()
-    serveBlobs(context)
-    fs.writeFileSync(Path.join(ssbConfig.path, 'manifest.json'), JSON.stringify(ssbConfig.manifest))
-    console.log(`Address: ${context.sbot.getAddress()}`)
-    return context
+    electron.ipcMain.once('server-started', function (ev, config) {
+      ssbConfig = config
+      cb && cb()
+    })
+    windows.background = openWindow(ssbConfig, Path.join(__dirname, 'server-process.js'), {
+      connect: false,
+      center: true,
+      fullscreen: false,
+      fullscreenable: false,
+      height: 150,
+      maximizable: false,
+      minimizable: false,
+      resizable: false,
+      show: false,
+      skipTaskbar: true,
+      title: 'patchwork-server',
+      useContentSize: true,
+      width: 150
+    })
+    // windows.background.on('close', (ev) => {
+    //   ev.preventDefault()
+    //   windows.background.hide()
+    // })
   }
 }
