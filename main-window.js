@@ -91,7 +91,7 @@ module.exports = function (config) {
         ])
       ]),
       h('span.appTitle', [
-        h('span.title', 'Patchwork'),
+        h('span.title', 'Lola'),
         api.app.html.progressNotifier()
       ]),
       

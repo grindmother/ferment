@@ -85,10 +85,10 @@ exports.create = function (api) {
     })
 
     var result = h('div.SplitView', [
+      h('div.main', feedView),
       h('div.side', [
         getSidebar()
-      ]),
-      h('div.main', feedView)
+      ])
     ])
 
     result.pendingUpdates = feedView.pendingUpdates

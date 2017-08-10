@@ -29,6 +29,8 @@ exports.create = function (api) {
 
       function publish () {
         close()
+        //console.log('what is the content', content);
+        content.type = '/lola/audio';
         api.sbot.async.publish(content, cb)
       }
 

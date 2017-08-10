@@ -90,6 +90,7 @@ exports.create = function (api) {
           var root = msg.root || msg
           return root && root.value && root.value.content && rootFilter(root) && bumpFilter(msg) && displayFilter(msg)
         }),
+
         pull.drain((msg) => {
           if (msg.value.content.type === 'vote') return
           if (api.app.sync.externalHandler(msg)) return

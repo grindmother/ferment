@@ -105,7 +105,7 @@ function openMainWindow () {
       height: windowState.height,
       titleBarStyle: 'hidden-inset',
       autoHideMenuBar: true,
-      title: 'Patchwork',
+      title: 'LOLA',
       show: true,
       backgroundColor: '#EEE',
       webPreferences: {

@@ -1,5 +1,5 @@
-var computed = require('@mmckegg/mutant/computed')
-var watch = require('@mmckegg/mutant/watch')
+var computed = require('mutant/computed')
+var watch = require('mutant/watch')
 var svg = require('../lib/svg')
 var drawSvgOverview = require('../lib/svg-overview')
 
