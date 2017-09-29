@@ -1,24 +1,24 @@
 <h1 align="center">
   <br>
-  <img src="/assets/logo/64.png" alt="Lola" width="200">
+  <img src="/assets/logo/64.png" alt="LolaShare" width="200">
   <br>
-  Lola
+  LolaShare
   <br>
   <br>
 </h1>
 
 
-Lola is a peer-to-peer audio publishing and streaming application. Think SoundCloud or Spotify, but entirely decentralized and free.
+LolaShare is a peer-to-peer audio publishing and streaming application. Think SoundCloud or Spotify, but entirely decentralized and free.
 
 ---
 
-**Current Status: Lola Network is offline**
+**Current Status: LolaShare Network is offline**
 
 *Updated: 8/2/2017*
 
 Don't be worried! We'll be back online very soon.
 
-Since our initial Alpha release last year, we have made vast improvements to our underlying [peer to peer communication network](https://github.com/ssbc). Armed with the knowledge we have learned in the past year and our improved networking software, we are now taking Lola to the next level with a Beta release. 
+Since our initial Alpha release last year, we have made vast improvements to our underlying [peer to peer communication network](https://github.com/ssbc). Armed with the knowledge we have learned in the past year and our improved networking software, we are now taking LolaShare to the next level with a Beta release. 
 
 The Alpha version was using a custom fork of [SSB](https://github.com/ssbc), and we are now in the process to updating to the latest version of SSB. Until we complete this update there is no way for peers to find each other on the network.
 
@@ -41,7 +41,7 @@ Our vision is a future where users truly control their own content through socia
 
 ## Who we are
 
-Lola is made by a group of like-minded open-source software developers with a common love for making music. 
+LolaShare is made by a group of like-minded open-source software developers with a common love for making music. 
 
 We wanted to create a free, sustainable, and open solution for original music creators to share and discover new works of music. 
 
@@ -49,25 +49,25 @@ Some of us have been working together on open-source software projects for almos
 
 ## How it works
 
-Lola uses a peer-to-peer gossip protocol called [SSB](https://github.com/ssbc). **There is no central server and no single point of failure.** Everyone on the network acts a server, maintaining a copy of all of their friends and their friend's friends data.
+LolaShare uses a peer-to-peer gossip protocol called [SSB](https://github.com/ssbc). **There is no central server and no single point of failure.** Everyone on the network acts a server, maintaining a copy of all of their friends and their friend's friends data.
 
-Lola will gossip ( securely communicate ) with other peers ( your friends ) to find out if any of your shared contacts have posted new materials. All posts are cryptographically proven with an append-only log, ensuring no posts are skipped or lost.
+LolaShare will gossip ( securely communicate ) with other peers ( your friends ) to find out if any of your shared contacts have posted new materials. All posts are cryptographically proven with an append-only log, ensuring no posts are skipped or lost.
 
-Traditionally, finding peers across a complex network topography ( the internet ) has been a difficult problem. This is why Lola uses "pub" servers. A "pub" acts as gossip broker where information can be shared across networks. A "pub" is just an ordinary Lola peer which has a publicly accessible IP address and may be remotely connected to on demand. Lola will maintain several "main" pubs, ensuring there is always an easy way to connect and begin discovering new music and content creators. Users may also create their own pubs and invite others to join.
+Traditionally, finding peers across a complex network topography ( the internet ) has been a difficult problem. This is why LolaShare uses "pub" servers. A "pub" acts as gossip broker where information can be shared across networks. A "pub" is just an ordinary LolaShare peer which has a publicly accessible IP address and may be remotely connected to on demand. LolaShare will maintain several "main" pubs, ensuring there is always an easy way to connect and begin discovering new music and content creators. Users may also create their own pubs and invite others to join.
 
-The actual audio files are Torrents powered by [webtorrent](webtorrent.io) over the WebRTC protocol. [SSB](github.com/ssbc) is used to propagate messages between peers which contains a link to a magnet url. It sounds complex, but Lola is able to present this seamlessly to users through a simple upload form, much like other music sharing sites.
+The actual audio files are Torrents powered by [webtorrent](webtorrent.io) over the WebRTC protocol. [SSB](github.com/ssbc) is used to propagate messages between peers which contains a link to a magnet url. It sounds complex, but LolaShare is able to present this seamlessly to users through a simple upload form, much like other music sharing sites.
 
-Whenever you listen to audio in Lola, you will begin to seed that file with other peers. The audio will be cached on your machine until you remove it, or decide to stop sharing it.
+Whenever you listen to audio in LolaShare, you will begin to seed that file with other peers. The audio will be cached on your machine until you remove it, or decide to stop sharing it.
 
-## Lola and Copyright
+## LolaShare and Copyright
 
-Lola is an audio publishing platform for **copyright-owning creators**, **creative commons licensed material**, **remix artists**, and **DJs**. 
+LolaShare is an audio publishing platform for **copyright-owning creators**, **creative commons licensed material**, **remix artists**, and **DJs**. 
 
-Since Lola is a decentralized peer-to-peer community, what you curate in your network is up to you. We strongly recommend users abide by the applicable copyright laws of their country.
+Since LolaShare is a decentralized peer-to-peer community, what you curate in your network is up to you. We strongly recommend users abide by the applicable copyright laws of their country.
 
-For example, if someone in your network ( your friends ) added copyrighted material, and you listen to it, your Lola will start sharing the file. If you don't want to share the legal responsibility for this, you can right-click and select 'Stop Sharing Post' You should also consider unfollowing the user and reporting the infringement to the owner of the pub to prevent the spread of the material.
+For example, if someone in your network ( your friends ) added copyrighted material, and you listen to it, your LolaShare will start sharing the file. If you don't want to share the legal responsibility for this, you can right-click and select 'Stop Sharing Post' You should also consider unfollowing them this user and reporting the infringement to the owner of the pub to prevent the spread of the material.
 
-Lola itself will **never** host any non-creative commons materials or maintain a directory of links to copyrighted materials. We own no servers, and maintain no music database or trackers containing copyrighted materials.
+LolaShare itself will **never** host any non-creative commons materials or maintain a directory of links to copyrighted materials. We own no servers, and maintain no music database or trackers containing copyrighted materials.
 
 ## Installation
 
