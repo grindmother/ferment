@@ -32,9 +32,9 @@
   "author": "Matt McKegg",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/LolaShare/LolaShare/issues"
+    "url": "https://github.com/mmckegg/ferment/issues"
   },
-  "homepage": "https://github.com/LolaShare/LolaShare#readme",
+  "homepage": "https://github.com/mmckegg/ferment#readme",
   "dependencies": {
     "@mmckegg/mutant": "~3.7.2",
     "atomic-file": "^0.1.0",

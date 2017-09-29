@@ -79,13 +79,13 @@ function openMainWindow () {
       width: 1024,
       height: 768,
       titleBarStyle: 'hidden-inset',
-      title: 'LolaShare',
+      title: 'Ferment',
       show: true,
       backgroundColor: '#444',
       webPreferences: {
         experimentalFeatures: true
       },
-      icon: './lolashare-logo.png'
+      icon: './ferment-logo.png'
     })
     windows.main.setSheetOffset(40)
 

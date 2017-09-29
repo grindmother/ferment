@@ -36,7 +36,7 @@ function DiscoveryFeed (context) {
               ` to really get things going! 🍻`
             ]),
             h('img', {
-              src: `file://${Path.join(__dirname, '..', 'lolashare-logo.png')}`,
+              src: `file://${Path.join(__dirname, '..', 'ferment-logo.png')}`,
               style: {
                 display: 'block',
                 width: 200,
