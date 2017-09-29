@@ -1,161 +1,222 @@
 <h1 align="center">
   <br>
-  <img src="/assets/logo/64.png" alt="Lola" width="200">
+  <a href="http://ferment.audio"><img src="/ferment-logo.png" alt="Ferment" width="200"></a>
   <br>
-  Lola
+  Ferment
   <br>
   <br>
 </h1>
 
+---
 
-Lola is a peer-to-peer audio publishing and streaming application. Think SoundCloud or Spotify, but entirely decentralized and free.
+**Ferment Pub offline**
+
+So this means you can't join right now. I'm in the process of rewriting ferment so that it can work with any standard ssb pub. Once this is done, you'll be able to use the app again, and I won't have to worry about bandwidth issues!
+
+More info: https://github.com/mmckegg/ferment/issues/48
 
 ---
 
-**Current Status: Lola Network is offline**
+[Ferment](http://ferment.audio) is a peer-to-peer audio publishing and streaming application. It is an attempted re-creation of classic SoundCloud, but runs entirely decentralized. 💞 🍻
 
-*Updated: 8/4/2017*
+It is made possible by combining these **amazing** projects: [ssb](https://scuttlebot.io/), [webtorrent](https://webtorrent.io/) and [electron](http://electron.atom.io/).
 
-Don't be worried! We'll be back online very soon.
+[📺 Watch a quick video demo](https://www.youtube.com/watch?v=xgvxXbWYmrI)
 
-Since our initial Alpha release last year, we have made vast improvements to our underlying [peer to peer communication network](https://github.com/ssbc). Armed with the knowledge we have learned in the past year and our improved networking software, we are now taking Lola to the next level with a Beta release. 
+[🔽 Download for macOS](https://github.com/mmckegg/ferment/releases)
 
-The Alpha version was using a custom fork of [SSB](https://github.com/ssbc), and we are now in the process to updating to the latest version of SSB. Until we complete this update there is no way for peers to find each other on the network.
+[🛠 Build from source](#install)
 
-If you'd like to help please see our [Contributing](#contributing) section.
+[💖 Donate and support me on Patreon](https://www.patreon.com/MattMcKegg)
 
----
+<img src="/assets/ferment-screenshot-0.0.0.jpg" alt="WebTorrent" width="888" height="688" />
 
-*a screenshot from our alpha release, codename: Ferment*
-<img src="/assets/ferment-screenshot-0.0.0.jpg" alt="Alpha Screenshot" width="888" height="688" />
+## Requirements
+
+Right now things are [super easy](https://github.com/mmckegg/ferment/releases) if you are running macOS, but for other platforms you need to do some [hard open-sourcey compilation stuff](#install). Also it just doesn't work at all on Windows right now (will be [addressed soon](https://github.com/mmckegg/ferment/issues/30)).
+
+If there is no [packaged app](https://github.com/mmckegg/ferment/releases) for your platform, you'll need to build from source using modern version of [`node` and `npm`](https://nodejs.org).
 
 ## Inspiration
 
-The costs associated with running a traditional streaming music site far outweigh the amount of revenue any traditional business model can support (without severely affecting user experience). We can see this now with SoundCloud's high prices and constant advertisements. Other streaming services are losing money every year and are not sustainable.
+I'm trying to replace my need for SoundCloud as a [backyard musician that uploads WAY to much stuff](https://soundcloud.com/destroy-with-science).
 
-There is no money in hosting other people's content for free, and these existing music sharing companies need to maintain high revenues to stay in business and keep their investors happy.
+I'd been ranting to my friends for a few months about how much SoundCloud has changed since "the good old days". But then I gave it some thought and realised the changes **did make a lot sense from their perspective**. There is no money in hosting other people's content for free, and the company does need to **stay in business and keep those investors happy**.
 
-Ultimately, this is bad for the users and content creators. There is an implicit tie-in to these services. APIs disappear one-by-one, data formats close up, previous free features are put behind paywalls. You become dependent on these services, and then they change all your favourite features or simply just shut down. 
+It's just a real shame how much forced tie-in there is with these sorts of online services. APIs disappear one-by-one, data formats close up. You become dependent on them, and then they change all your favourite features or simply just shut down. **This is a rather unfortunate vision of a tech future that I don't want to live in.**
 
-Our vision is a future where users truly control their own content through socially connected systems which interact on a personal level.
-
-## Who we are
-
-Lola is made by a group of like-minded open-source software developers with a common love for making music. 
-
-We wanted to create a free, sustainable, and open solution for original music creators to share and discover new works of music. 
-
-Some of us have been working together on open-source software projects for almost a decade, while others have just recently joined the cause.
+The incentives are all in the wrong places. **We need small scale systems that work on a personal level.** Sure there are trade-offs, but I'm sick of this completely disconnected feeling you get in the globally connected world.
 
 ## How it works
 
-Lola uses a peer-to-peer gossip protocol called [SSB](https://github.com/ssbc). **There is no central server and no single point of failure.** Everyone on the network acts a server, maintaining a copy of all of their friends and their friend's friends data.
+Ferment uses a peer-to-peer gossip protocol called [Secure Scuttlebutt](https://scuttlebot.io/more/protocols/secure-scuttlebutt.html). The best part about this is there is **no central server** and **no single point of failure**. In fact everyone on the network is a server, with a copy of all of their friends and their friend's friends data. You gossip with other peers to find out if any of your shared contacts have any new posts and share them. But by gossip, we mean cryptographically prove everything they've said since the last time you heard from them. It is impossible to skip a message.
 
-Lola will gossip ( securely communicate ) with other peers ( your friends ) to find out if any of your shared contacts have posted new materials. All posts are cryptographically proven with an append-only log, ensuring no posts are skipped or lost.
+[Finding peers across the complex topography of the internet is pretty difficult though](https://scuttlebot.io/more/articles/design-challenge-avoid-centralization-and-singletons.html). This is where pub servers come in. They act as gossip hubs where information can be shared across networks. A pub is just an ordinary Ferment peer that has a publicly accessible IP address and can be remotely connected to on demand.
 
-Traditionally, finding peers across a complex network topography ( the internet ) has been a difficult problem. This is why Lola uses "pub" servers. A "pub" acts as gossip broker where information can be shared across networks. A "pub" is just an ordinary Lola peer which has a publicly accessible IP address and may be remotely connected to on demand. Lola will maintain several "main" pubs, ensuring there is always an easy way to connect and begin discovering new music and content creators. Users may also create their own pubs and invite others to join.
+The actual audio files are just torrents (a special variant called [webtorrent](https://github.com/feross/webtorrent) that works over WebRTC). The SSB message contains a reference to its magnet url, and you seed the file to other ferment peers.
 
-The actual audio files are Torrents powered by [webtorrent](webtorrent.io) over the WebRTC protocol. [SSB](github.com/ssbc) is used to propagate messages between peers which contains a link to a magnet url. It sounds complex, but Lola is able to present this seamlessly to users through a simple upload form, much like other music sharing sites.
+**Whenever you listen to something in Ferment, you start seeding that file with other peers.** It will be cached on your machine until you remove it (right-click > Stop Sharing Post). In the future this may be handled automatically (you'll only cache material you have "liked" and selected content from followed users that are weak on the network).
 
-Whenever you listen to audio in Lola, you will begin to seed that file with other peers. The audio will be cached on your machine until you remove it, or decide to stop sharing it.
+## Ferment and Copyright
 
-## Lola and Copyright
+Ferment is an audio publishing platform for **copyright-owning creators**, **creative commons licensed material**, **remix artists** and **DJs**. As this is a decentralized, peer-to-peer community, what you culture in your network is up to you. **You get to choose what level of sharing legality you are comfortable with.**
 
-Lola is an audio publishing platform for **copyright-owning creators**, **creative commons licensed material**, **remix artists**, and **DJs**. 
+For example, if someone in your network adds copyrighted material, and you listen to it, your Ferment will start sharing the file. If you don't want to share the legal responsibility for this, right-click and select 'Stop Sharing Post.'
 
-Since Lola is a decentralized peer-to-peer community, what you curate in your network is up to you. We strongly recommend users abide by the applicable copyright laws of their country.
+You could also consider unfollowing them and reporting the infringement to the owner of the pub to prevent the spread of the material.
 
-For example, if someone in your network ( your friends ) added copyrighted material, and you listen to it, your Lola will start sharing the file. If you don't want to share the legal responsibility for this, you can right-click and select 'Stop Sharing Post' You should also consider unfollowing the user and reporting the infringement to the owner of the pub to prevent the spread of the material.
+**A pub owner should unfollow anyone who adds material which infringes copyright.**
 
-Lola itself will **never** host any non-creative commons materials or maintain a directory of links to copyrighted materials. We own no servers, and maintain no music database or trackers containing copyrighted materials.
+## Joining Pub Server
 
-## Installation
+By default, **Ferment** will only see other users that are on the same local area network as you. In order to share with users on the internet, you need to be invited to a pub server.
 
-Since we are in the process of making a major network update, we've currently removed installation and build instructions.
+Since I'm a nice person 💖 you can hang out in my pub, and you don't even have to buy any drinks! 🍻 But please be mindful about uploading content that you do not own the rights to. My pub will [unfollow anyone who uploads content that I don't think is _fair_ to the original creators](#ferment-and-copyright).
 
-We'll be adding cross-platform installation and build instructions back as soon as our Beta version is able to connect to the updated SSB network.
+**Click 'Join Pub' on the sidebar then paste the code below:**
 
-If you are curious, you can view our previous Alpha releases (codename: *Ferment*) for MacOS [here](https://github.com/fermentation/ferment/releases), but it won't be able to connect anywhere since it's using our legacy protocol.
+```
+pub.ferment.audio:43761:@uIL3USK7QJg5AHohnZC329+RXS09nwjc24ulFBH2Ngg=.ed25519~Dss0hBA6buBPJQS36BDCddkFxZmF6HV30LkHCj8QgjI=
+```
 
-<a name="contributing"></a>
-## Contributing to the project
+> **NOTE:** To avoid destroying my server, this code can only be used a limited amount of times. Please post an issue if it doesn't work for you, and I'll generate a new one.
 
-We really appreciate the recent support we've been receiving and are actively working on a contribution guide to help enable users to contribute to the project at many levels of involvement.
+If all goes to well, you'll start to see audio appear before your eyes! Give that play button a spin.
 
-The easiest way to get involved is to signup for announcements at [https://lolashare.com](https://lolashare.com), star the project here on Github, follow us on [Twitter](https://twitter.com/lolashare), or pledge your support to our [Open Collective](https://opencollective.com/lolashare). 
+However, if you don't see anything appear after about 30 seconds, try restarting ferment. It may take a minute or two before it appears. You should be all good as long as `+connected pub.ferment.audio:43761:....` appears in your terminal.
 
-If you’d like to join the conversation with our developers, you can download the [Patchwork client](https://github.com/ssbc/patchwork), join a [public hub](https://github.com/ssbc/scuttlebot/wiki/Pub-Servers), and find us in the #lolashare room on the SSB network.
+**If you receive an error message, it probably means my pub server has locked up. This seems to be happening a bit at the moment, [trying to get to the bottom of it](https://github.com/mmckegg/ferment/issues/7).** Let me know and I'll restart it. In the mean time, you could start creating a shiny profile and adding some tunes!
+
+## Publishing Audio
+
+You can share audio with your followers by clicking the "+ Add Audio" button in the top right corner of the screen. [Make sure you read the section about copyright before publishing anything!](#ferment-and-copyright)
+
+After choosing a file and pressing **Publish**, Ferment will convert your audio into a format that compresses and streams well. At this point, you will start to seed the file.
+
+**To make sure other people can play your file, you'll need to wait until the status changes from "Waiting to share 💖" to the beer 🍻 icon.** Other users and pubs that follow you should start seeding your post soon after you add it, but if this doesn't happen for a few minutes, restarting Ferment can help.
+
+On start-up, Ferment checks the files you have cached (or added) against the tracker and prioritize seeding the rarest files on the network. However, any files you play will start seeding immediately.
+
+## Install
+
+### on macOS
+
+Download the latest release [here](https://github.com/mmckegg/ferment/releases)!
+
+**Make sure you read the section of this readme titled ["Joining Pub Server"](#joining-pub-server)!**
+
+### from npm
+
+```bash
+$ npm install -g ferment
+```
+
+And then run using:
+
+```bash
+$ ferment
+```
+
+If you get an error appear saying something like [`Module version mismatch. Expected 50, got 48.`](https://github.com/mmckegg/ferment/issues/5), try running the following:
+
+```bash
+# requires automake on your system
+$ ferment --rebuild
+```
+
+Install latest updates:
+
+```bash
+$ npm install -g ferment@latest && ferment --rebuild
+```
+
+If you get weird issues, trash it and reinstall:
+
+```bash
+$ npm rm -g ferment
+```
 
 
-## Backers
+### from source
 
-Support us with a monthly donation and help us continue our activities. [Become a backer](https://opencollective.com/lolashare#backer)
+**Warning:** Development is done on the master branch, so this could be broken right now!
 
-<a href="http://opencollective.com/lolashare/backer/0/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/0/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/1/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/1/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/2/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/2/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/3/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/3/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/4/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/4/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/5/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/5/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/6/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/6/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/7/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/7/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/8/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/8/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/9/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/9/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/10/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/10/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/11/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/11/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/12/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/12/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/13/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/13/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/14/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/14/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/15/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/15/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/16/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/16/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/17/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/17/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/18/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/18/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/19/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/19/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/20/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/20/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/21/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/21/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/22/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/22/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/23/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/23/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/24/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/24/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/25/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/25/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/26/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/26/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/27/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/27/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/28/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/28/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/backer/29/website" target="_blank"><img src="http://opencollective.com/lolashare/backer/29/avatar.svg"></a>
+```bash
+$ git clone https://github.com/mmckegg/ferment.git
+$ cd ferment
+$ npm install
+```
 
-## Sponsors
+And then run using:
 
-Become a sponsor and get your logo on our README on Github with a link to your site. [Become a sponsor](https://opencollective.com/lolashare#sponsor)
+```bash
+$ npm start
+```
 
-<a href="http://opencollective.com/lolashare/sponsor/0/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/0/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/1/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/1/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/2/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/2/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/3/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/3/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/4/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/4/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/5/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/5/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/6/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/6/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/7/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/7/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/8/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/8/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/9/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/9/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/10/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/10/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/11/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/11/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/12/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/12/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/13/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/13/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/14/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/14/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/15/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/15/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/16/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/16/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/17/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/17/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/18/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/18/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/19/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/19/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/20/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/20/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/21/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/21/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/22/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/22/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/23/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/23/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/24/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/24/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/25/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/25/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/26/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/26/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/27/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/27/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/28/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/28/avatar.svg"></a>
-<a href="http://opencollective.com/lolashare/sponsor/29/website" target="_blank"><img src="http://opencollective.com/lolashare/sponsor/29/avatar.svg"></a>
+Install latest updates:
+
+```bash
+$ npm update
+$ npm run rebuild # make sure native add-ons are compatible with electron version
+```
+
+If you get weird issues, trash your `ferment/node_modules` directory:
+
+```bash
+$ rm -rf node_modules
+$ npm install
+```
+
+## Hosting Your Own Pub Server
+
+See [this guide](http://ssbc.github.io/docs/scuttlebot/howto-setup-a-pub.html) for full info setting up [scuttlebot](http://ssbc.github.io/scuttlebot/).
+
+### Ferment flavoured pub server
+
+Ferment includes it's own bundled server app that you can run which also functions as a tracker and torrent seeder. It also scopes the network, only replicating ferment feeds with you (rather than the normal 3-hop friend replicate, which gives you a bunch of other ssb data, which you won't be able to see but takes up hard-drive space and makes things slow for no reason).
+
+This is all super undocumented now. Eventually there will be a one-click style install. Or at least some step by step instructions for different platforms.
+
+Here's a hint to get started:
+
+```
+xvfb-run npm run server -- --host={yourhostname} --seed {YOUR_ID}
+```
+
+## TODO
+
+- [x] Scuttlebot database
+- [x] Webtorrent streaming
+- [x] Layout main application interface, base styles
+- [x] Audio player interface
+- [x] Sequencial feed playback
+- [x] API for adding file (transcode, analyse waveform)
+- [x] Upload interface [still needs more fields, and artwork]
+- [x] Connect to local peers and merge streams
+- [x] Store artwork in blobstore, and retrieve again
+- [x] User setup (choose display name, bio, picture)
+- [x] Specific Artist Feed
+- [x] Proper play/pause/loading buttons (nice try emoji)
+- [x] Follow other users ("friends")
+- [x] Display following stats
+- [x] Likes
+- [x] Backgrounding (keep seeding / syncing when main window is closed)
+- [x] Invite to pub
+- [x] Make torrents more reliable via pub server trackers [still need to make this work for other pubs though, hard coded to pub.ferment.audio right now]
+- [x] Allow revisions (some kind of special reply that replaces the content with new content)
+- [x] Show seed stats
+- [x] Reposting
+- [x] Make Save / Download buttons work
+- [x] Automatically download/seed items from people you follow
+- [ ] Allow "delete" of audio posts (some kind of tombstoning)
+- [ ] Playlists
+- [ ] Commenting (time based)
+
+### Server
+
+- [x] Pub server (invites, etc)
+- [x] Seed torrents from specified feeds
+- [ ] Web interface for viewing specified feeds (started in [branch](https://github.com/mmckegg/ferment/tree/web-lite-client))
 
 ## License
 

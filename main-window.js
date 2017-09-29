@@ -142,7 +142,7 @@ module.exports = function (client, config) {
           classList: [ computed(currentView, (x) => x[0] === 'followingFeed' ? '-selected' : null) ]
         }, 'Following')
       ]),
-      h('span.appTitle', ['LolaShare']),
+      h('span.appTitle', ['Ferment']),
       h('span', [
         h('a', {
           'ev-click': send(actions.viewProfile, api.id),
@@ -155,8 +155,8 @@ module.exports = function (client, config) {
     ]),
     when(latestUpdate,
       h('div.info', [
-        h('a.message -update', { href: 'https://github.com/LolaShare/LolaShare/releases' }, [
-          h('strong', ['🎉 LolaShare ', latestUpdate, ' has been released.']), ' Click here for more info!'
+        h('a.message -update', { href: 'https://github.com/mmckegg/ferment/releases' }, [
+          h('strong', ['🎉 Ferment ', latestUpdate, ' has been released.']), ' Click here for more info!'
         ])
       ])
     ),
