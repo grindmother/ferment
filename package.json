@@ -8,7 +8,9 @@
     "start": "electron index.js",
     "server": "electron server/index.js",
     "postinstall": "npm run rebuild",
-    "rebuild": "npm rebuild --runtime=electron --target=1.4.3 --abi=50 --disturl=https://atom.io/download/atom-shell"
+    "rebuild": "npm rebuild --runtime=electron --target=1.4.3 --abi=50 --disturl=https://atom.io/download/atom-shell",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "bin": {
     "ferment": "scripts/start.js"
@@ -77,10 +79,12 @@
     "statistics": "^3.3.0",
     "stream-to-pull-stream": "^1.7.2",
     "webtorrent": "~0.97.2",
-    "xtend": "^4.0.1"
+    "xtend": "^4.0.1",
+    "snyk": "^1.83.0"
   },
   "devDependencies": {
     "node-gyp": ">=1.0.2",
     "standard": "^8.3.0"
-  }
+  },
+  "snyk": true
 }
