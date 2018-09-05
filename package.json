@@ -69,7 +69,7 @@
     "sodium-prebuilt": "~1.0.22",
     "ssb-blobs": "~0.1.7",
     "ssb-client": "~4.3.0",
-    "ssb-config": "~2.1.1",
+    "ssb-config": "~2.2.1",
     "ssb-markdown": "^3.0.0",
     "ssb-msg-schemas": "^6.2.1",
     "ssb-msgs": "^5.2.0",
