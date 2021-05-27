@@ -38,7 +38,7 @@
   "dependencies": {
     "@mmckegg/mutant": "~3.7.2",
     "atomic-file": "^0.1.0",
-    "bittorrent-tracker": "^8.0.12",
+    "bittorrent-tracker": "^9.12.1",
     "broadcast-stream": "^0.1.1",
     "color-hash": "^1.0.3",
     "compare-version": "^0.1.2",
