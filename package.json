@@ -38,7 +38,7 @@
   "dependencies": {
     "@mmckegg/mutant": "~3.7.2",
     "atomic-file": "^0.1.0",
-    "bittorrent-tracker": "^8.0.12",
+    "bittorrent-tracker": "^9.15.0",
     "broadcast-stream": "^0.1.1",
     "color-hash": "^1.0.3",
     "compare-version": "^0.1.2",
@@ -65,9 +65,9 @@
     "pull-stream": "^3.4.5",
     "rimraf": "^2.5.4",
     "sanitize-filename": "^1.6.1",
-    "scuttlebot": "~9.1.1",
+    "scuttlebot": "~9.6.0",
     "sodium-prebuilt": "~1.0.22",
-    "ssb-blobs": "~0.1.7",
+    "ssb-blobs": "~1.2.1",
     "ssb-client": "~4.3.0",
     "ssb-config": "~2.1.1",
     "ssb-markdown": "^3.0.0",
@@ -76,7 +76,7 @@
     "ssb-ref": "^2.6.1",
     "statistics": "^3.3.0",
     "stream-to-pull-stream": "^1.7.2",
-    "webtorrent": "~0.97.2",
+    "webtorrent": "~0.110.0",
     "xtend": "^4.0.1"
   },
   "devDependencies": {
