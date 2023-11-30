@@ -44,7 +44,7 @@
     "compare-version": "^0.1.2",
     "create-torrent": "~3.25.1",
     "data-uri-to-buffer": "0.0.4",
-    "electron": "~1.4.2",
+    "electron": "~3.0.0",
     "electron-default-menu": "^1.0.0",
     "graphmitter": "^1.6.3",
     "has-network": "0.0.0",
@@ -63,7 +63,7 @@
     "pull-ping": "^2.0.2",
     "pull-pushable": "^2.0.1",
     "pull-stream": "^3.4.5",
-    "rimraf": "^2.5.4",
+    "rimraf": "^4.0.0",
     "sanitize-filename": "^1.6.1",
     "scuttlebot": "~9.1.1",
     "sodium-prebuilt": "~1.0.22",
@@ -76,7 +76,7 @@
     "ssb-ref": "^2.6.1",
     "statistics": "^3.3.0",
     "stream-to-pull-stream": "^1.7.2",
-    "webtorrent": "~0.97.2",
+    "webtorrent": "~1.9.0",
     "xtend": "^4.0.1"
   },
   "devDependencies": {
